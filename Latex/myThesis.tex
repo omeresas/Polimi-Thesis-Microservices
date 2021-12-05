@@ -71,8 +71,9 @@
 % PACKAGES FOR REFERENCES & BIBLIOGRAPHY
 \usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
 \usepackage{cleveref}
-\usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
-\bibliographystyle{abbrvnat} % You may use a different style adapted to your field
+% I CHANGED BELOW TWO LINES
+\bibliographystyle{unsrtnat}
+\usepackage[numbers,sort&compress]{natbib}
 
 % OTHER PACKAGES
 \usepackage{pdfpages} % To include a pdf file
@@ -189,10 +190,82 @@ Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole ch
 \section{Microservice Architecture}
 \label{sec:ms_arch}
 
+Although the microservice architecture style has already been a de-facto standard for some large tech companies, and is being embraced by numerous firms in the industry, because of the novelty of the architecture, not all developers and architects in the tech industry and researchers in the academia are aware of what it means and which paradigms it advertises.
+Microservice architecture is, not in the least meaning of the word, vastly different from the traditional way of building a web application, namely the monolithic architecture.
+Hence, it is a valuable effort to define microservice architecture, what it is about and describe features and trends from which this rather unorthodox architecture emerged.
+\\
+Most importantly, microservice architecture is, as the name suggests, a software architecture.
+There are numerous and slightly different definitions based on the particular discipline of software engineering for what a software architecture is.
+However, a very simple yet powerful definition is, a (software) architecture is a representation of significant design decisions that shape a system, where significant is measured by the cost of change \cite{booch}. 
+In the case for microservice architecture, the most signification design decision is, splitting the system into small, autonomous services that work together.
+Focusing on each element of this design decision will bring about more clarity about the architecture.
+\\
+First, the microservice architecture divide the system into parts, as other architectural styles do, based on various point of views of the system.
+Single Responsibility Principle, one of the famous SOLID principles of software engineering, promotes the idea that every module, class or a function in a computer program should have responsibility over a single part of that program's functionality, and it should encapsulate that part \cite{srp}.
+The microservice architecture takes that idea to the extreme and encourages developing independent microservices that tackles just one business functionality.
+Unlike a monolithic application, the system is not layered as database, back-end and front-end, or more generally, data, logic and UX layers, but consists of microservices that are created around business capabilities, as displayed in Figure~\ref{fig:monovsmicro}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{myImages/monolithic-vs-microservices.png}
+    \caption{Monolithic vs Microservice Architecture}
+    \label{fig:monovsmicro}
+\end{figure}
+
+Second, the microservice architecture advocates for those services to be small.
+It is not easy and in some cases inaccurate (e.g, in terms of LOC) to give an estimate of the magnitude of a service, however, a rule of thumb to keep in mind is, microservices should be small enough and not smaller \cite{newman}.
+Each service should focus on one business functionality and do it well.
+\\
+Third, and the last major aspect that defines the microservice architecture is autonomy.
+Each service in the microservice architecture is a separate entity, even to the degree that they are mostly designed, developed and deployed by separate teams.
+Each team has staff that can together carry out full range of skills required for development, such as database, UX and project management.
+\\
+At this point, in order to summarize the mentioned major aspects of the microservice architecture and make the architecture more concrete by adding a bit more detail about the implementation, it is a good opportunity to take a look at the definition of the microservice architecture given by an influential software engineer in the field.
+According to M. Fowler, the microservice architecture is, "in short, an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API.
+These services are built around business capabilities and independently deployable by fully automated deployment machinery.
+There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies." \cite{microdef}.
+In the next section, each characteristic of the microservice architecture is explained in more detail.
+
 \subsection{General Characteristics}
 \label{subsec:chars}
 
-\subsection{Differences with Other Architectures}
+\begin{itemize}
+    \item Each microservice is developed by a small, cross-functional team.
+    The team decides which programming language(s) and technology stack to choose to implement the microservice, and has their own CI/CD tools for testing, release and deployment.
+    Each microservice is considered not just a project, but a product, and the development teams are responsible also for the deployment and production process of their microservice, in the Amazon's notion of "you build it, you run it" \cite{youbuild}.
+    
+    \item Each microservice is a light-weight component that is independently deployable. In case of a change in a particular library, systems that have multiple libraries in a single process like a monolithic architecture has to redeploy entire application. Instead, in a same scenario, having multiple services facilitates redeploying only the changed service. Moreover, this kind of ease in deployment enables the system to be more fault-tolerant and scalable in a more dynamic way, as illustrated Figure~\ref{fig:scalability}.
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{myImages/scalable.png}
+    \caption{Scalability in Monolithic vs Microservice Apps}
+    \label{fig:scalability}
+\end{figure}
+
+    \item Microservices communicate with each other by means of network calls, using well-defined APIs, and simple protocols like REST over HTTP. While some other architectures incorporate smart (and heavy-weight) messaging mechanisms, such as Enterprise Service Buses (ESB) that can do routing, transformation, choreography and some business logic, the microservice architecture opt for simple communication infrastructure that can do basic routing of messages. In short, they have smart endpoints and dumb pipes.
+
+    \item Each microservice is a loosely-coupled business unit, that is responsible for a single part of the business capability.
+    Each model of a microservice is designed on a Bounded Context, which is a part of Domain Driven Design technique \cite{boundedcontext}. Conceptual model of the real world entities are decentralized, meaning that the representation (name) and modeling (attributes) of same real world entities are distinct. Figure~\ref{fig:micromodel} illustrates an example bounded context design and highlights the different representation of the same entity in different microservices.
+    
+    \begin{figure}[H]
+    \centering
+    \subfloat[Same Concept as Different Model Entities in Different Microservices\label{fig:micromodel1}]{
+        \includegraphics[scale=0.4]{myImages/micromodel1.png}
+    }
+    \quad
+    \subfloat[Decomposing Traditional Data Models\label{fig:micromodel2}]{
+        \includegraphics[scale=0.45]{myImages/micromodel2.png}
+    }
+    \caption{A Microservices Design Using Bound Context Model per Microservice}
+    \label{fig:micromodel}
+\end{figure}
+
+    \item Just like the decentralized modeling, the persistence layer of the whole application is decentralized, in other words, each microservice and associated team is responsible for managing their own data. The team decides on which kind of database (SQL, NoSQL, graph, columnar, etc) they make use of, taking into consideration their own models and needs.
+
+\end{itemize}
+
+\subsection{Differences with Service Oriented Architecture}
 \label{subsec:diff}
 
 \section{Design Patterns and Anti-Patterns in Microservices}
@@ -239,7 +312,7 @@ Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole ch
 %-------------------------------------------------------------------------
 
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
-\bibliography{Thesis_bibliography} % The references information are stored in the file named "Thesis_bibliography.bib"
+\bibliography{myThesisBib}
 
 %-------------------------------------------------------------------------
 %	APPENDICES
@@ -258,6 +331,27 @@ which supplement the main results contained in the previous chapters.
 
 % LIST OF TABLES
 \listoftables
+
+% LIST OF ABBREVIATIONS
+% Write out the List of Symbols in this page
+\chapter*{List of Abbreviations}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ll}
+        \textbf{Abbreviation} & \textbf{Description} \\\hline\\[-9px]
+        UX & User Experience \\[2px]
+        LOC & Lines of Code \\[2px]
+        HTTP & Hypertext Transfer Protocol \\[2px]
+        API & Application Programming Interface \\[2px]
+        CI/CD & Continuous Integration / Continuous Delivery \\[2px]
+        SQL & Structured Query Language \\[2px]
+        NoSQL & Not-Only-SQL, to refer to different kinds of non-relational databases \\[2px]
+        REST & Representational State Transfer \\[2px]
+        ESB & Enterprise Service Bus \\[2px]
+        BC & Bounded Context \\[2px]
+        DDD & Domain Driven Design \\[2px]
+    \end{tabular}
+\end{table}
 
 % ACKNOWLEDGEMENTS
 \chapter*{Acknowledgements}
