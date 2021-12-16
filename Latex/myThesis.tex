@@ -332,8 +332,8 @@ Developers can choose from implementing their own API gateway, using an existing
 \subsubsection{Service Mesh with Sidecar}
 \label{subsubsec:service_mesh}
 
-A service mesh is a configurable , low-latency infrastructure layer aimed to handle high volume of network-based inter-process communication among  application infrastructure services through APIs \cite{service_mesh}.
-Service mesh pattern is in general implemented with sidecar proxy in each service instance, that handles inter-process communication, monitoring and many other concerns.
+A service mesh is a configurable , low-latency infrastructure layer that is designed to tackle high volume of network-based inter-process communication among  application infrastructure services through APIs.
+Service mesh pattern is in general implemented as an array of lightweight network proxies called sidecar, without needing the application to be aware of proxies \cite{li2019service}. The sidecar proxies in each service instance handles inter-process communication, monitoring and many other concerns.
 Some aspects provided by this helper infrastructure include resiliency (fault tolerance, load balancing), service discovery, routing, observability, security, access control, communication protocol support and alike.
 \\
 The service mesh pattern is divided into two parts, namely, the control part and the data part, commonly referred as the control plane and the data plane. The control plane generates routing tables and deploy routing configuration to the proxies in the data plane. The actual forwarding of the network traffic is done by the proxies in the data plane, and for this reason, the data plane is also said to be the forwarding plane. Figure~\ref{fig:service_mesh} shows the diagram of an application with service mesh pattern, with the distinction of the control and data planes.
@@ -354,7 +354,7 @@ Some of the advantages of making use of a service mesh are:
     
     \item Resiliency for inter-service communications: Circuit-breaking, retries and timeouts, fault injection, fault handling, load balancing and fail-over. 
     
-    \item Service Discover: Discovery of service endpoints through a dedicated service registry.
+    \item Service Discovery: Discovery of service endpoints through a dedicated service registry.
     
     \item Observability: Metrics, monitoring, distributed logging, distributed tracing.
     
@@ -366,6 +366,37 @@ Some of the advantages of making use of a service mesh are:
 \end{itemize}
 
 Implementations of the service mesh pattern include products such as Istio, Linkerd and Consul Connect.
+
+\subsubsection{Service Registry and Discovery}
+\label{subsubsec:srd}
+
+In order for services to communicate, they expose a remote API at a particular location, specified by host and port number.
+However, their number of service instances and locations change dynamically.
+Scaling of services are done thanks to virtualization/containerization technologies and virtual machines and containers are usually assigned dynamic IP addresses.
+For a service client to get a service, it needs to know the location of that particular service and this is done through service registry and discovery pattern.
+When making a request, the client (of a service, it can be API gateway or another service), consults, directly or indirectly, to a service registry that keeps the up-to-date addresses of all service instances.
+The clients of the service registry need to know the location(s) of the service registry instances.
+Service registry instances must be deployed on fixed and well known IP addresses.
+Clients are configured with those IP addresses.
+Although clients should cache data provided by the service registry, if the service registry fails that data will eventually become out of date. 
+Consequently, the service registry must be highly available.
+
+\begin{itemize}
+    \item Service Registry: Service instances register themselves or a third party registers the service.
+    A service registry might invoke a service instance’s health check API to verify that it is able to handle requests. Systems that provide service registry include middlewares such as Netflix Eureka, Apache Zookeeper; and service meshes such as Consul and Etcd. Some other systems such as Kubernetes, Marathon and AWS ELB have implicit service registry.
+    
+    \item Client-side Service Discovery: Query (of service registry) logic is built into the client.
+    Spring Boot and Spring Cloud provides client-side service discovery, which is implemented by Netflix OSS (Open Source Software) components: service registry Eureka and HTTP client Ribbon that queries Eureka registry.
+    
+    \item Server-side Service Discovery: The client makes the request via a router that runs on a well known location.
+    The router queries a service registry, which might be built into the router, and forwards the request to an available service instance.
+    As an example, AWS Elastic Load Balancer acts as a router that load balances both external and internal traffic and also acts as a service registry.
+    EC2 instances are registered with the ELB either explicitly via an API call or automatically as part of an auto-scaling group.
+    Some clustering solutions such as Kubernetes and Marathon run a proxy (“service” in Kubernetes terminology) on each host that functions as a server-side discovery router.
+    In order to access a service, a client connects to the local proxy using the port assigned to that service.
+    The proxy then forwards the request to a service instance (or to controller such as ingress-nginx) running somewhere in the cluster.
+
+\end{itemize}
 
 \subsubsection{Backends For Frontends}
 \label{subsubsec:bff}
@@ -394,11 +425,246 @@ Figure~\ref{fig:rabbitmq} illustrates an example diagram that includes RabbitMQ 
     \label{fig:rabbitmq}
 \end{figure}
 
-Implementations of message brokers include RabbitMQ and Apache Kafka. The Key-Value store Redis can also be used as a message broker. In addition, cloud providers offers message brokers and event buses with different capabilities, such as AWS SNS, AWS SQS, AWS Eventbridge, Azure Event Bus, Google Cloud Tasks and Google Cloud Pub/Sub.
+Implementations of message brokers include RabbitMQ and Apache Kafka.
+The Key-Value store Redis can also be used as a message broker.
+In addition, cloud providers offers message brokers and event buses with different capabilities, such as AWS SNS, AWS SQS, AWS Eventbridge, Azure Event Bus, Google Cloud Tasks and Google Cloud Pub/Sub.
 
+\subsubsection{Database per Service}
+\label{subsubsec:dps}
+
+For the sake of loose-coupled services, each service’s persistent data is private to that service and accessible only via its API.
+Even though keeping private tables or schema per service facilitates private data, having separate database instances per service also enables the deployment and scaling of services and the teams to be more independent.
+By this means, each service can use the type of database that is best suited to its needs.
+For example, a service that does text searches could use ElasticSearch, while
+another service that manipulates a social graph could use Neo4j.
+Although having a separate database server per service is aligned with loose coupling idea, it increases complexity in terms of implementation of transactions that span multiple services, since many NoSQL databases do not support conventional atomic distributed transactions, such as 2-Phase Commit \cite{twopc}.
+
+\subsubsection{Saga}
+\label{subsubsec:saga}
+
+In order to solve the issue of implementing business transactions across multiple services, each multi-service transaction is implemented as a sequence of local transactions, which is called a saga.
+If a local transaction fails because it violates a business rule then the saga executes a series of compensating transactions that undo the changes that were made by the preceding local transactions.
+The two ways of implementing a saga pattern are:
+
+\begin{itemize}
+    \item Choreography-based Saga: A transaction is first targeted to a particular service (“order” service receives “POST/orders” request).
+    The service completes local transaction with its own database and emits an event to the event bus or a particular event channel (“order created” event in “order events” or a common channel).
+    The service that subscribed to that kind of event sees the emitted event and does its own logic and local transaction to its own database and emits another event for any service that listens for that kind of event.
+    If all steps are successful, the last service will let the first service know by emitting an event.
+    Otherwise, if a failure occurs in a step, the service that could not get its job done (in terms of logic or infrastructure) fires a failure event for the previous step, so the services that have worked before this step can sequentially perform rollbacks.
+    A diagram of choreography-based saga pattern is illustrated in Figure~\ref{fig:saga}.
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{myImages/saga.jpeg}
+    \caption{Choreography-based Saga Pattern}
+    \label{fig:saga}
+    \end{figure}
+    
+    \item Orchestration-based Saga: In this approach, unlike the above method, there is an orchestrator that manages the entire transaction.
+    When a transaction order that is related to multiple services comes to the service (again, such as “POST/orders”), the service sends a command to the orchestrator.
+    The orchestrator starts calling services to be called (directly or indirectly) and after a successful response, it calls the next one. Upon an answer that tells about a failure, the orchestrator then starts sending rollback messages to the previous services.
+    With respect to the choreography approach, this method brings about scalability and single point of failure issues.
+
+\end{itemize}
+
+\subsubsection{API Composition}
+\label{subsubsec:api_comp}
+
+A simple way to implement queries that spans multiple services is API composition pattern
+API composer service can take the query, then starts querying individual services that are related to the main query, join the responses and format the main query result to the client.
+However, some queries would result in inefficient, in-memory joins of large datasets.
+
+\subsubsection{Command Query Responsibility Segregation (CQRS)}
+\label{subsubsec:cqrs}
+
+Another way to respond to a query that covers numerous services is Command Query Segregation Pattern.
+A service is wrapped around a view database that is a read-only replica that fulfils the query responsibility of the application.
+The service keeps the database up-to-date by subscribing to domain events, published by the service that owns the data.
+As the name suggests, separate services are responsible for the query (read) and command (write and any other logic) parts of the application.
+Although it comes with potential complexity, code duplication and eventually consistent view nature, it supports multiple de-normalized views that are scalable and performant.
+
+\subsubsection{Event Sourcing}
+\label{subsubsec:event_sourcing}
+
+A service typically needs to update its data and send/publish messages.
+For example, a service that participates in a saga needs to atomically update the database and sends messages/events.
+If the database transaction commits messages must be sent.
+Conversely, if the database rolls back, the messages must not be sent.
+In addition, messages must be sent to the message broker in the order they were sent by the service.
+This ordering must be preserved across multiple service instances that update the same aggregate.
+\\
+A good solution to this problem is to use event sourcing pattern.
+Event sourcing persists the state of a business entity such as Order or a Customer as a sequence of state-changing events.
+Whenever the state of a business entity changes, a new event is fired from the respective microservice, and stored in a database named as the event store, which can be an ACID-compliant database, a time-series database or a database server specifically implemented for event sourcing pattern, such as EventStore.
+The most recent state of the application data is constructed by processing the events and storing the data in a materialised view that serves read-only queries.
+Embracing the eventual consistency paradigm, the materialised view can be updated according to the constraints of the domain of the application, by finding the most recent snapshot of the application data and processing the persisted events that have occurred since that snapshot. Figure~\ref{fig:event_sourcing} illustrates the flow and storage of the events in a regular application that makes use of event sourcing pattern.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{myImages/event-sourcing.png}
+\caption{Event Sourcing Pattern}
+\label{fig:event_sourcing}
+\end{figure}
+
+Moreover, event sourcing pattern makes it possible to implement temporal queries that determine the state of an entity at any point in time.
+Append-only storage mechanism enables to see the actions taken related to a particular set of data, as well as assisting in testing and debugging \cite{event_sourcing_docs}.
+
+\subsubsection{Service Instance per Virtual Machine}
+\label{subsubsec:per_vm}
+
+The microservices architecture promotes some ideas also for the deployment stage of the software lifecycle and these ideas are, as expected, built around loose-coupling paradigm.
+The first of these patterns regarding the deployment process is service instance per virtual machine (VM) pattern.
+Basically, in this method, each microservice is packaged as a VM image and deployed as an application running in its own VM, possibly with other VMs running on an hypervisor-based machine which is managed by Infrastructure-as-a-Service (IaaS) provider, such as AWS EC2, Google Compute Engine and Digital Ocean.
+Packaging of a service as a VM image results in ease of scaling of services, which can also be automatically done by the IaaS provider based on the load.
+Moreover, the details of the implementation of the service can be encapsulated in a VM image, therefore the dependence of the service technology over the physical host can be reduced.
+With regard to the drawbacks, it is time-consuming for developers to create VM images and configure infrastructure components such as load balancers and firewalls.
+
+\subsubsection{Service Instance per Container}
+\label{subsubsec:per_container}
+
+Another microservice pattern regarding the deployment aspect is service instance per container pattern.
+Similar to packaging each service as a VM image, this pattern proposes packaging each service as a container image, in most cases, as a Docker image.
+According to the official docs, Docker is an open platform for developing, shipping, and running applications, and provides the ability to package and run an application in a loosely isolated environment called a container \cite{docker_def}.
+Docker containers provide many of the same advantages as VM images, however, due to the underlying virtualization method, Docker containers are much more lightweight with respect to VMs \cite{eder2016hypervisor}.
+Rather than using a separate operating system, containers share a operating system, resulting in a significantly smaller size of each deployment.
+Underneath, Docker make use of "linux kernel namespaces" and "control groups" to isolate resources of a single virtual or physical host (a single operating system in both cases) and allows Docker containers and services inside to consume resources of the host.
+Being a more "micro" approach, containers make it easier for developers to package and share an application through "Docker Hub" and deploy a service as a container image, which is built with specifications taken from a "Dockerfile", to a private cloud or a Container-as-a-Service (CaaS) provider, such as Google Cloud Run or AWS Fargate.
+Moreover, the overall resiliency of the application can be improved since it takes less time and effort to run a container with respect to a service with its own operating system.
+For the sake of a clear understanding of the two virtualization methods mentioned, and how they differ from traditional deployment methods, the evolution of concepts are illustrated in Figure~\ref{fig:hypervisor_vs_container}. As a side note, it is interesting to see the same evolution towards fine-granularity, seen in application architecture from monoliths and SOA to microservices, also in software deployment approaches.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{myImages/kubernetes_evo.png}
+\caption{Comparison and evolution of traditional, hypervisor-based and container-based deployment}
+\label{fig:hypervisor_vs_container}
+\end{figure}
+
+Microservices applications consist of tens or hundreds of microservices, and considering multiple instances for some services, the total number of service instances can be quite high.
+In order for the advantages promised by the microservice architecture, supposing the adoption of container-based deployment, the cluster of containers must be properly instantiated, managed and observed.
+To simplify the management of a cluster of containers, there are container orchestration platforms, such as Kubernetes, AWS Elastic Container Service, Docker Swarm and Mesosphere.
+Among them, Kubernetes was initially developed by Google, open-sourced in 2014 and since then has been the most widely used container orchestration platform.
+At this point, to see how containerization technology and orchestration platforms comes together to realize a microservice application, it is crucial to mention some capabilities of Kubernetes and challenges it tackles.
+Some of the features of Kubernetes are:
+\begin{itemize}
+    \item Service Discovery and Load Balancing: Kubernetes exposes container via a DNS name or IP address to the cluster, can deploy an "ingress" component that can as as an API gateway, and can distribute network traffic between service instances if the load is high.
+    
+    \item Storage orchestration: Allows mounting (attaching, binding) of different storage options such as local storage and public cloud provider, to the containers.
+    
+    \item Automated rollouts and rollbacks: Enables developers to describe the desired state of the containers at hand and via a feed-back mechanism, tries to realize the desired state into the actual state of the cluster. In other words, "rolls out" changes in a progressive way and if something bad happens, "rolls back" changes to the previous stable state. It can create or remove containers and some kinds of Kubernetes objects such "Pods", "Deployments" and "Services" to carry out the task.
+    
+    \item Automatic bin packing: When provided with the information of how much CPU and memory a container needs, Kubernetes can figure out how to place containers to a set of nodes so that the resources are best utilized.
+    
+    \item Self-healing: Restarts containers that failed, and based on user-defined health-check, replaces or kills containers that do not respond. Moreover, it routes traffic to healthy instances until the failed container is ready to handle requests.
+    
+    \item Secret and Configuration Management: Stores and manages sensitive information such as passwords, OAuth access token and SSH keys. Without having to re-build container images, stores and updates application configuration such as environment variables.
+\end{itemize}
+
+In addition to stand-alone Kubernetes platform for on-premise solution, the cloud providers offer Kubernetes-as-a-Service options, such as Google Kubernetes Engine (GKE), AWS EKS and Azure AKS, that enables to run Kubernetes clusters on the cloud, by means of container images and Kubernetes config files.
+\\
+As a consequence of the capabilities explained above, and as also stated by researchers from IBM in a research paper \cite{jaramillo2016leveraging}, it is appropriate to say that Docker has been a disruptive technology which changed the way applications are developed and distributed.
+Following the same concepts and ideas as microservice architectural paradigm itself, Docker is quite a good fit for building and deploying microservices.
+
+\subsubsection{Serverless}
+\label{subsubsec:serverless}
+
+Services as source codes can be packaged (eg, as a ZIP file) and uploaded to the deployment infrastructure, which is an utility operated by a public cloud provider.
+The infrastructure hides any concept of servers, resources, virtual machines and containers, it just takes the code and runs it.
+Under the hood, it uses virtual machines and containers to isolate the services.
+The client (of this service) is charged for each request based on the resources consumed.
+This solution is very elastic in terms of scaling, however, it comes with significant constraints in the environment.
+As an example, AWS Lambda limits the maximum time it can take for a microservice to serve a request to be fifteen minutes, making it unsuitable for microservices that need to execute for longer amount of time, such as data-processing batch jobs \cite{aws_lambda}.
+Another important constraint in serverless pattern is, the microservices need to be "stateless", in other words, the microservice should not assume the existence of a particular data in its local file storage or memory to serve requests, instead, the state should be stored in persistence services such as AWS S3.
+Constraints such as these allow small microservices to be instantiated quickly, making it suitable for developers to deploy particular microservices that are not called frequently enough to be deployed to its own host, reducing the insfrastructure costs.
+Examples include AWS Lambda, Google Cloud Functions, Azure Functions.
+
+\subsubsection{Health Check API}
+\label{subsubsec:health_check_api}
+
+Microservices, as any other software component, can crash or fail to serve the requests even if they still run.
+During the times of unavailability, it is critical to notice those services that cannot carry out requests so that the requesting services do not wait unnecessarily, and instead, if there is another healthy instance of the failing service, are routed to those available instances.
+Since the scope of a microservice is in general small, the availability status in terms of sufficient disk memory, connection to a database or a cache service or in general any other service it is dependant upon, can be coded or created from features of the framework used.
+As an example, the microservice can have an health check endpoint such as "/api/v1/health", and can respond to GET request with the status of the service described in a simple JSON file, possibly with HTTP status codes such as 200, 204, or 500, which stand for "OK", "No Content" and "Internal Server Error", respectively.
+\\
+In addition to health check mechanisms as code, the container orchestration platform Kubernetes offers health check methods that can be configured descriptively in Kubernetes configuration file by developers.
+Kubernetes offers two kinds of health checking or "probing" options, named as liveness and readiness, and can carry out the health checks in periodic time intervals specified.
+The first type, liveness. refers to whether a set of one or more containers, also knows as a "pod", is responsive or not.
+In cases of a crash or a deadlock situation, restarting the pod can help make the service available again.
+The second type, readiness, is used to decide if the service is ready to serve the requests, i.e., serves request only after loading data or configruation files or checking with services it depends on.
+The health check API pattern, as seen from examples, is in fact helpful to detect and manage failures in microservices and hence the whole system, improving the resiliency of the application.
+
+\subsubsection{Log Aggregator}
+\label{subsubsec:log_aggregator}
+
+As mentioned in the previous health check API pattern, from time to time, microservices may fail to serve the request and in some cases, it takes more than simple restarting the service to solve the issue.
+Developers might need to take a look in the log files to find the exact cause of the problem.
+In a microservice application, however, inspecting log files of a microservice by connecting to its host can be frustrating.
+One reason is, there can be multiple instances of a microservice on different host, and it would be time-consuming to find the right host, especially if the services are scaled to new host automatically.
+Another reason might be that, merely finding log files in most cases does not suffice to remove the bug, but trouble-shooting the microservices and comparing the logs from a chain of microservices is needed.
+In order to ease the trouble-shooting process, log aggregator pattern can be utilized.
+\\
+Essentially, what log aggregator pattern proposes is, creating a central service and simply aggregating all log files from other microservices instances. Although this is simple idea, with some additions, the trouble-shooting process and developer experience can be significantly improved.
+Through a configuration or log aggregator service, different logging types with various levels of detail can be specified to running microservices.
+After creating a structured logging for all microservices with appropriate fields, to some extent, aggregated log files can be searchable.
+Furthermore, advanced analyzing tools can be used to have more insights about the whole system.
+As an example, ElasticSearch, Logstash and Kibana tools, also known as "ELK" stack, are widely used for this purpose.
+From microservices themselves or from a message broker, the logs are sent to data ingestion tool Logstash, and afterwards, ElasticSearch is used to analyze text or JSON data and Kibana is used to visualize the results to make the data more presentable for developers and data analysts.
+Another example from a public cloud provider is AWS CloudWatch.
+In addition to above-mentioned capabilities of ELK stack, CloudWatch can be configured to send alerting events or do some operational changes such as auto-scaling, if a particular word or a message occurs among the logs.
+
+\subsubsection{Distributed Tracing}
+\label{subsubsec:distributed_tracing}
+
+In a microservice architected application, in contrary to a monolithic application, a request does not get handled by a single software component but rather by multiple microservices needed for that particular request.
+From a system-wide point of view, a request, whether it is from an external UI agent or an internal microservice for a background job, results in an execution of a chain of microservices.
+Naturally, this type of multi-call mechanism of microservices brings about complexity in terms of application development and performance monitoring.
+For example, it would be helpful for developers to see which microservices are being called and which bounded domain contexts are being touched by a specific request.
+Another exemplary scenario is that, some microservices might take more time to execute their tasks before calling the next microservice in the chain, so it would be beneficial to acquire how long it takes for microservices to complete their tasks so that the bottleneck of the system can be pinpointed and improved.
+For these kind of tasks, distributed tracing pattern can be quite advantageous.
+\\
+In essence, distributed tracing pattern suggests assigning IDs to each external requests and passing it along with each call down the chain or path of execution, so that the path can be traced.
+Each microservice is attached or instrumented with an agent that creates new spans for incoming requests and attaches context information required for identification to outgoing request.
+Similar to log aggregator pattern, a central collector service reveices trace data from agents, validates and stores data to be queried.
+Finally, a query process queries the tracing database and shows the result of the query, possibly as a visualization using nodes, arrows or nested spans and related data.
+Figure~\ref{fig:jaeger_trace} illustrates a detailed view of inter-service calls resulted from a GET request to an endpoint in frontend service, created by Jaeger, which is an open-source distributed tracing system.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{myImages/trace-detail-ss.png}
+\caption{Visualization of inter-service calls and timing data by Jaeger}
+\label{fig:jaeger_trace}
+\end{figure}
+
+As mentioned above, the distributed tracing pattern, similar to a service mesh, can be divided into two parts, an intrumentation or tracing part and the collection part.
+Unsurprisingly, in order for a system to have distributed tracing capability, these two parts must be compatible, in other words, they must adhere to the same API specification.
+In the open-source community, although there is no standardization yet, collective efforts such as OpenTracing tries to create a standardization of APIs, naming of concepts and shows tools such as Jaeger that complies with the OpenTracing standard.
+Another major distributed tracing system Zipkin, which supports distributed tracing integration with popular cloud frameworks such as Spring Cloud.
 
 \subsection{Anti-Patterns}
 \label{subsec:antipattern}
+
+\subsubsection{Wrong Cut}
+\label{subsubsec:wrong_cut}
+
+As mentioned previously, microservices are designed using bounded context method, that is, each microservice is designed to carry out tasks related to one small business capability.
+One misconception for the separation of microservices is the construction of microservices in a layered fashion, as opposed to having one business capability.
+Designing microservices so that each microservice takes care of a major task from a technical perspective of the whole application is in fact a bad habit from SOA.
+To explain shortly and to not repeat the differences between SOA and microservices architectures, it is appropriate to say that, while designing microservices in a layered style like UI, logic and data increases re-usability of both code and data, it conflicts with the requirements needed for the microservice architecture to deliver its benefits.
+The wrong cut anti-pattern causes deployments to be dependant on other services, breaks team independence and brings about high-coupling, since each business task would then require more microservices to be available.
+To avoid this pattern, microservices should be designed from a business perspective and the ownership of logic and data to a development team should be preserved.
+
+\subsubsection{Cyclic Dependencies}
+\label{subsubsec:cyclic_dependencies}
+
+An application that employs the microservice architecture style handles external request through a chain or path of microservice calls.
+For that reason, during run-time, the whole application can be visualised as a directed graph, specifically, microservices as nodes and calls as arrows.
+The cyclic dependencies anti-pattern is, basically, a cyclic span of connected arrows on the graph, implying that, there is, or can be, a request that might result in microservices calling each other in a cyclic order.
+Due to a bug in code, or a bad decision during the design phase, a particular request can cause microservices that take part in the cyclic service calls, to call each other indefinitely.
+Even if the cyclic call ends by design, it is a sign of high coupling between microservices, hinting at the possibility that, the microservices might have designed so small that they cannot carry out business capabilities without being dependant on each other's logic or data.
+To remedy this anti-pattern, the microservices that appear in the cycle can be re-designed and perhaps merged into a single microservice, yet taking into consideration that the new microservice does not become a megaservice.
+
+\subsubsection{}
+\label{subsubsec:wrong_cut}
 
 \chapter{Adopted Methodology}
 \label{ch:method}%
@@ -466,9 +732,13 @@ which supplement the main results contained in the previous chapters.
         API & Application Programming Interface \\[2px]
         BC & Bounded Context \\[2px]
         CI/CD & Continuous Integration / Continuous Delivery \\[2px]
+        CaaS & Container-as-a-Service \\[2px]
+        CQRS & Command Query Responsibility Segregation \\[2px]
         DDD & Domain Driven Design \\[2px]
         ESB & Enterprise Service Bus \\[2px]
         HTTP & Hypertext Transfer Protocol \\[2px]
+        IaaS & Infrastructure-as-a-Service \\[2px]
+        JSON & Javascript Object Notation \\[2px]
         LOC & Lines of Code \\[2px]
         MSMQ & Microsoft Messaging Queuing \\[2px]
         NoSQL & Not-Only-SQL, to refer to different kinds of non-relational databases \\[2px]
@@ -478,10 +748,11 @@ which supplement the main results contained in the previous chapters.
         SOA & Service Oriented Architecture \\[2px]
         SOAP & Simple Object Access Protocol \\[2px]
         SQL & Structured Query Language \\[2px]
+        SSH & Secure Shell \\[2px]
         TLS & Transport Layer Security \\[2px]
         UI & User Interface \\[2px]
         UX & User Experience \\[2px]
-        
+        VM & Virtual Machine \\[2px]
     \end{tabular}
 \end{table}
 
