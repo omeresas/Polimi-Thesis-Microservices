@@ -200,7 +200,7 @@ However, a very simple yet powerful definition is, a (software) architecture is 
 In the case for microservice architecture, the most signification design decision is, splitting the system into small, autonomous services that work together.
 Focusing on each element of this design decision will bring about more clarity about the architecture.
 \\
-First, the microservice architecture divide the system into parts, as other architectural styles do, based on various point of views of the system.
+First, the microservice architecture divide the system into parts, as other architectural styles do, based on various points of views of the system.
 Single Responsibility Principle, one of the famous SOLID principles of software engineering, promotes the idea that every module, class or a function in a computer program should have responsibility over a single part of that program's functionality, and it should encapsulate that part \cite{srp}.
 The microservice architecture takes that idea to the extreme and encourages developing independent microservices that tackles just one business functionality.
 Unlike a monolithic application, the system is not layered as database, back-end and front-end, or more generally, data, logic and UX layers, but consists of microservices that are created around business capabilities, as displayed in Figure~\ref{fig:monovsmicro}.
@@ -232,7 +232,7 @@ In the next section, each characteristic of the microservice architecture is exp
 \begin{itemize}
     \item Each microservice is developed by a small, cross-functional team.
     The team decides which programming language(s) and technology stack to choose to implement the microservice, and has their own CI/CD tools for testing, release and deployment.
-    Each microservice is considered not just a project, but a product, and the development teams are responsible also for the deployment and production process of their microservice, in the Amazon's notion of "you build it, you run it" \cite{youbuild}.
+    Each microservice is considered not just a project, but a product, and the development teams are responsible also for the deployment and production processes of their microservice, in the Amazon's notion of "you build it, you run it" \cite{youbuild}.
     
     \item Each microservice is a light-weight component that is independently deployable. In case of a change in a particular library, systems that have multiple libraries in a single process like a monolithic architecture has to redeploy entire application. Instead, in a same scenario, having multiple services facilitates redeploying only the changed service. Moreover, this kind of ease in deployment enables the system to be more fault-tolerant and scalable in a more dynamic way, as illustrated Figure~\ref{fig:scalability}.
     
@@ -272,7 +272,7 @@ The profound idea of microservice architecture, which proposes splitting a syste
 In the late 90's, Service Oriented Architecture (SOA) emerged as an enterprise-wide approach to software development of components that takes advantage of reusable software components, or services.
 Similar to microservice architecture, each service is designed to execute business functions.
 \\
-Although the two architectures look quite identical at the first glance, they take different different stands on the solutions of common problems in software architecture and therefore there are substantial differences between the two.
+Although the two architectures look quite identical at the first glance, they take different stands on the solutions of common problems in software architecture and therefore there are substantial differences between the two.
 Listing the distinctions under three categories will help explain the difference.
 
 \begin{itemize}
@@ -297,8 +297,8 @@ Since its introduction by Netflix and discussions at workshops and software arch
 As the architecture is adopted more and more as time goes, legacy systems have been migrated and new projects have been developed utilizing the microservice architecture.
 By sharing the experience after successful projects, similar to the evolution of design patterns in other paradigms, reusable solutions to commonly occurring problems have been identified and consequently design patterns in the microservice architecture showed up.
 On the flip side, there has also been sub-optimal solutions during this period, resulting from several factors, some of which might be lack of experience, misunderstanding of the microservice architecture or just old habits from SOA.
-In the same manner as design pattern, the anti-patterns of the microservice architecture has been identified by researcher and experienced engineers.
-In the next two sections, the design patterns and anti-patterns are explored.
+In the same manner as design patterns, the anti-patterns of the microservice architecture has been identified by researchers and experienced engineers.
+In the next two sections, the design patterns and anti-patterns that exist in microservice architectures are explored.
 
 \subsection{Design Patterns}
 \label{subsec:designpattern}
@@ -306,7 +306,7 @@ In the next two sections, the design patterns and anti-patterns are explored.
 \subsubsection{API Gateway}
 \label{subsubsec:api_gateway}
 
-API gateway acts as a single entry point for all clients as well as an edge service for exposing microservices to the outside world as managed APIs.
+API gateway acts as a single point of entry for all clients as well as an edge service for exposing microservices to the outside world as managed APIs.
 It sounds like a reverse proxy, but also has additional responsibilities like simple load-balancing, authentication, authorization, failure handling, auditing, protocol translations, and routing. An API Gateway should always be a highly-available and performant component, since it is the entry point to the entire system, as illustrated in Figure~\ref{fig:api_gateway}.
 
 \begin{figure}[H]
@@ -332,7 +332,7 @@ Developers can choose from implementing their own API gateway, using an existing
 \subsubsection{Service Mesh with Sidecar}
 \label{subsubsec:service_mesh}
 
-A service mesh is a configurable , low-latency infrastructure layer that is designed to tackle high volume of network-based inter-process communication among  application infrastructure services through APIs.
+A service mesh is a configurable, low-latency infrastructure layer that is designed to tackle high volume of network-based inter-process communication among  application infrastructure services through APIs.
 Service mesh pattern is in general implemented as an array of lightweight network proxies called sidecar, without needing the application to be aware of proxies \cite{li2019service}. The sidecar proxies in each service instance handles inter-process communication, monitoring and many other concerns.
 Some aspects provided by this helper infrastructure include resiliency (fault tolerance, load balancing), service discovery, routing, observability, security, access control, communication protocol support and alike.
 \\
@@ -371,13 +371,11 @@ Implementations of the service mesh pattern include products such as Istio, Link
 \label{subsubsec:srd}
 
 In order for services to communicate, they expose a remote API at a particular location, specified by host and port number.
-However, their number of service instances and locations change dynamically.
+However, the number of service instances and locations change dynamically.
 Scaling of services are done thanks to virtualization/containerization technologies and virtual machines and containers are usually assigned dynamic IP addresses.
 For a service client to get a service, it needs to know the location of that particular service and this is done through service registry and discovery pattern.
 When making a request, the client (of a service, it can be API gateway or another service), consults, directly or indirectly, to a service registry that keeps the up-to-date addresses of all service instances.
-The clients of the service registry need to know the location(s) of the service registry instances.
-Service registry instances must be deployed on fixed and well known IP addresses.
-Clients are configured with those IP addresses.
+The clients of the service registry need to know the location(s) of the service registry instances, hence service registry instances must be deployed on fixed and well known IP addresses.
 Although clients should cache data provided by the service registry, if the service registry fails that data will eventually become out of date. 
 Consequently, the service registry must be highly available.
 
@@ -402,9 +400,10 @@ Consequently, the service registry must be highly available.
 \label{subsubsec:bff}
 
 Instead of using one common backend service for multiple clients, there are separate deployments of the same service with different configurations or implementations that can meet different UI requirements of different clients.
-Each one is provides an API for its client.
-Because each backend is specific to one interface, it can be optimized for that interface.
-Each interface team has autonomy to control their own backend and doesn't rely on a centralized backend development team.
+Each microservice that implements backends for frontends pattern provides an API, tailored specifically for one kind of client.
+Because each backend is specific to one kind of client, it can be optimized for the interface the client uses.
+As an example, while a microservice returns the detailed result of a query for the web application to use, another microservice with the same business capability, implemented with slightly different logic or configuration can return a concise version of the result to a mobile client.
+As a result, each interface team has autonomy to control their own backend and does not need to rely on a centralized backend development team.
 
 \subsubsection{Asynchronous Messaging}
 \label{subsubsec:async_msg}
@@ -447,7 +446,7 @@ If a local transaction fails because it violates a business rule then the saga e
 The two ways of implementing a saga pattern are:
 
 \begin{itemize}
-    \item Choreography-based Saga: A transaction is first targeted to a particular service (“order” service receives “POST/orders” request).
+    \item Choreography-based Saga: A transaction is first targeted to a particular service (“order” service receives a POST request to "/orders").
     The service completes local transaction with its own database and emits an event to the event bus or a particular event channel (“order created” event in “order events” or a common channel).
     The service that subscribed to that kind of event sees the emitted event and does its own logic and local transaction to its own database and emits another event for any service that listens for that kind of event.
     If all steps are successful, the last service will let the first service know by emitting an event.
@@ -462,7 +461,7 @@ The two ways of implementing a saga pattern are:
     \end{figure}
     
     \item Orchestration-based Saga: In this approach, unlike the above method, there is an orchestrator that manages the entire transaction.
-    When a transaction order that is related to multiple services comes to the service (again, such as “POST/orders”), the service sends a command to the orchestrator.
+    When a transaction order that is related to multiple services comes to the service, the service sends a command to the orchestrator.
     The orchestrator starts calling services to be called (directly or indirectly) and after a successful response, it calls the next one. Upon an answer that tells about a failure, the orchestrator then starts sending rollback messages to the previous services.
     With respect to the choreography approach, this method brings about scalability and single point of failure issues.
 
@@ -487,12 +486,10 @@ Although it comes with potential complexity, code duplication and eventually con
 \subsubsection{Event Sourcing}
 \label{subsubsec:event_sourcing}
 
-A service typically needs to update its data and send/publish messages.
-For example, a service that participates in a saga needs to atomically update the database and sends messages/events.
-If the database transaction commits messages must be sent.
-Conversely, if the database rolls back, the messages must not be sent.
-In addition, messages must be sent to the message broker in the order they were sent by the service.
-This ordering must be preserved across multiple service instances that update the same aggregate.
+A microservice typically needs to update its data and send or publish messages that conveys some information about the transaction or related business action.
+For example, a service that participates in a saga needs to atomically update the database and sends messages or events.
+If the database transaction is executed successfully, resulting messages must be sent and later, if the entity in the database rolls back to its previous state or changed again into a new state, related appropriate messages must be send to interested microservices.
+In addition, the  ordering of messages must be preserved across multiple service instances that update the same aggregate.
 \\
 A good solution to this problem is to use event sourcing pattern.
 Event sourcing persists the state of a business entity such as Order or a Customer as a sequence of state-changing events.
@@ -547,7 +544,7 @@ Among them, Kubernetes was initially developed by Google, open-sourced in 2014 a
 At this point, to see how containerization technology and orchestration platforms comes together to realize a microservice application, it is crucial to mention some capabilities of Kubernetes and challenges it tackles.
 Some of the features of Kubernetes are:
 \begin{itemize}
-    \item Service Discovery and Load Balancing: Kubernetes exposes container via a DNS name or IP address to the cluster, can deploy an "ingress" component that can as as an API gateway, and can distribute network traffic between service instances if the load is high.
+    \item Service Discovery and Load Balancing: Kubernetes exposes container via a DNS name or IP address to the cluster, can deploy an "ingress" component that can act as an API gateway, and can distribute network traffic between service instances if the load is high.
     
     \item Storage orchestration: Allows mounting (attaching, binding) of different storage options such as local storage and public cloud provider, to the containers.
     
@@ -568,14 +565,14 @@ Following the same concepts and ideas as microservice architectural paradigm its
 \subsubsection{Serverless}
 \label{subsubsec:serverless}
 
-Services as source codes can be packaged (eg, as a ZIP file) and uploaded to the deployment infrastructure, which is an utility operated by a public cloud provider.
+To deploy a microservice application, the services as source codes can be packaged (eg, as a ZIP file) and uploaded to the deployment infrastructure, which is an utility operated by a public cloud provider.
 The infrastructure hides any concept of servers, resources, virtual machines and containers, it just takes the code and runs it.
 Under the hood, it uses virtual machines and containers to isolate the services.
 The client (of this service) is charged for each request based on the resources consumed.
 This solution is very elastic in terms of scaling, however, it comes with significant constraints in the environment.
 As an example, AWS Lambda limits the maximum time it can take for a microservice to serve a request to be fifteen minutes, making it unsuitable for microservices that need to execute for longer amount of time, such as data-processing batch jobs \cite{aws_lambda}.
 Another important constraint in serverless pattern is, the microservices need to be "stateless", in other words, the microservice should not assume the existence of a particular data in its local file storage or memory to serve requests, instead, the state should be stored in persistence services such as AWS S3.
-Constraints such as these allow small microservices to be instantiated quickly, making it suitable for developers to deploy particular microservices that are not called frequently enough to be deployed to its own host, reducing the insfrastructure costs.
+Constraints such as these allow small microservices to be instantiated quickly, making it suitable for developers to deploy not the entire microservice application but some particular microservices that are not called frequently enough to be deployed to its own host, reducing the insfrastructure costs.
 Examples include AWS Lambda, Google Cloud Functions, Azure Functions.
 
 \subsubsection{Health Check API}
@@ -583,14 +580,14 @@ Examples include AWS Lambda, Google Cloud Functions, Azure Functions.
 
 Microservices, as any other software component, can crash or fail to serve the requests even if they still run.
 During the times of unavailability, it is critical to notice those services that cannot carry out requests so that the requesting services do not wait unnecessarily, and instead, if there is another healthy instance of the failing service, are routed to those available instances.
-Since the scope of a microservice is in general small, the availability status in terms of sufficient disk memory, connection to a database or a cache service or in general any other service it is dependant upon, can be coded or created from features of the framework used.
+Since the scope of a microservice is in general small, the availability status in terms of sufficient disk memory, connection to a database or a cache service or in general any other service it is dependant upon, can be coded or created from features of the framework being used.
 As an example, the microservice can have an health check endpoint such as "/api/v1/health", and can respond to GET request with the status of the service described in a simple JSON file, possibly with HTTP status codes such as 200, 204, or 500, which stand for "OK", "No Content" and "Internal Server Error", respectively.
 \\
-In addition to health check mechanisms as code, the container orchestration platform Kubernetes offers health check methods that can be configured descriptively in Kubernetes configuration file by developers.
+In addition to health check mechanisms as code, the container orchestration platform Kubernetes offers health check methods that can be configured descriptively in Kubernetes configuration files by developers.
 Kubernetes offers two kinds of health checking or "probing" options, named as liveness and readiness, and can carry out the health checks in periodic time intervals specified.
-The first type, liveness. refers to whether a set of one or more containers, also knows as a "pod", is responsive or not.
+The first type, liveness, refers to whether a set of one or more containers, also knows as a "pod", is responsive or not.
 In cases of a crash or a deadlock situation, restarting the pod can help make the service available again.
-The second type, readiness, is used to decide if the service is ready to serve the requests, i.e., serves request only after loading data or configruation files or checking with services it depends on.
+The second type, readiness, is used to decide if the service is ready to serve the requests, i.e., serves request only after loading data or configuration files or checking with services it depends on.
 The health check API pattern, as seen from examples, is in fact helpful to detect and manage failures in microservices and hence the whole system, improving the resiliency of the application.
 
 \subsubsection{Log Aggregator}
@@ -599,7 +596,7 @@ The health check API pattern, as seen from examples, is in fact helpful to detec
 As mentioned in the previous health check API pattern, from time to time, microservices may fail to serve the request and in some cases, it takes more than simple restarting the service to solve the issue.
 Developers might need to take a look in the log files to find the exact cause of the problem.
 In a microservice application, however, inspecting log files of a microservice by connecting to its host can be frustrating.
-One reason is, there can be multiple instances of a microservice on different host, and it would be time-consuming to find the right host, especially if the services are scaled to new host automatically.
+One reason is, there can be multiple instances of a microservice on different hosts, and it would be time-consuming to find the right host, especially if the services are scaled to new hosts automatically.
 Another reason might be that, merely finding log files in most cases does not suffice to remove the bug, but trouble-shooting the microservices and comparing the logs from a chain of microservices is needed.
 In order to ease the trouble-shooting process, log aggregator pattern can be utilized.
 \\
@@ -607,7 +604,7 @@ Essentially, what log aggregator pattern proposes is, creating a central service
 Through a configuration or log aggregator service, different logging types with various levels of detail can be specified to running microservices.
 After creating a structured logging for all microservices with appropriate fields, to some extent, aggregated log files can be searchable.
 Furthermore, advanced analyzing tools can be used to have more insights about the whole system.
-As an example, ElasticSearch, Logstash and Kibana tools, also known as "ELK" stack, are widely used for this purpose.
+As an example, ElasticSearch, Logstash and Kibana tools, also known as the "ELK" stack, are widely used for this purpose.
 From microservices themselves or from a message broker, the logs are sent to data ingestion tool Logstash, and afterwards, ElasticSearch is used to analyze text or JSON data and Kibana is used to visualize the results to make the data more presentable for developers and data analysts.
 Another example from a public cloud provider is AWS CloudWatch.
 In addition to above-mentioned capabilities of ELK stack, CloudWatch can be configured to send alerting events or do some operational changes such as auto-scaling, if a particular word or a message occurs among the logs.
@@ -624,7 +621,7 @@ For these kind of tasks, distributed tracing pattern can be quite advantageous.
 \\
 In essence, distributed tracing pattern suggests assigning IDs to each external requests and passing it along with each call down the chain or path of execution, so that the path can be traced.
 Each microservice is attached or instrumented with an agent that creates new spans for incoming requests and attaches context information required for identification to outgoing request.
-Similar to log aggregator pattern, a central collector service reveices trace data from agents, validates and stores data to be queried.
+Similar to log aggregator pattern, a central collector service receives trace data from agents, validates and stores data to be queried.
 Finally, a query process queries the tracing database and shows the result of the query, possibly as a visualization using nodes, arrows or nested spans and related data.
 Figure~\ref{fig:jaeger_trace} illustrates a detailed view of inter-service calls resulted from a GET request to an endpoint in frontend service, created by Jaeger, which is an open-source distributed tracing system.
 
@@ -635,64 +632,276 @@ Figure~\ref{fig:jaeger_trace} illustrates a detailed view of inter-service calls
 \label{fig:jaeger_trace}
 \end{figure}
 
+% learn how to cite CC license for the figure
+
 As mentioned above, the distributed tracing pattern, similar to a service mesh, can be divided into two parts, an intrumentation or tracing part and the collection part.
 Unsurprisingly, in order for a system to have distributed tracing capability, these two parts must be compatible, in other words, they must adhere to the same API specification.
 In the open-source community, although there is no standardization yet, collective efforts such as OpenTracing tries to create a standardization of APIs, naming of concepts and shows tools such as Jaeger that complies with the OpenTracing standard.
-Another major distributed tracing system Zipkin, which supports distributed tracing integration with popular cloud frameworks such as Spring Cloud.
+Another major distributed tracing system is Zipkin, which supports distributed tracing integration with popular cloud frameworks such as Spring Cloud.
+
+\subsubsection{Circuit Breaker}
+\label{subsubsec:circuit_breaker}
+
+From time to time, microservice instances may become unresponsive to other microservices, due to a high load that makes the service instance run out of resources, or a bug in the source code that makes the instance crash during run-time.
+In a typical microservice application, the failure of microservice instances can be remedied by provisioning new ones, taking advantage of agile deployment capability thanks to fine-grained nature of the microservice architecture.
+Nonetheless, in some cases, provisioning new instances of the failing microservice after the failure might not be good enough in terms of quality of service of the entire application.
+As an example, if a call from the client side needs a service from a particular microservice and the request is routed to the failing microservice instance, the client would need to wait indefinitely, resulting in poor user experience.
+In another and possibly more serious situation, if there are microservices that depend on the failing microservice instance, calls on the failing microservice might result in poor utilization of precious resources such as threads in other microservices, resulting in poor performance and possibly unresponsiveness in those microservice instance, effectively cascading the original failure to other connected components in the system.
+The circuit breaker pattern, in effect, intends to block a failure in a microservice instance from spreading to other instances in the rest of the system.
+The mechanism of doing so is basically wrapping calls to a service and inspecting the result of call in terms of success or failure.
+If there are enough failures, the circuit breaker component cuts the connection logically, or "trips" as the electrical circuit breaker does.
+After that, all attempts to invoke the failing instance immediately returns an error for a specified period of time, so that the clients of the service do not wait or consume resources in a futile waiting mode.
+The circuit breaker pattern can be implemented in either the client or server side, or it can have its own microservice instance as a proxy between them \cite{montesi2016circuit}.
+Figure~\ref{fig:circuit_breaker} shows the three states found in the circuit breaker pattern and the flow between them.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.60\textwidth]{myImages/circuit_breaker.png}
+\caption{State Diagram of Circuit Breaker Pattern}
+\label{fig:circuit_breaker}
+\end{figure}
+
+\begin{itemize}
+    \item Closed State: The closed state is the normal state of operation in which the requests are conveyed to the invoked service. The number of cases, in which there is a erroneous return value from the called service or no return at all, is counted, and when the threshold is reached, the circuit breaker trips to the open state.
+    
+    \item Open State: In the open state, the requests are not conveyed and instead an immediate failure message is given back to the caller service. By means of periodically polling the failing service and checking if there is a successful return, or just waiting for a specified amount of time, the half-open state is reached.
+    
+    \item Half-Open State: The half-open state acts as an intermediary step before making the circuit closed and granting all requests admission to the invoked service. In this state, only a limited number of requests are permitted to the target service, while others are returned with an immediate error message. In case any of the limited calls made to the service fails, the circuit goes back to the open state. Lastly, if the limited calls are handled and returned successfully by the previously failing instance, the circuit becomes closed again, returning to the normal operation with counters being reset.
+\end{itemize}
+
+Example libraries that implement the circuit breaker pattern include Netflix Hystrix and Resiliency4j for Java, Opossum for Node.js and Gobreaker for Go languages.
 
 \subsection{Anti-Patterns}
 \label{subsec:antipattern}
+
+% write which papers are used as a guide for this section
 
 \subsubsection{Wrong Cut}
 \label{subsubsec:wrong_cut}
 
 As mentioned previously, microservices are designed using bounded context method, that is, each microservice is designed to carry out tasks related to one small business capability.
-One misconception for the separation of microservices is the construction of microservices in a layered fashion, as opposed to having one business capability.
+One misconception for the separation of microservices is the construction of microservices in a layered fashion, as opposed to assigning one business capability per microservice.
 Designing microservices so that each microservice takes care of a major task from a technical perspective of the whole application is in fact a bad habit from SOA.
 To explain shortly and to not repeat the differences between SOA and microservices architectures, it is appropriate to say that, while designing microservices in a layered style like UI, logic and data increases re-usability of both code and data, it conflicts with the requirements needed for the microservice architecture to deliver its benefits.
 The wrong cut anti-pattern causes deployments to be dependant on other services, breaks team independence and brings about high-coupling, since each business task would then require more microservices to be available.
 To avoid this pattern, microservices should be designed from a business perspective and the ownership of logic and data to a development team should be preserved.
 
-\subsubsection{Cyclic Dependencies}
-\label{subsubsec:cyclic_dependencies}
+\subsubsection{Nano Microservice}
+\label{subsubsec:nano_microservice}
 
-An application that employs the microservice architecture style handles external request through a chain or path of microservice calls.
-For that reason, during run-time, the whole application can be visualised as a directed graph, specifically, microservices as nodes and calls as arrows.
-The cyclic dependencies anti-pattern is, basically, a cyclic span of connected arrows on the graph, implying that, there is, or can be, a request that might result in microservices calling each other in a cyclic order.
-Due to a bug in code, or a bad decision during the design phase, a particular request can cause microservices that take part in the cyclic service calls, to call each other indefinitely.
-Even if the cyclic call ends by design, it is a sign of high coupling between microservices, hinting at the possibility that, the microservices might have designed so small that they cannot carry out business capabilities without being dependant on each other's logic or data.
-To remedy this anti-pattern, the microservices that appear in the cycle can be re-designed and perhaps merged into a single microservice, yet taking into consideration that the new microservice does not become a megaservice.
+Another anti-pattern due to bad design choices in terms of separation of microservices is the nano microservices anti-pattern.
+Unlike the wrong cut anti-pattern, the nano microservice anti-pattern does not stem from a misconception of the design paradigm but the excess use of separation of business boundaries.
+As the name suggests, there might be cases that the microservices are designed so small that they cannot carry out business capabilities in a more or less indepedent way.
+Designing microservices unnecessarily small results in a larger number of microservices in the system, and increases communication overhead.
+This anti-pattern can also manifests itself as a cyclic dependency among a set of microservices, hinting at the fact that they are designed to be dependant on each other's logic or data to serve an outside request.
+To remedy this anti-pattern, the nano microservices can be re-designed around business capabilites, aimed at one business capability per microservice.
+In the case of cyclic dependencies and frequent calls related to one business request, the microservices that take part in the related cluster or cycle can merged into a single microservice, yet taking into consideration that the new microservice does not become a megaservice.
 
-\subsubsection{}
-\label{subsubsec:wrong_cut}
+\subsubsection{Mega Microservice}
+\label{subsubsec:mega_microservice}
 
-\chapter{Adopted Methodology}
-\label{ch:method}%
+At the opposite end, there is the mega microservice anti-pattern, which means, designing one or more microservices in the system so that they can accomplish multiple business capabilities.
+Having mega microservices in the application puts more work on the shoulders of the development team, and adding developers to the team leads to a situation that resembles a monolithic architecture.
+It also results in additional difficulty in the deployment process, since in this case the part of system that changes in each deployment is larger, on contrary to one small microservice.
+Again, it is important to design microservices in a way that each microservice performs one business capability.
+Refactoring a mega microservice into a couple of microservices can help ease the deployment stage, and increase team independence.
 
-\section{Classification of Patterns}
-\label{sec:class_method}
+\subsubsection{ESB Usage}
+\label{subsubsec:esb_usage}
 
-\section{Selection of Open Source Projects}
-\label{sec:select_method}
+In the subsection \ref{subsec:diff}, the differences between the microservice and service-oriented architectures have been explained and particular roles each architectural paradigm assigns to the message broker component have been discussed.
+Related to this difference, there is in fact an anti-pattern called ESB usage in the microservices world, that is based on the usage of ESB-like smart communication components in a microservice application.
+The use of communication components that additionally takes care of service registry and discovery, transformation and some business logic contradicts with the "smart endpoints, dumb pipes" principle of the microservice architecture.
+Rather than relying on the transformation of messages by an ESB, microservices should understand and handle different outlines of messages, register and discover services through a separate mechanism themselves.
+Removing additional tasks such as these from the messaging component and using a lightweight message broker makes it easier to maintain the software and decreases the probability of a single point of failure case for the entire system.
 
-\section{Detection of Patterns}
-\label{sec:detection_method}
+\subsubsection{Hardcoded Endpoints}
+\label{subsubsec:hardcoded_endpoints}
+
+For a microservice to be able to make a request to another microservice, the requesting microservice need to know the location of the provider microservice.
+The location of a microservice on the network is specificed via an IP address of its host and also a port number that is allocated for the process by the host in order to route network packets to the related process.
+For that reason, to be able to communicate on the network, microservices need to know IP addresses and the port numbers of microservices that they need to make a request to.
+In short, there are two main methods to handle this task.
+The first solution is to delegate this task of knowing which microservice is where on the network to a separate microservice or an underlying infrastructure designed for microservice architectures, namely, using the service registry and discovery design pattern.
+The second way, however, is the anti-pattern that is about to be explained, the hardcoded endpoints anti-pattern.
+The solution of the second way, and the poor one, is explicitly stating the addresses of microservices through different mechanisms, such as writing in the source code or storing them in a configuration file or environment variable.
+Although this method can be used during the development process, it makes it harder to scale the services for the production stage, since it would be necessary to update all other microservice instances to know about the location of a new microservice deployment.
+In addition, using hardcoded endpoints undermines the benefits of an internal load balancer, if one is used to distribute some share of the traffic of requests to a recently instantiated microservice.
+Taking into consideration the promises proposed by the microservice architecture, it is quite beneficial and in some cases necessary to employ design patterns such as service registry and discovery that shapes the system in a way that allows those promises to be delivered.
+
+\subsubsection{No API Gateway}
+\label{subsubsec:no_api_gateway}
+
+Similar to the two previous anti-patterns, the no API gateway anti-pattern is in fact the absence of a microservice design pattern, namely API gateway pattern.
+Without an API gateway, clients of the microservice application need to communicate directly with the microservice that are needed for a particular task.
+The clients have to know the location of multiple microservices and might have to send multiple requests for the resources they need.
+The auxiliary tasks such as authentication, without an API gateway, are needed to be done for each microservices.
+Lastly, and probably the biggest difficulty of not having an API gateway is that the clients need to know how the application is structured, in other words, the names, locations and capabilities of microservices need to be conveyed to the client side.
+For all these reasons, having an API gateway is of utmost importance for a microservice application to be able to communicate with the client in an effortless way.
+
+\subsubsection{Shared Persistence}
+\label{subsubsec:shared_persistence}
+
+In section \ref{subsec:chars}, while listing the general characteristics of the microservice architecture, it is stated that each microservice in general has its own persistence layer, meaning that each microservice deals with storing and managing its own data in its own database instance.
+The shared persistence anti-pattern, as the name suggests, stem from using the same database record (entity, row or document) or the same database instance to serve requests from multiple microservices.
+It is important to note that, unlike many of the previous anti-patterns, the shared persistence anti-pattern contains a spectrum of choices that can be made to decide the extent how much flexibility is desired at the cost of duplication of data and less efficient use of infrastructure resources.
+Besides having one database instance per service, microservices can share a single database instance, a database schema in a database and even tables in a database schema.
+While the use of a single database maximizes re-usability, private database schemes and private database tables allow for various degrees of data privacy and ownership, at the expense of possible data duplication and redundancy in the database instance.
+In some cases, the decision to share data among multiple microservices may seem reasonable to developers and architects, however, it is crucial to remember that shared persistence anti-pattern diminishes team independence in the sense that changes to schema and table design need to be coordinated, and increases run-time coupling, since all microservices need a particular database instance to be up and running to serve a single business capability.
+
+\subsubsection{Shared Libraries}
+\label{subsubsec:shared_libraries}
+
+Similar to the shared persistence anti-pattern, the shared libraries is a common anti-pattern in the sense that developers opt for sharing logic instead of data for this particular anti-pattern.
+Extracting common code to a library is one of the best practices in software development discipline, since it reduces development efforts by following "Don't repeat yourself" (DRY) principle.
+In addition, if there are multiple microservices on the same host, they can share a run-time library so that the resources of the host are best utilized.
+However, sharing both development and run-time libraries can be detrimental to the independent development principle of the microservice architecture.
+Because of sharing libraries, a change in the shared library requires careful coordination among teams, slowing down development speed in the long term. Furthermore, if the change is not coordinated well enough, an update on a shared library may cause significant changes in other microservices, potentially breaking the entire application.
+As a remedy, the run-time libraries can be refactored into a separate microservice, so that if there is a need to change the library, the change can be incrementally introduced, in other words, there can be separate instances that support both versions, or the library can a have versioned API.
+For the shared development libraries, developers should prefer code duplication instead of risking wrong abstraction so that the development efforts remain stable in the future.
+
+\subsubsection{No CI/CD Tools}
+\label{subsubsec:no_cicd}
+
+One of the main pillars of the microservice architecture is creating teams that develop microservices that handles one business capability.
+The fine-grained decomposition allows teams to develop and maintain the microservice they own in an agile yet solid way.
+To support the integration of development and operation tasks, teams are encouraged to use CI/CD tools, which allows for faster delivery without compromising software quality.
+While it may seem easier to develop software without CI/CD tools at the first glance, the development and testing stage takes more time since a human agent needs to test the changed software part and possibly the whole software component, causing the time it takes to give feedback to developers to be longer.
+On the other hand, having version control repositories for microservices, unit and integration tests in appropriate places, automated delivery mechanisms on successful commits and merges makes development faster and more under control.
+Although the absence of CI/CD tools can also be disadvantageous for other software architectures, it is especially beneficial to use them in complex and modern architectures such as microservices so that the agility for microservice development can be achieved.
+
+\subsubsection{Multiple Service Instances per Host}
+\label{subsubsec:multiple_service_per_host}
+
+For a microservices application, one of the deployment ways is deploying multiple microservice instances on a single virtual or physical host.
+While this deployment option makes best use of resources of the underlying infrastructure, it severely harms the ease of scaling of services, since simply scaling a host results in all services that runs on the host to be scaled.
+Moreover, different microservices may try to use different software components that runs on different OSs, or they can require different versions of the same dependency on the host machine, resulting in conflicting technologies and the need for a substantial amount of cooperation between teams during the development period.
+In short, deploying multiple microservices on a single host is an anti-pattern and should be avoided in a microservice architecture.
+
+\subsubsection{No API Versioning}
+\label{subsubsec:no_api_versioning}
+
+When a new version of a microservice is deployed, the developers may also decide to introduce a modified version of the former API, if it has been seen as a better fit for the newer version of the microservice.
+In order not to break the communication between the altered microservice and other microservices, from time to time it is necessary for the altered microservice to support both the new and the old versions of its API, until other teams make changes required in their code that adopts the new API.
+In cases such as these, API versioning can help identify the version of the API to be used between the client and the modified microservice.
+The version of the API can be inserted in the URL path to be used by the client, or inserted as one of the custom headers in the HTTP request.
+In addition, the degree of the change made to the API can be clarified to some extent, by using semantic versioning method.
+The teams can coordinate and agree on a particular way of interpreting version numbers, or they also can make use of standization efforts such as SemVer.
+In summary, utilizing API versioning is simple yet rewarding practice for microservices applications and not doing so may lead to inefficient communication efforts between teams.
+
+\subsubsection{No Health Check}
+\label{subsubsec:no_health_check}
+
+Microservice applications may contain dozens of microservice instances, and for this reason, a failure or a crash in a microservice instance does not necessarily lead to an entire system-wide breakdown, making the failure hard to notice.
+Not implementing a health check API endpoint in microservices or utilizing the related health check feature of the underlying container orchestration platform such as the one from Kubernetes is not just a trade-off but an anti-pattern in microservice architectures.
+Specifying periodic health check in the orchestration platform or adding a couple of simple health check logic into request handling code of microservices is a valuable investment that can help monitor the whole application, making it easier to find and fix the service instance down or route requests to up-and-running instances until the problem is solved.
+
+\subsubsection{Local Logging}
+\label{subsubsec:local_logging}
+
+Another bad practice that makes microservice applications less transparent to the developers is local logging anti-pattern.
+Although implementing a distributed logging service is not trivial, say, compared to adding a health check endpoint, because of the significant disadvantages it causes in applications with large number of microservices, solely storing logs locally per microservice basis constitutes an anti-pattern.
+Without a log aggregation mechanism, analyzing the state of the application requires more time and unimaginable effort in cases where the logs are larger in size and number.
+In consequence, having a distributed logging structure in staging and production environments reduces trouble-shooting efforts and helps with monitoring processes.
+
+\chapter{Research Methodology}
+\label{ch:research_method}%
+
+In this chapter, the work conducted is described.
+First, the research questions constructed for the study are introduced and in the next section, the methodology used to answer those research questions are explained.
+
+\section{Research Questions}
+\label{sec:research_questions}
+
+For the scope of this study, the following two research questions have been established.
+
+\begin{itemize}
+    \item \textbf{RQ1}: Is there a consistent categorization or classification of design patterns and anti-patterns of microservice architectures in the academia?
+    If not, what could be an alternative way to structure those design patterns and anti-patterns?
+    
+    \item \textbf{RQ2}: Are the design patterns and anti-patterns of microservice architectures also reflected in the popular microservice projects in the open source community?
+    Which design patterns and anti-patterns exist in those prominent projects?
+\end{itemize}
+
+Through these two research questions, the goal of this study is to see the level of sophistication and finesse in which the microservice design patterns and anti-patterns are categorised in the academia and to validate the occurrence of microservice design patterns and anti-patterns mentioned in the academia on a limited set of open source microservice projects.
+
+\section{Adopted Methodology}
+\label{sec:adopted_method}
+
+To answer first research question, the following steps have been adopted.
+
+\begin{itemize}
+    \item In the first step, a literature review on electronic databases has been conducted.
+
+    \item item 2
+\end{itemize}
 
 \chapter{Results}
 \label{ch:results}%
 
-\section{Resulting Classification of Patterns}
-\label{sec:class_result}
+In this chapter, the results of the research process are described.
+The first two section reports on the findings of the research related to the two research question, with the intention of giving accurate answers to the research questions.
+Next, in the light of the experience and data collected during the research process, additional comments have been made about the microservice design patterns and anti-patterns in the discussion of findings section.
 
-\section{Selected Open Source Projects}
-\label{sec:select_result}
+\section{Classification of Patterns}
+\label{subsec:classification_result}
 
-\section{Detected Patterns in Selected Projects}
-\label{sec:detection_result}
+In order to find out whether there exists a consistent classification of microservice design patterns and anti-patterns, research papers about the topic have been investigated.
+Digital libraries such as IEEE Explore, ACM Digital Library, Springer, Scopus, and the literature research tool, Google Scholar, have been consulted.
+The keywords used in the search queries made to the libraries included "microservice pattern", "microservice pattern classification", "microservice anti-pattern" and "microservice anti-pattern classification".
+It has been detected that, while there exists many studies regarding one or more design patterns or anti-patterns of microservice architectures, few studies approach to the topic from holistic point of view, in other words, mention or conduct a study involving different kinds of design patterns and anti-patterns of microservice architectures.
+After initial review of the studies, few more studies have been added through snowballing technique, and from this extended set, studies that do not contain a classification or grouping of patterns and anti-patterns have been eliminated.
+The remaining set of primary studies used to answer the first research question are listed in Table~\ref{table:studies}. 
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{|l p{33em} l|}
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{ID} & \textbf{Title} & \textbf{Format}\T\B \\
+    \hline \hline
+    P1 & A systematic mapping study in microservice architecture \cite{7796008} & Conference\T\B\\
+    \hline
+    P2 & Architecting with microservices: a systematic mapping study \cite{DIFRANCESCO201977} & Journal\T\B\\
+    \hline
+    P3 & Architectural patterns for microservices: a systematic mapping study \cite{TaibiD2018APfM} & Conference\T\B\\
+    \hline
+    P4 & Deployment and communication patterns in microservice architectures: a systematic literature review \cite{KARABEYAKSAKALLI2021111014} & Journal\T\B\\
+    \hline
+    P5 & Patterns related to microservice architecture: a multivocal literature review \cite{valdivia} & Journal\T\B\\
+    \hline
+    P6 & Microservices: a systematic mapping study \cite{10.5220/0005785501370146} & Conference\T\B\\
+    \hline
+    P7 & A pattern language for scalable microservices-based systems \cite{10.1145/3241403.3241429} & Conference\T\B\\
+    \hline
+    P8 & Actual use of architectural patterns in microservices-based open source projects \cite{8719492} & Conference\T\B\\
+    \hline
+    P9 & Towards a taxonomy of microservices architectures \cite{10.1007/978-3-319-74781-1_15} & Conference\T\B\\
+    \hline
+    P10 & Quality attributes in patterns related to microservice architecture: a systematic literature review \cite{9105640} & Conference\T\B\\
+    \hline
+    P11 & Microservices anti-patterns: a taxonomy \cite{Taibi2020} & Book chapter\T\B\\
+    \hline
+    P12 & On the study of microservices antipatterns: a catalog proposal \cite{10.1145/3424771.3424812} & Conference\T\B\\
+    \hline
+    P13 & Towards a collaborative repository for the documentation of service-based antipatterns and bad smells \cite{8712355} & Conference\T\B\\
+    \hline
+    P14 & Quality assurance for microservice architectures \cite{9522227} & Conference\T\B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Primary studies that contain classification of patterns or anti-patterns}
+    \label{table:studies}
+\end{table}
+
+\section{Patterns and Anti-Patterns in Microservice Projects}
+\label{subsec:pattern_result}
 
 \section{Discussion of Findings}
 \label{sec:discussion}
 
+number of studies of pattern > studies of anti-patterns
+aksakalli2021deployment
 \chapter{Conclusion}
 \label{ch:conclusion}%
 
@@ -735,6 +944,7 @@ which supplement the main results contained in the previous chapters.
         CaaS & Container-as-a-Service \\[2px]
         CQRS & Command Query Responsibility Segregation \\[2px]
         DDD & Domain Driven Design \\[2px]
+        DRY & Don't Repeat Yourself \\[2px]
         ESB & Enterprise Service Bus \\[2px]
         HTTP & Hypertext Transfer Protocol \\[2px]
         IaaS & Infrastructure-as-a-Service \\[2px]
