@@ -833,8 +833,27 @@ To answer first research question, the following steps have been adopted.
 \begin{itemize}
     \item In the first step, a literature review on electronic databases has been conducted.
 
-    \item item 2
+    \item to be continued
 \end{itemize}
+
+Regarding the research method for the second research question, the work provided in the steps below have been conducted.
+
+\begin{itemize}
+    \item As a first step, open source projects implemented with a microservice architecture are searched in the repository hosting service GitHub (cite as footnote XXX).
+    The keyword pattern "microservice OR micro-service" have been utilized.
+
+    \item The search result are sorted using "most stars" sorting option.
+    The rationale behind this decision is to see both the "text-book" microservice application example provided by software companies and other projects that are potentially being used for microservice architecture reference.
+    Although this decision does not result in a set of very high quality microservice applications with various design patterns implemented to solve microservice challenges, it is helpful in identifying the projects that has some visibility among the open source community and the patterns and anti-patterns that exist in those projects.
+    
+    \item The applications implemented as a case study from software companies or example applications from individual or group of developers have been selected.
+    The repositories that are software development tools implemented to aid in microservice application development, such as frameworks, libraries, tool-kits and microservice application templates are excluded.
+    
+    \item Because of the technological heterogeneity that exist in both individual microservices in a microservice project and in the set of microservice projects to be examined, design patterns such as "saga" and "shared libraries" that requires a competent understanding of the programming language being used and a thorough comprehension of the business logic are excluded from the list of patterns and anti-patterns to be identified.
+    
+    \item The identification methods for the remaining patterns and anti-patterns are reviewed and the related work is conducted.
+\end{itemize}
+
 
 \chapter{Results}
 \label{ch:results}%
@@ -850,49 +869,309 @@ In order to find out whether there exists a consistent classification of microse
 Digital libraries such as IEEE Explore, ACM Digital Library, Springer, Scopus, and the literature research tool, Google Scholar, have been consulted.
 The keywords used in the search queries made to the libraries included "microservice pattern", "microservice pattern classification", "microservice anti-pattern" and "microservice anti-pattern classification".
 It has been detected that, while there exists many studies regarding one or more design patterns or anti-patterns of microservice architectures, few studies approach to the topic from holistic point of view, in other words, mention or conduct a study involving different kinds of design patterns and anti-patterns of microservice architectures.
-After initial review of the studies, few more studies have been added through snowballing technique, and from this extended set, studies that do not contain a classification or grouping of patterns and anti-patterns have been eliminated.
-The remaining set of primary studies used to answer the first research question are listed in Table~\ref{table:studies}. 
+After initial review of the studies, few more studies have been added through snowballing technique, and from this extended set, the studies that do not contain a classification or grouping of patterns and anti-patterns have been eliminated.
+The remaining set of primary studies that has been used to answer the first research question are listed in Table~\ref{table:primary_studies}. 
 
 \begin{table}[H]
 \centering 
-    \begin{tabular}{|l p{33em} l|}
+    \begin{tabular}{|l p{28em} l|}
     \hline
     \rowcolor{bluepoli!40}
     \textbf{ID} & \textbf{Title} & \textbf{Format}\T\B \\
     \hline \hline
-    P1 & A systematic mapping study in microservice architecture \cite{7796008} & Conference\T\B\\
+    P1 & Architectural patterns for microservices: a systematic mapping study \cite{TaibiD2018APfM} & Conference\T\B\\
     \hline
-    P2 & Architecting with microservices: a systematic mapping study \cite{DIFRANCESCO201977} & Journal\T\B\\
+    \rowcolor{bluepoli!10}
+    P2 & Deployment and communication patterns in microservice architectures: a systematic literature review \cite{KARABEYAKSAKALLI2021111014} & Journal\T\B\\
     \hline
-    P3 & Architectural patterns for microservices: a systematic mapping study \cite{TaibiD2018APfM} & Conference\T\B\\
+    P3 & Patterns related to microservice architecture: a multivocal literature review \cite{valdivia} & Journal\T\B\\
     \hline
-    P4 & Deployment and communication patterns in microservice architectures: a systematic literature review \cite{KARABEYAKSAKALLI2021111014} & Journal\T\B\\
+    \rowcolor{bluepoli!10}
+    P4 & A pattern language for scalable microservices-based systems \cite{10.1145/3241403.3241429} & Conference \T\B\\
     \hline
-    P5 & Patterns related to microservice architecture: a multivocal literature review \cite{valdivia} & Journal\T\B\\
+    P5 & Actual use of architectural patterns in microservices-based open source projects \cite{8719492} & Conference\T\B\\
     \hline
-    P6 & Microservices: a systematic mapping study \cite{10.5220/0005785501370146} & Conference\T\B\\
+    \rowcolor{bluepoli!10}
+    P6 & Quality attributes in patterns related to microservice architecture: a systematic literature review \cite{9105640} & Conference\T\B\\
     \hline
-    P7 & A pattern language for scalable microservices-based systems \cite{10.1145/3241403.3241429} & Conference\T\B\\
+    P7 & Microservices anti-patterns: a taxonomy \cite{Taibi2020} & Book chapter\T\B\\
     \hline
-    P8 & Actual use of architectural patterns in microservices-based open source projects \cite{8719492} & Conference\T\B\\
+    \rowcolor{bluepoli!10}
+    P8 & On the study of microservices antipatterns: a catalog proposal \cite{10.1145/3424771.3424812} & Conference\T\B\\
     \hline
-    P9 & Towards a taxonomy of microservices architectures \cite{10.1007/978-3-319-74781-1_15} & Conference\T\B\\
+    P9 & Towards a collaborative repository for the documentation of service-based antipatterns and bad smells \cite{8712355} & Conference\T\B\\
     \hline
-    P10 & Quality attributes in patterns related to microservice architecture: a systematic literature review \cite{9105640} & Conference\T\B\\
-    \hline
-    P11 & Microservices anti-patterns: a taxonomy \cite{Taibi2020} & Book chapter\T\B\\
-    \hline
-    P12 & On the study of microservices antipatterns: a catalog proposal \cite{10.1145/3424771.3424812} & Conference\T\B\\
-    \hline
-    P13 & Towards a collaborative repository for the documentation of service-based antipatterns and bad smells \cite{8712355} & Conference\T\B\\
-    \hline
-    P14 & Quality assurance for microservice architectures \cite{9522227} & Conference\T\B\\
+    \rowcolor{bluepoli!10}
+    P10 & Quality assurance for microservice architectures \cite{9522227} & Conference\T\B\\
     \hline
     \end{tabular}
     \\[10pt]
     \caption{Primary studies that contain classification of patterns or anti-patterns}
-    \label{table:studies}
+    \label{table:primary_studies}
 \end{table}
+
+A concise explanation of primary studies and their views on the categorization of microservice design patterns and anti-patterns are given below.
+
+\begin{itemize}
+    \item \textbf{P1}: P1 is a systematic mapping study that reports on the widely used microservice architecture patterns and presents a catalogue regarding the advantages and disadvantages of microservice patterns.
+    As a result, they establish three categories, namely "orchestration and communication", "deployment" and "data storage".
+    In the first category, they include "API gateway", "service discovery" and "hybrid" patterns, and in the second category, "multiple service per host" and "single service per host" patterns.
+    Lastly, in the data storage category, they add "database per service", "database cluster" and "shared database server" patterns.
+    The "hybrid" pattern is, according to their definition, is a combination of "API gateway" and "service discovery" patterns, and is similar to ESB used in service-oriented architectures, which is, in fact, presented as an anti-pattern in this study.
+    Next, P1 suggests "multiple service per host" as a microservice pattern, explaining its advantages and disadvantages, while in this study, it is clearly stated as an anti-pattern.
+    In addition, P1 presents several options in the data management spectrum, presenting every option as a pattern, although in this study, some options such as "shared database server" is counted as an anti-pattern.
+    
+    \item \textbf{P2}: In P2, the researchers make a systematic literature review, exploring "deployment" and "communication" patterns in microservice architectures.
+    While the researchers do not attempt to study other kinds of microservice patterns, they list several microservice patterns in the two categories, hence the study was considered useful in regard to the selection of patterns into different categories.
+    In the "deployment" category, they present "serverless", "service instance per VM" and "service instance per container" approaches, while in the "communication" category, they list "synchronous communication", "publish/subscribe communication", "combination of HTTP and message queue", "asynchronous communication", "communication using binary protocols" and "point-to-point communication" patterns.
+    Although the patterns belonging to the "deployment" category are also presented as patterns in this study, some communication approaches presented as options such as "publish/subscribe" and "communication using binary protocols" are described as communication patterns in P2, suggesting that there can be different levels of granularity in the detail of patterns that can be viewed as separate design patterns by researches.
+    
+    \item \textbf{P3}: The authors of P3 make a literature review of patterns related to microservice architectures and come up with group names encompassing design patterns.
+    The grouping is made by quality attributes and benefits associated with each pattern and the resulting group names include "data persistence", "communication", "entry point", "distribution", "fault tolerance" and "supplementals".
+    Moreover, the quality attributes used in grouping involves "maintainability", "reliability", "performance efficiency", "security", "compatibility", and "portability".
+    Similar to the different levels of treatment towards design patterns and finer techniques around patterns seen in P2, the researchers of P3 choose to state what is presented in this study as options and techniques as patterns.
+    
+    \item \textbf{P4}: The researchers of P4 present a taxonomy of microservices architectural patterns and further investigates design patterns that might help software architects develop highly scalable systems.
+    The taxonomy in the paper includes "migration", "design", "mitigation", "IOT", "front-end", "back-end", "DevOps", "deployment", "communication", "behaviour" and "orchestration" as microservice architectural patterns.
+    Coming to the architectural patterns related to scalability, they propose three categories, namely, "load balancer patterns", "decomposition patterns" and "grouping patterns".
+    Finally, resulting from two-step filtering activity, they suggests three actual microservice patterns, each of which belongs to the aforementioned category respectively: "internal load balancer", "circuit breaker" and "container" patterns.
+    
+    \item \textbf{P5}: The next study P5 investigates microservice design patterns first in the academia and then in the open source software platform GitHub.
+    The two authors of P4 in this separate study P5 uses the same classification names that they do in P4, and also differentiate between the design patterns that are also used in SOA and the design patterns that solely belongs to microservice architectures.
+    One observation about P5 is that the researchers leave out some of the categories while assigning design patterns into the categories.
+    As a result, the pattern categories "deployment", "mitigation", "communication", "migration", "orchestration" and "back-end" has a number of design patterns selected for those categories, even though the categories "design", "behaviour", "front-end", "DevOps" and "IOT" do not have any patterns inside these groups.
+    
+    \item \textbf{P6}: The three authors of P3 investigate quality attributes in microservice patterns in the study P6.
+    While doing so, they use the same quality attributes and present the same grouping of microservice patterns from P3.
+    
+    \item \textbf{P7}: In the study P7, the authors conduct a survey that involves developers and practitioners who have experience in microservice architectures and ask them about microservice anti-patterns and their perceived harmfulness.
+    The anti-patterns mentioned by developers are then divided into two main groups: "technical" and "organizational" anti-patterns.
+    The technical anti-patterns are further classified into "internal", "communication" and "others", while organizational anti-patterns are segregated into "team oriented" and "technology and tool oriented".
+    The first observation about P7 is that it includes the behavioral pitfalls that can be seen in companies trying to embrace microservices, which are not included in this study.
+    For the technical anti-patterns, the authors choose to categorize anti-patterns based on the number of microservices each anti-pattern directly affects, in other words, according to the authors, internal anti-patterns impact individual authors, while communication anti-patterns undermines the communication between microservices and other anti-patterns, namely "lack of monitoring", "shared persistence" and "wrong cuts" hurts more or less the whole system.
+    
+    \item \textbf{P8}: The researchers of the study P8 conduct a literature review and examine open source microservice projects to find anti-patterns of microservice architectures.
+    As a result of the study, they find sixteen microservice anti-patterns and categorize them based on the development cycle of a microservice system.
+    The four categories of microservice anti-patterns the authors present in P8 are "design", "implementation", "deployment" and "monitoring".
+    
+    \item \textbf{P9}: The authors of the study P9 conduct a systematic literature review and extract 36 service-based anti-patterns that can be found in both SOA and microservice architectures.
+    While categorizing anti-patterns, they choose to consider the levels of abstraction the anti-patterns impact in the system and propose the "business", "application" and "architecture" anti-pattern categories.
+    
+    \item \textbf{P10}: In the study P10, the researchers present the bad practises found in microservice architecture, and in doing so, they try to differentiate anti-patterns of microservice architectures from architectural (bad) smells.
+    For example, while in this study, "hardcoded endpoints" and "shared persistence" are considered anti-patterns, P10 considers them as architectural smells, nonetheless stating that the difference is blurred.
+    For the anti-patterns, the authors refer to the study P8 and present the same anti-patterns under the same categories as P8.
+\end{itemize}
+
+Considering the studies and the classifications listed above, there exists 5 pattern-related papers (P1, P3, P4, P5, P6) that gives output to 3 different categorizations (those from P1, P3, P5), since the study pairs P3-P6 and P4-P5 are written by the same researchers and use the same classification of patterns, and P2 presents only the patterns that the authors have seen fit to be placed under "communication" and "deployment" categories.
+In addition, although the literature review was limited to the studies presented in the academia, during the literature review phase, one classification from a microservice patterns blog appeared valuable to be considered.
+The author of the book \cite{twopc}, in his blog \cite{blogtaxonomy}, divides microservice design patterns into three main "application", "application infrastructure" and "infrastructure" categories, and considers some of what is presented in this study as the finer techniques as patterns, which can be put into many smaller categories.
+\\
+With regard to the classifications of anti-patterns of microservices, it has been observed that 4 anti-pattern related papers (P7 to P10) bring 3 different classifications, as the authors of P10 refer to P8 and use the same classification.
+\\
+In the light of these findings, it can be concluded that, although there are studies that investigate a particular aspect of microservices and attempt to associate design patterns with that category, there does not exist a consistent classification of both the design patterns and anti-patterns of microservice architectures.
+\\
+In an attempt to develop another classification of microservice design patterns and anti-patterns, it is useful to take into consideration the names of the categories the patterns and anti-patterns are associated with in other studies.
+For ease of reference, the names of the categories of patterns and anti-patterns, including those from P2 and excluding empty group names from P5, are presented in Table~\ref{table:category_names}. 
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{|l p{27em} l|}
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{ID} & \textbf{Category Names} & \textbf{Type}\T\B \\
+    \hline \hline
+    P1 & Orchestration \& Coordination, Deployment, Data Storage & Pattern\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    P2 & Communication, Deployment & Pattern\T\B\\
+    \hline
+    P3 \& P6 & Data Persistence, Communication, Entry Point, Distribution, Fault Tolerance, Supplementals & Pattern\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    P4 \& P5 & Deployment, Mitigation, Communication, Migration, Orchestration, Back-End & Pattern\T\B\\
+    \hline
+    P7 & Technical: Internal, Communication, Others; Organizational: Team Oriented, Technology and Tool Oriented & Anti-Pattern\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    P8 \& P10 & Design, Implementation, Deployment, Monitoring & Anti-Pattern\T\B\\
+    \hline
+    P9 & Architecture, Application, Business & Anti-Pattern\T\B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Names of pattern and anti-pattern categories used in related studies}
+    \label{table:category_names}
+\end{table}
+
+From the category names presented in Table~\ref{table:category_names}, the concepts and aspects around which the authors categorize the patterns and anti-patterns can be inferred.
+First of all, the classifications from P1, P2, P4 and P8 use the explicit "deployment" category for patterns and anti-patterns related to the deployment aspect of microservices.
+When examined thoroughly, the "distribution" name used in P3 encapsulates techniques such as "container", "microservice DevOps", "self-contained services" and "enable continuous integration", in other words, the methods that aid in the deployment of microservice systems.
+In regard to P7, the bad practises of deployment aspect of microservices is discussed under "organizational" and further "technology and tool oriented" anti-pattern category.
+The wrong-doings in the deployment aspect is not discussed in P9 in detail, possibly because the study P9 aims to encompass anti-patterns in the traditional service-oriented architectures, and the deployment of SOA could be said to be more similar and follows more or less the deployment norms of monolithic systems.
+\\
+Another observation about the classifications is that the category "communication" is often used in the studies.
+For those studies that do no explicitly use "communication" category, when examined in detail, it is observed that the communication aspect is dealt with in different categories.
+For example, the communication aspect of microservices is mentioned to some extent in P1 under "orchestration \& coordination" category, although the term "orchestration" is more used in the community to imply infrastructure-related tasks, such as the ones Kubernetes can carry out.
+While P9 does not use "communication" category, P8 places some anti-patterns that undermines the communication in a microservice system to some extent.
+As an example, P8 puts "hardcoded endpoints" anti-pattern into "implementation" category and "no API gateway" anti-pattern into "deployment" anti-pattern category.
+\\
+The last commonality that could be observed from the classifications is that the classifications from P1 and P3 choose to use "data storage" and "data persistence" category names to emphasis those patterns related to the persistence aspect of microservices.
+\\
+As a side note, again, from the careful examination of studies, it has been observed that some classifications use particular category names that do not effectively convey the underlying aspect, benefit of patterns or harm of anti-patterns that are put into those categories. 
+One exemplary case could be of P1 using "orchestration" category to present "service discovery" and "API gateway" patterns.
+Another example about this point is that the study P5 presents "circuit breaker" under "deployment", "service discovery" under "migration" and "continuous integration" under "orchestration" categories, while P8 associates "no API gateway" under "deployment" anti-pattern category.
+\\
+In order to aid the development of a classification for microservice patterns and anti-patterns, it can be beneficial to take a look at the studies that conduct systematic mapping studies.
+The three papers listed in Table~\ref{table:secondary_studies} present a list of keywords that are gathered around similar concepts.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{|l p{30em} l|}
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{ID} & \textbf{Title} & \textbf{Format}\T\B \\
+    \hline \hline
+    S1 & A systematic mapping study in microservice architecture \cite{7796008} & Conference\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    S2 & Microservices: a systematic mapping study \cite{10.5220/0005785501370146} & Conference\T\B\\
+    \hline
+    S3 & Towards a taxonomy of microservices architectures \cite{10.1007/978-3-319-74781-1_15} & Conference\T\B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Secondary studies about concepts and keywords in microservice architectures}
+    \label{table:secondary_studies}
+\end{table}
+
+Short explanations about the parts found in these studies that could be helpful in development of classification are stated below.
+
+\begin{itemize}
+    \item \textbf{S1}: The authors of S1 present the challenges and quality attributes of microservice architectures that they discovered during their literature review that involves 33 studies.
+    The microservice challenges include "communication/integration", "service discovery", "performance", "fault-tolerance", "security", "tracing and logging", "application performance monitoring", and "deployment operations", any of which is tackled by one or more design patterns presented in this study.
+    Another observation that could be made about the findings presented in S1 is that the top six quality attributes mentioned in the literature are "scalability", "independence", "maintainability", "deployment", "health management" and "modularity", hinting at the fact that the emphasis on the microservice systems is that they are built as a set of small independent software products that are developed and maintained independently.
+    
+    \item \textbf{S2}: The researchers in S2 extract keywords out of 21 studies and based on the results, it can be observed that the four most frequent key terms are "scalability", "independently deployable", "testing" and "architectural style", again, putting emphasis on the nature of microservice that microservices are a composition of small independently deployable software components.
+    Additionaly, as a result of the research, the authors of S2 states that they can distinguish two technical perspectives about the methods found in microservice architectures: "architecture" and "methods".
+    The "architecture" perspective encompasses architecture design and implementation methods, while "methods" perspective is more process-centric, according to the authors.
+    
+    \item \textbf{S3}: Lastly, the author of S3 conducts a literature review and based on the 46 relevant primary work, proposes a taxonomy of concepts that exists in microservice architecture landscape.
+    The six core categories of the suggested taxonomy include "design", "implementation", "deployment", "runtime", "crosscutting concerns" and "organizational aspects".
+    In this taxonomy, the domain-related and architecture-related design tasks are placed under the "design" category, while data storage kinds (SQL or NoSQL), data exchange methods (REST or RPC) and service discovery methods are found  in the "implementation" category.
+    Next, the "deployment" category involves different options to where the code physically runs, such as cloud or in-house, and "runtime" encompasses the deployment approaches presented in this study, such as containers, virtual machines and serverless options.
+    The aspects that are in general considered supplementary techniques such as monitoring, testing and DevOps are divided into "crosscutting concerns" and "organizational aspects" category.
+\end{itemize}
+
+The first observation about the secondary studies is that there are indeed a number of ways the patterns and anti-patterns can be categorized.
+Using challenge key terms directly from S1 would result in a large number of categories, although some challenges can be merged under a larger category.
+The two perspectives "architecture" and "methods" from S2 sounds promising since the placement of patterns and anti-patterns could be intuitive, that is, whether a pattern or an anti-pattern belongs to architecture or methods category might be deduced from the size of the change it brings into the architecture.
+For example, while the "service discovery" pattern makes a big change in the architecture, the "no health check API" anti-pattern is more process-centric hence belongs to the methods category.
+On the other hand, the taxonomy of S3 uses the stages of microservice application development as categories and add supplementary methods into two new categories.
+\\
+%ask to emtpy lines to prof
+\\
+Considering the classifications from primary studies and insights from secondary studies explained in detail above, we propose the taxonomy of patterns and anti-patterns in microservice architectures given in Table~\ref{table:pattern_table} and Table~\ref{table:antipattern_table}, respectively.
+The important aspects valued during the development of the classification is that, first, we aimed at categories being more rigid in that one pattern or anti-pattern in a category do not influence the other categories much, whether it is a challenge, attribute or development stage in microservice architectures.
+For example, having "asynchronous communication" pattern solely in "communication" category would be acceptable at first, however, when examined in detail, the mechanisms of utilizing an asynchronous communication might require a messaging pipeline or an event source that is capable of storing messages in queues, and would in turn influence how the application business domain is reflected in the implementation.
+Another example could be of that using a separate "data persistence" category for the patterns and anti-patterns.
+Our argument of not using any data-related category is that it also influences other parts of the system in a significant way.
+To illustrate, having "event sourcing" or "CQRS" patterns or "shared database instance" anti-pattern in a data-related category would look good at first glance, although patterns such as "event sourcing" and "CQRS" considerably changes the architecture of the system, in the sense that those patterns change the ways and logical layers through which microservices communicate with each other.
+While "event sourcing" and "CQRS" adds persistence mechanisms other than the norm of database-per-service pattern, "event sourcing" imposes the use of pub/sub mechanism for microservices to be able to benefit from it, and "CQRS" alters the way the front-end and back-end communicate, causing the front-end to use different data models based on the particular request.
+As for the "shared database instance" anti-pattern, it relieves microservices from the constraint that they should communicate only through API calls, by their API definitions and not directly use the target data source.
+\\
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{12em} 
+  | >{\centering\arraybackslash} m{12em} 
+  | >{\centering\arraybackslash} m{12em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Architectural Patterns} & \textbf{Deployment Patterns} & \textbf{Monitoring \& Reliability Patterns}\T\B \\
+    \hline \hline
+    API Gateway & Service Instance per Container & Health Check\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & Service Instance per VM & Distributed Tracing\T\B\\
+    \hline
+    Service Registry \& Discovery & Serverless & Log Aggregator\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends &  & Circuit Breaker\T\B\\
+    \hline
+    Asynchronous Messaging & & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & & \T\B\\
+    \hline
+    Saga & & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    API Composition & & \T\B\\
+    \hline
+    CQRS & & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Event Sourcing & & \T\B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Proposed Classification of Microservice Design Patterns}
+    \label{table:pattern_table}
+\end{table}
+\\
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{12em} 
+  | >{\centering\arraybackslash} m{12em} 
+  | >{\centering\arraybackslash} m{12em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Architectural Anti-Patterns} & \textbf{Deployment Anti-Patterns} & \textbf{Monitoring \& Reliability Anti-Patterns}\T\B \\
+    \hline \hline
+    Wrong Cut & No CI/CD & No Health Check\T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Nano Microservice & Multiple Service Instances per Host & Local Logging\T\B\\
+    \hline
+    Mega Microservice & No API Versioning & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    ESB Usage &  & \T\B\\
+    \hline
+    Shared Libraries &  & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Hardcoded Endpoints & & \T\B\\
+    \hline
+    No API Gateway & & \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Shared Persistence & & \T\B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Proposed Classification of Microservice Anti-Patterns}
+    \label{table:antipattern_table}
+\end{table}
+The reason why an "implementation" category is not used, although it is for sure one of the stages of typical software development and could be used for a category, is that, we argue that points illustrated in "implementation" categories are actually indications related to other groups or concepts.
+For instance, the "hard-coded endpoint" and "shared libraries" anti-patterns given in P8 are the result of bad architectural design choices, in the sense that the first is the direct result of the absence or neglect of the "service discovery" pattern, and the second is related to a bad design decision about whether a common logic should be employed as a library or a microservice, and not necessarily an original wrong-doing that show up during the implementation phase.
+One counter-argument claiming that the "hard-coded endpoint" anti-pattern is still related to the implementation category might be that, even though a service discovery mechanism is utilized in the system, developers can hard-code endpoints and by-pass the service discovery for some of the microservices.
+About this argument, we argue that the same can be true as well for many other design decisions, and not obeying the design and not implementing microservices accordingly should count as implementation anti-patterns for each of the design decision in a trivial manner.
+We claim that creating a separate implementation anti-pattern for each design decision serves no purpose for research purposes other than cluttering the landscape, and it is a reasonable assumption to make that the benefits and drawbacks of options stated in this study are only valid if they are executed or chosen to do so.
+\\
+\\
+For the reasons stated above, it has been seen fit in this study to merge main topics such as communication, data, design and implementation into one main category called "architectural design" patterns and anti-patterns, similar to the categorization used for techniques related to microservices in systematic mapping study S2.
+For the techniques that are more process-centric, we have chosen to split the remaining patterns and anti-patterns into two method-oriented categories, namely "deployment" and "monitoring \& reliability".
+While the "deployment" category is also used by other studies, we have seen it suitable to merge the challenges "tracing and logging", "application performance monitoring" and "fault-tolerance" presented in S1, into the "monitoring \& reliability" category.
+We believe that this classification is also intuitive in the sense that it reflects the deployment and maintenance periods of a software product lifecycle, hence might be more useful for developers to see all kinds of patterns and anti-patterns during a particular step of software development period.
+Inside the "deployment" category, in addition to the deployment options such as "service instance per container" and "serverless", the pitfalls "no CI/CD" and "no API versioning" have been judged appropriate to be placed under "deployment" anti-patterns since they occur during the deployment stage, the first tool not being utilized to make the deployment more frequent and the second is a bad practice when developers change the API definition between the two releases of a microservice.
+As for the "monitoring \& reliability" category, the patterns and anti-patterns that helps or undermines the actual capability and continuity of serviceability have been considered relevant to be placed.
+\\
+\\
+Effectively, the proposed taxonomy merges the inter-related topics such as communication, data and architectural design into one "architecture" category and presents "architectural patterns" and "architectural anti-patterns" categories, and then gather the process-centric techniques and pitfalls into the four "deployment patterns", "deployment anti-patterns", "monitoring \& reliability patterns" and "monitoring \& reliability anti-patterns".
+\\
 
 \section{Patterns and Anti-Patterns in Microservice Projects}
 \label{subsec:pattern_result}
@@ -900,8 +1179,8 @@ The remaining set of primary studies used to answer the first research question 
 \section{Discussion of Findings}
 \label{sec:discussion}
 
-number of studies of pattern > studies of anti-patterns
-aksakalli2021deployment
+% mention number of studies of pattern > studies of anti-patterns
+
 \chapter{Conclusion}
 \label{ch:conclusion}%
 
@@ -944,10 +1223,12 @@ which supplement the main results contained in the previous chapters.
         CaaS & Container-as-a-Service \\[2px]
         CQRS & Command Query Responsibility Segregation \\[2px]
         DDD & Domain Driven Design \\[2px]
+        DevOps & A combination of software development and IT operations \\[2px]
         DRY & Don't Repeat Yourself \\[2px]
         ESB & Enterprise Service Bus \\[2px]
         HTTP & Hypertext Transfer Protocol \\[2px]
         IaaS & Infrastructure-as-a-Service \\[2px]
+        IOT & Internet of Things \\[2px]
         JSON & Javascript Object Notation \\[2px]
         LOC & Lines of Code \\[2px]
         MSMQ & Microsoft Messaging Queuing \\[2px]
