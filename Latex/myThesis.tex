@@ -1609,6 +1609,66 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
 \subsubsection{R6: Coolstore Microservices}
 \label{subsubsec:R6}
 
+\begin{enumerate}
+    \item \textbf{API Gateway:} The architecture contains an API gateway built with .NET framework that routes incoming requests to four business domain microservices. (YES)
+    
+    \item \textbf{Service Mesh with Sidecar:} The repository contains configuration files that injects Istio sidecars to services when the application is deployed on Azure Kubernetes Service and the service mesh Istio is installed.
+    Additionally, the application uses Dapr runtime, which is similar to a service mesh in injecting sidecars and controlling via a control plane, but focuses more on aiding developers with business related tasks, such as service invocation, state management and publish/subscribe mechanism (XXX). (YES)
+    
+    \item \textbf{Service Registry and Discovery:} The application uses service registry and discovery mechanism of Dapr runtime. (YES)
+    
+    \item \textbf{Backends for Frontends:} The implementation does not contain different services or aggregators for different kinds of clients. (NO)
+    
+    \item \textbf{Asynchronous Messaging:} The Dapr runtime provides publish/subscribe mechanism for events by making use of one of the compatible message brokers, such as Redis store in this case. (YES)
+    
+    \item \textbf{Database per Service:} The implementation makes use of one PostgreSQL database instance, hence database per service pattern is not employed. (NO)
+    
+    \item \textbf{API Composition:} The architecture does not contain any aggregator service. (NO)
+    
+    \item \textbf{CQRS:} There is no division of tasks into command and query services in the project. (NO)
+    
+    \item \textbf{Event Sourcing:} Similarly, the architecture does not involve an event store that enables event sourcing pattern. (NO)
+    
+    \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images for this deployment pattern to be employed. (NO)
+    
+    \item \textbf{Service Instance per Container:} The microservices are containerised into Docker images to be instantiated using Docker Compose, Kubernetes or AKS. (YES)
+    
+    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment. (NO)
+    
+    \item \textbf{Health Check:} The application uses health check feature of .NET framework and probing function of Kubernetes to the "/healthz" endpoints. (YES)
+    
+    \item \textbf{Distributed Tracing:} The Dapr sidecars that run along the microservices generate trace data, while a compatible trace collector service, Zipkin server in this case, collects the traces and provides users with an interface for querying traces. (YES)
+    
+    \item \textbf{Log Aggregator:} The architecture uses Serilog structured logger for logging events and Dapr provides ability to send the logs to a compatible log collector, such as Fluentd server or Azure OMS cloud service.
+    However, because the architecture does not contain a log aggregator in its current state, the log aggregator pattern is not utilized. (NO)
+    
+    \item \textbf{Circuit Breaker:} The application does not apply circuit breaker pattern through libraries or as an enabled capability through underlying infrastructure. (NO)
+    
+    \item \textbf{Wrong Cut:} The application is intended to be an e-commerce application and business microservices are separated into "identity", "inventory", "product catalog", "shopping cart" and "sale" microservices.
+    Since the application is not separated into technical layers, the wrong cut anti-pattern is avoided. (NO)
+    
+    \item \textbf{Nano or Mega Microservices:} Regarding the division of business tasks and the fact that each service has three or four API endpoints, there is no difference in size between microservices that resembles nano or mega microservice anti-pattern. (NO)
+    
+    \item \textbf{ESB Usage:} The architecture does not contain any ESB component. (NO)
+    
+    \item \textbf{Hardcoded Endpoints:} The implementation does not contain hardcoded IP addresses apart from "0.0.0.0" and "127.0.0.1". (NO)
+    
+    \item \textbf{No API Gateway:} Because of the presence of an API gateway, this anti-pattern is avoided.
+    
+    \item \textbf{Shared Persistence:} In the "tye.yaml", which is a configuration file for Tye deployment tool, the same connection string to PostgreSQL database instance is used by "inventory", "product catalog" and "sale" microservices.
+    According to the detection criteria, the application hence contains shared persistence anti-pattern. (YES)
+    
+    \item \textbf{No CI/CD:} The repository includes a Travis CI file that triggers Docker image builds and pushes new images to Docker Hub upon accepted pull requests on master branch. (YES)
+    
+    \item \textbf{Multiple Service Instances per Host:} Thanks to containerisation of services, there is no constraint that would cause deployment of all services on the same host. (NO)
+    
+    \item \textbf{No API Versioning:} The endpoints do no contain API version numbers. (YES)
+    
+    \item \textbf{No Health Check:} The application implements and pings health check endpoints. (NO)
+    
+    \item \textbf{Local Logging:} The absence of a log aggregator service results in local logging anti-pattern in this application. (YES)
+\end{enumerate}
+
 \section{Discussion of Findings}
 \label{sec:discussion}
 
