@@ -82,6 +82,11 @@
 \usepackage{fancyhdr} % For the headers
 \fancyhf{}
 
+% FOR CHECK AND CROSS SIGN
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
 % Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
 \input{Configuration_Files/config}
 
@@ -241,7 +246,7 @@ In the next section, each characteristic of the microservice architecture is exp
     \includegraphics[width=0.75\textwidth]{myImages/scalable.png}
     \caption{Scalability in Monolithic vs Microservice Apps}
     \label{fig:scalability}
-\end{figure}
+    \end{figure}
 
     \item Microservices communicate with each other by means of network calls, using well-defined APIs, and simple protocols like REST over HTTP. While some other architectures incorporate smart (and heavy-weight) messaging mechanisms, such as Enterprise Service Buses (ESB) that can do routing, transformation, choreography and some business logic, the microservice architecture opt for simple communication infrastructure that can do basic routing of messages. In short, they have smart endpoints and dumb pipes.
 
@@ -464,8 +469,14 @@ The two ways of implementing a saga pattern are:
     When a transaction order that is related to multiple services comes to the service, the service sends a command to the orchestrator.
     The orchestrator starts calling services to be called (directly or indirectly) and after a successful response, it calls the next one. Upon an answer that tells about a failure, the orchestrator then starts sending rollback messages to the previous services.
     With respect to the choreography approach, this method brings about scalability and single point of failure issues.
-
 \end{itemize}
+
+In addition, in some systems where saga or event sourcing patterns are used, transactional outbox method solves the issue of atomicity between changing the state and sending of messages, if there are requirements that are not met with eventual consistency and require atomicity.
+A business microservice that uses a relational database inserts messages/events into an outbox table in the database as part of the local business logic transaction, with an additional boolean attribute that means "unpublished" for newly created messages, and "published" for messages that are acknowledged by message relay service.
+A separate message relay service either polls the outbox table or reads the transaction log of business services, to get the "unpublished" messages.
+Then, the message relay service sends those "unpublished" messages to a message broker that delivers messages to interested parties.
+The message relay service then waits for acknowledgement from message broker, and upon an acknowledgement, changes the status of successfully sent "unpublished" messages to "published" in the outbox table of the business microservice.
+In short, by storing messaging as part of business transaction in the DBMS and using a buffer service between business microservices and message broker, the atomicity between database transactions and messages can be achieved.
 
 \subsubsection{API Composition}
 \label{subsubsec:api_comp}
@@ -493,7 +504,7 @@ In addition, the  ordering of messages must be preserved across multiple service
 \\
 A good solution to this problem is to use event sourcing pattern.
 Event sourcing persists the state of a business entity such as Order or a Customer as a sequence of state-changing events.
-Whenever the state of a business entity changes, a new event is fired from the respective microservice, and stored in a database named as the event store, which can be an ACID-compliant database, a time-series database or a database server specifically implemented for event sourcing pattern, such as EventStore.
+Whenever the state of a business entity changes, a new event is fired from the respective microservice, and stored in a database named as the event store, which can be an ACID-compliant database, a time-series database or a database server specifically implemented for event sourcing pattern, such as EventStore (XXX).
 The most recent state of the application data is constructed by processing the events and storing the data in a materialised view that serves read-only queries.
 Embracing the eventual consistency paradigm, the materialised view can be updated according to the constraints of the domain of the application, by finding the most recent snapshot of the application data and processing the persisted events that have occurred since that snapshot. Figure~\ref{fig:event_sourcing} illustrates the flow and storage of the events in a regular application that makes use of event sourcing pattern.
 
@@ -848,7 +859,7 @@ To answer first research question, the following steps have been adopted.
 Regarding the research method for the second research question, the work provided in the steps below have been conducted.
 
 \begin{itemize}
-    \item As a first step, open source projects implemented with a microservice architecture are searched in the repository hosting service GitHub (cite as footnote XXX).
+    \item As a first step, open source projects implemented with a microservice architecture are searched in the repository hosting service GitHub \footnote{\href{https://github.com}{https://github.com}}.
     The keyword pattern "microservice OR micro-service" have been utilized.
 
     \item The search result are sorted using "most stars" sorting option.
@@ -1197,12 +1208,12 @@ The list of projects examined are given in Table~\ref{table:project_list}, with 
     \rowcolor{bluepoli!40}
     \textbf{ID} & \textbf{Repository Name} & \textbf{URL} & \textbf{GitHub Stars}\T\B \\
     \hline \hline
-    R1 & dotnet-architecture/eShopOnContainers & \href{https://bit.ly/3uQzv6e}{https://bit.ly/3uQzv6e} & 19.8k\T\B\\
+    R1 & dotnet-architecture/eShopOnContainers & \href{https://bit.ly/3uQzv6e}{https://bit.ly/3uQzv6e} & 20k\T\B\\
     \hline
     \rowcolor{bluepoli!10}
-    R2 & GoogleCloudPlatform/microservices-demo & \href{https://bit.ly/3JrKOFX}{https://bit.ly/3JrKOFX} & 11.7k\T\B\\
+    R2 & GoogleCloudPlatform/microservices-demo & \href{https://bit.ly/3JrKOFX}{https://bit.ly/3JrKOFX} & 11.8k\T\B\\
     \hline
-    R3 & sqshq/piggymetrics & \href{https://bit.ly/34GC4gv}{https://bit.ly/34GC4gv} & 11.3k\T\B\\
+    R3 & sqshq/piggymetrics & \href{https://bit.ly/34GC4gv}{https://bit.ly/34GC4gv} & 11.4k\T\B\\
     \hline
     \rowcolor{bluepoli!10}
     R4 & cer/event-sourcing-examples & \href{https://bit.ly/3JqMeAz}{https://bit.ly/3JqMeAz} & 2.9k\T\B\\
@@ -1228,10 +1239,85 @@ The list of projects examined are given in Table~\ref{table:project_list}, with 
     \label{table:project_list}
 \end{table}
 
-Starting from the project R1, the list of patterns and anti-patterns identified per project have been presented below.
+Starting from the repository R1, the result of the examination is presented in the following pages.
+First, a table that indicates the existence of each design pattern and anti-pattern for the project examined is prepared.
+Then, a few sentences that explain the state of presence of each design pattern or anti-pattern in terms of implementation and libraries or frameworks used are provided. 
 
 \subsubsection{R1: eShopOnContainers}
 \label{subsubsec:R1}
+
+The first examined application is "eShopOnContainers" application, developed by Microsoft to provide use cases for .NET framework features implemented for microservice architectures.
+As the name suggests, the application is intended to be an e-commerce application, involving four business microservices, namely "identity", "catalog", "ordering" and "basket" services.
+In addition business services, the system contains an event bus, two separate API gateways for web and mobile clients, a web status service that conducts health checks and a log collector service.
+Figure~\ref{fig:R1_arch} shows the architectural diagram of the application, adapted from the architectural diagram in the repository.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R1.png}
+\caption{Architectural Diagram of eShopOnContainers Application}
+\label{fig:R1_arch}
+\end{figure}
+
+As a result of inspection for design patterns and anti-patterns, we present the Table~\ref{table:R1_result} which shows the presence of each pattern and anti-pattern in the application.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & \cmark & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & \cmark & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & \cmark & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & \cmark & No CI/CD & – \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & – \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & – \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & – & & \T\B \\
+    \hline
+    Log Aggregator & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R1}
+    \label{table:R1_result}
+\end{table}
+
+Below, the particular implementation of design patterns and explanations about anti-patterns are provided.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The application uses two API gateways, one for web applications in browsers and another one for mobile clients using Xamarin-based (XXX) app.
@@ -1255,7 +1341,7 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     \item \textbf{Database per Service:} Even though there is not an evidence detected that signals accessing the same data entry from multiple microservices, the three microservices "catalog", "ordering" and "identity" uses the same MySQL server instance to store their data, by creating their own database schema in the same database instance.
     The only other microservice that involves data storing and accessing is the "basket" microservice and it utilizes Redis key-value store as another container instance.
     At this point, it is important to note that this repository is created as an example to be tinkered by developers who are new to the microservice architecture and it is stressed by creators of this project in the Wiki page of repository that this decision is not ideal for microservice projects in production and is only taken to lower the infrastructure requirements for the application to let it run on also on hosts with lower computing resources.
-    Nonetheless, since the detection criteria for this pattern is set in this study such that each microservice that needs a data-related service should have its own database instance, it can be concluded that the database per service pattern is not employed in this application. (NO, or IN SPECTRUM)
+    Nonetheless, since the detection criteria for this pattern is set in this study such that each microservice that needs a data-related service should have its own database instance, it can be concluded that the database per service pattern is not employed in this application. (NO)
     
     \item \textbf{API Composition:} As previously said, the application utilizes two aggregator services and the client requests that are data-wise complex are handled by those aggregator services.
     Instead of regular HTTP requests, the aggregator services use gRPC protocol to communicate with "ordering", "catalog" and "basket microservices, take required data, execute logic to transform data into appropriate structure for response and respond to API gateways with HTTP responses. (YES)
@@ -1263,7 +1349,7 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     \item \textbf{CQRS:} The CQRS pattern is utilized to some degree inside the "ordering" microservice.
     The API definition of "ordering" service is divided into two command and query parts, where the command part involves commands and respective command handler classes, and the query part includes query classes that makes a connection to the database and returns the result.
     In contrary to using different data models for command and query, the two parts read or write data through the same "OrderAggregate" data model.
-    The implementation of these classes are aided by MediatR (XXX) library, created to help implement CQRS and mediator patterns in .NET platforms. (NO, or IN SPECTRUM)
+    The implementation of these classes are aided by MediatR (XXX) library, created to help implement CQRS and mediator patterns in .NET platforms. (YES)
     
     \item \textbf{Event Sourcing:} Although the use of event concept is detected in the application, the architecture is not constructed in a way that there exists a separate event store for microservices to send and consume events. (NO)
     
@@ -1280,13 +1366,13 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{Distributed Tracing:} In the application no distributed tracing client library or trace collector mechanism has been found. (NO)
     
-    \item \textbf{Log Aggregator:} The application uses structured logging mechanism "Serilog" of .NET framework per microservice basis and "Seq" log collector service instantiated as a separate container during runtime.
+    \item \textbf{Log Aggregator:} The application uses structured logging mechanism "Serilog" of .NET framework per microservice basis and "Seq" log collector service instantiated as a separate container during run-time.
     Thanks to structured logging mechanism of Serilog and UI feature of Seq the logs can be inspected using different filters that involves tags, event types and application contexts. (YES)
     
     \item \textbf{Circuit Breaker:} The system does not have a fully implemented circuit breaker pattern but uses retry logic implemented by sidecars when deployed on Linkerd service mesh.
     Related to the circuit breaker, one microservice named "basket" has a "FailingMiddleware" example feature that can be enabled or disabled by HTTP calls, when "FailingMiddleware" is enabled, all calls to "basket" microservice returns a HTTP 500 response, and when disabled works normally. (NO)
     
-    \item \textbf{Wrong Cut:} The application consists of "basket", "ordering", "catalog", "identity" business domain microservices and other infrastructure-related components, such as API gateways, API aggregator and log aggregators, web frontend and status microservices and an event bus.
+    \item \textbf{Wrong Cut:} The application consists of "basket", "ordering", "catalog", "payment", "identity" business domain microservices and other infrastructure-related components, such as API gateways, API aggregator and log aggregators, web frontend and status microservices and an event bus.
     Although the business domain microservices access to the same SQL database instance, the architecture is not layered as in traditional monolithic systems and does not have the wrong cut anti-pattern. (NO)
     
     \item \textbf{Nano or Mega Microservices:} The separation of business domains seems to reflect good practice of bounded context technique, so the microservices are not designed in a way that results in a nano or mega microservice anti-pattern. (NO. NO)
@@ -1299,7 +1385,7 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{No API Gateway:} The architecture includes two API gateways that acts as intermediaries between frontend and microservices. (NO)
     
-    \item \textbf{Shared Persistence:} The microservices access the same MySQL server instance even though create their own schemas, so it can be concluded that there exists shared persistence anti-pattern to some degree. (IN SPECTRUM)
+    \item \textbf{Shared Persistence:} The microservices access the same MySQL server instance even though create their own schemas, so it can be concluded that there exists shared persistence anti-pattern to some degree. (YES)
     
     \item \textbf{No CI/CD:} In the "workflows" folder the repository has ".yaml" files that define GitHub Actions (XXX) workflows and on the repository page the build status of each microservice is shown.
     Hence, the repository makes use of GitHub Actions (XXX) as their choice of CI/CD pipeline. (NO)
@@ -1308,11 +1394,87 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{No API Versioning:} Even though implemented as an example and all endpoints have the same version number, the good practice is employed and the endpoints of microservices start with version numbers, for example, the "catalog" microservice has a GET endpoint "/api/v1/Catalog/items". (NO) 
     
-    \item \textbf{No Health Check and Local Logging:} As explained in the relative design pattern items, the architecture employs respective design patterns and does not have "no health check" and "local logging" anti-patterns. (NO, NO)
+    \item \textbf{No Health Check:} As explained in the health check pattern, the presence of health check endpoints and probing mechanism of Kuebrnetes prevents no health check anti-pattern. (NO)
+    
+    \item \textbf{Local Logging:} Thanks to the structured logging and log collector service, local logging anti-pattern is avoided in this application. (NO)
 \end{enumerate}
 
 \subsubsection{R2: GCP Online Boutique Microservices}
 \label{subsubsec:R2}
+
+The second examined application is Online Boutique application implemented by Google Cloud Platform, similar to eShopOnContainers application, to show some of the cloud technologies provided by GCP for microservice applications.
+The nine business microservices include "email service", "ad service", "payment service", "checkout service", "shipping service", "currency service", "product catalog service", "recommendatiton service" and "cart service", together with a Redis store for "cart service", a frontend app for static assets, single point of entry for HTTP calls and calling internal microservices using gRPC protocol.
+Additionally, the system contains a load generator for tinkering purposes.
+The microservices are implemented using Node.js, Python, Java, C# and Go, hence the application is a good example of polygot microservice architecture.
+The architectural diagram provided in the repository of the application is used as it is, in Figure~\ref{fig:R2_arch}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R2.png}
+\caption{Architectural Diagram of GCP Online Boutique Application}
+\label{fig:R2_arch}
+\end{figure}
+
+The presence of design patterns and anti-patterns have been listed in Table~\ref{table:R2_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & \cmark & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & – & Hardcoded Endpoints & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & – & No CI/CD & – \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & – \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & \cmark & & \T\B \\
+    \hline
+    Log Aggregator & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R2}
+    \label{table:R2_result}
+\end{table}
+
+To clarify each pattern or anti-pattern item, a few sentences are provided below.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The "frontend" microservice serves static web app assets (HTML, CSS, JS) and acts as an API gateway by making the appropriate gRPC calls to other business domain microservices when an HTTP request is made to an endpoint, providing the clients with a single entry point to communicate with microservices. (YES)
@@ -1389,8 +1551,82 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     Since the microservices are instrumented with StackDriver agent to be used for cloud deployment, the system does not contain local logging anti-pattern. (NO)
 \end{enumerate}
 
-\subsubsection{R3: PiggyMetrics}
+\subsubsection{R3: Piggy Metrics}
 \label{subsubsec:R3}
+
+The next examined repository belongs to the Piggy Metrics application, designed as a financial budget application to demonstrate Spring Boot, Spring Cloud and Docker for microservice architectures.
+The three microservices "statistics service", "account service" and "notification service" constitute business domain microservices, while "auth service" deals with user authentication, each of the four services having their own MongoDB database instance.
+The implementation makes use of Spring Cloud components such. as API gateway Zuul, service discovery server Eureka, Spring Cloud support for service registry and Spring Cloud Config for centralized configuration for services.
+Last but not least, the architecture contains Turbine stream aggregator, which is used to collect performance metrics from services via Spring Cloud Bus component, which in turn uses a RabbitMQ message broker instance to collect and push metrics.
+The architectural diagram is shown in Figure~\ref{fig:R3_arch}, modified from the diagram in the repository in a way that reflects the current state of implementation, as the original diagram does not include ELK log aggregator mechanism and correctly shows the current state of the architecture.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R3.png}
+\caption{Architectural Diagram of Piggy Metrics Application}
+\label{fig:R3_arch}
+\end{figure}
+
+The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R3_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & – & Hardcoded Endpoints & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & \cmark & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & – & No CI/CD & – \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & \cmark & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & \cmark &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R3}
+    \label{table:R3_result}
+\end{table}
+
+A few statements about each item below explains the related item concisely.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The application is built around microservice framework Spring Cloud and the architecture contains microservice architecture components and features supported by Spring Cloud framework. 
@@ -1467,6 +1703,80 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
 \subsubsection{R4: Event Sourcing \& CQRS Example Application}
 \label{subsubsec:R4}
 
+The fourth examined application is an example application for event sourcing and CQRS patterns, implemented by Eventuate team to demonstrate the use of their Eventuate Tram event store, which is a database for storing events that utilizes MySQL and Kafka under the hood.
+The business microservices are separated into two command and query sides.
+The command-side services include "customer command-side service", "account command-side service" and "transactions command-side service", while the query-side services "customer query-side service" and "account query-side service" deals with query tasks from the client.
+The business microservices and the API gateway are implemented as Spring Boot applications.
+The Figure~\ref{fig:R4_arch}, which is provided in the application repository, displays the architectural diagram of the application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R4.png}
+\caption{Architectural Diagram of Event Sourcing \& CQRS Example Application}
+\label{fig:R4_arch}
+\end{figure}
+
+The Table~\ref{table:R4_result} presents the presence of design patterns and anti-patterns detected in this application.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & – & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & \cmark & No CI/CD & \cmark \T\B \\
+    \hline
+    Event Sourcing & \cmark & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & – & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R4}
+    \label{table:R4_result}
+\end{table}
+
+Next, a short clarification about each item is provided below.
+
 \begin{enumerate}
     \item \textbf{API Gateway:} The application uses a Spring Boot application implemented as a API gateway.
     The routing rules are defined in a "application.properties" file based on the specifics of the HTTP request. (YES)
@@ -1483,8 +1793,8 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     \item \textbf{Asynchronous Messaging:} The microservices employ the communication through messages and events indirectly by means of a separate event store, which is similar to a message broker but implemented also a persistent data store that stores and relays events as abstractions of data.
     The pattern that captures this mechanism is called event sourcing, and since event sourcing is one way of embracing asynchronous messaging pattern, this application can be said to also have the asynchronous messaging pattern. (YES)
     
-    \item \textbf{Database per Service:} In this architecture the persistence tasks are delegated to the event store and individual microservice do not make use additional databases.
-    Although this is not a shared persistence anti-pattern, the application does not have the database per service pattern either. (NO)
+    \item \textbf{Database per Service:} In this architecture the persistence tasks are delegated to the event store and individual microservice do not make use additional databases, except for two query services that create view-only schemas in MongoDB.
+    Because the databases do not have their own database instances, database per service pattern is not utilized. (NO)
     
     \item \textbf{API Composition:} Because the system does not have aggregator or query-specific microservices, the API composition pattern is not utilized. (NO)
     
@@ -1522,9 +1832,12 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{Hardcoded Endpoints:} The implementation contains hardcoded endpoints anti-pattern by specifying host addresses of all five microservices as "localhost" inside the "application.properties" file, which API gateway component uses to configure the routing of incoming requests. (YES)
     
+    \item \textbf{No API Gateway:} The architecture makes use of a Spring Boot application as API gateway component, hence avoiding the no API gateway anti-pattern. (NO)
+    
     \item \textbf{Shared Persistence:} The persistence needs of all microservices is handled by the same event store instance.
     However, this design choice is related to the particular persistence mechanism selected for the application, which is using the event source pattern.
-    For this reason, the common use of the same event store instance is not regarded as the shared persistence anti-pattern, which usually implies using a traditional database instance for multiple microservices. (NO)
+    For this reason, the common use of the same event store instance is not regarded as the shared persistence anti-pattern, which usually implies using a traditional database instance for multiple microservices. 
+    Nonetheless, because the two query-side services make use of a single MongoDB instance in the sense that they create their own data models tailored for queries results in shared persistence anti-pattern, as the failure in the shared database instance might effect the both query services. (YES)
     
     \item \textbf{No CI/CD:} The repository does not contain a CI/CD mechanism. (YES)
     
@@ -1538,8 +1851,85 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
 \end{enumerate}
 
-\subsubsection{R5: FTGO Application}
+\subsubsection{R5: Food-to-Go Application}
 \label{subsubsec:R5}
+
+The fifth examined application is the Food-to-Go (FTGO) application, implemented as a food ordering platform to be used by both customers and restaurants.
+The application illustrates a number of microservice design patterns since it is also implemented as an example of design patterns explained in his book by Chris Richardson (XXX https://www.chrisrichardson.net).
+The business microservices include "accounting", "consumer", "restaurant", "delivery", "order" and "order history".
+For message broker purposes, Eventuate CDC (Change-Data-Capture) framework is used, which utilizes Kafka, Apache Zookeeper and MySQL under the hood.
+In addition, although omitted from set of patterns to be examined in this study, saga pattern is implemented using Eventuate Tram framework for coordinating distributed business transaction across multiple microservices.
+The persistence tasks of six microservices are handled by one MySQL database instance, while "order history" service uses a DynamoDB Local SQL database instance.
+Last but not least, a Zipkin instance in included in the application to collect trace data from API gateway and the order service.
+The architectural diagram is illustrated in Figure~\ref{fig:R5_arch}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R5.png}
+\caption{Architectural Diagram of Food-to-Go Application}
+\label{fig:R5_arch}
+\end{figure}
+
+The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R5_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & - \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & \cmark & No CI/CD & \cmark \T\B \\
+    \hline
+    Event Sourcing & \cmark & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & \cmark & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R5}
+    \label{table:R5_result}
+\end{table}
+
+A short comment about each design pattern and anti-pattern is provided below.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The implementation of the FTGO application uses Spring Cloud Gateway component as the API gateway of the application.
@@ -1592,6 +1982,8 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{Hardcoded Endpoints:} The application uses service discovery mechanism of Kubernetes and does not contain any hardcoded endpoints. (NO)
     
+    \item \textbf{No API Gateway:} Thanks to the use of Spring Cloud Gateway component, no API gateway anti-pattern is prevented in this application. (NO)
+    
     \item \textbf{Shared Persistence:} Except the "order history" service, other six microservices access to the same MySQL database instance, even though they create their own schemas.
     As previously said, according to the criteria set in this study, the absence of separate database instances is count as shared persistence anti-pattern, such as in this case. (YES)
     
@@ -1599,27 +1991,100 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{Multiple Service Instances per Host:} Having separate Docker images for individual microservices prevents the absolute need to deploy all services to the same host. (NO)
     
-    \item \textbf{No API Versioning:} There is no API versioning detected as part of the API endpoints. (NO)
+    \item \textbf{No API Versioning:} There is no API versioning detected as part of the API endpoints. (YES)
     
     \item \textbf{No Health Check:} The use of Spring Boot Actuator and Kubernetes health check mechanisms prevents no health check anti-pattern. (NO)
     
     \item \textbf{Local Logging:} The absence of a log aggregation mechanism results in local logging anti-pattern in this application. (YES)
 \end{enumerate}
 
-\subsubsection{R6: Coolstore Microservices}
+\subsubsection{R6: CoolStore Microservices}
 \label{subsubsec:R6}
+
+The sixth examined application is the CoolStore microservices application, which is a simple e-commerce application that is implemented to demonstrate primarily the utilization of Microsoft Tye tool and Dapr microservice run-time for microservice applications implemented using .NET framework.
+The architecture consists of five business services, namely the "identity app", "inventory app", "product catalog app", "shopping app" and "sale app", with the addition of an API gateway and frontend web application.
+All of the services are instrumented with Dapr sidecars, which are similar to service mesh sidecar, but help with developing microservice applications by providing service invocation, state management and such, rather than focusing on the infrastructure related tasks. (XXX footnote dapr)
+The architectural diagram of the system is shown in Figure~\ref{fig:R6_arch}, which is provided in the repository and displayed below as it is.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R6.png}
+\caption{Architectural Diagram of CoolStore Web Application}
+\label{fig:R6_arch}
+\end{figure}
+
+The presence of design patterns and anti-patterns are indicated in Table~\ref{table:R6_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & \cmark & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & - \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & – & No CI/CD & – \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & \cmark & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R6}
+    \label{table:R6_result}
+\end{table}
+
+A short description about each item is provided below.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The architecture contains an API gateway built with .NET framework that routes incoming requests to four business domain microservices. (YES)
     
     \item \textbf{Service Mesh with Sidecar:} The repository contains configuration files that injects Istio sidecars to services when the application is deployed on Azure Kubernetes Service and the service mesh Istio is installed.
-    Additionally, the application uses Dapr runtime, which is similar to a service mesh in injecting sidecars and controlling via a control plane, but focuses more on aiding developers with business related tasks, such as service invocation, state management and publish/subscribe mechanism (XXX). (YES)
+    Additionally, the application uses Dapr run-time, which is similar to a service mesh in injecting sidecars and controlling via a control plane, but focuses more on aiding developers with business related tasks, such as service invocation, state management and publish/subscribe mechanism (XXX). (YES)
     
-    \item \textbf{Service Registry and Discovery:} The application uses service registry and discovery mechanism of Dapr runtime. (YES)
+    \item \textbf{Service Registry and Discovery:} The application uses service registry and discovery mechanism of Dapr run-time. (YES)
     
     \item \textbf{Backends for Frontends:} The implementation does not contain different services or aggregators for different kinds of clients. (NO)
     
-    \item \textbf{Asynchronous Messaging:} The Dapr runtime provides publish/subscribe mechanism for events by making use of one of the compatible message brokers, such as Redis store in this case. (YES)
+    \item \textbf{Asynchronous Messaging:} The Dapr run-time provides publish/subscribe mechanism for events by making use of one of the compatible message brokers, such as Redis store in this case. (YES)
     
     \item \textbf{Database per Service:} The implementation makes use of one PostgreSQL database instance, hence database per service pattern is not employed. (NO)
     
@@ -1651,14 +2116,15 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{ESB Usage:} The architecture does not contain any ESB component. (NO)
     
-    \item \textbf{Hardcoded Endpoints:} The implementation does not contain hardcoded IP addresses apart from "0.0.0.0" and "127.0.0.1". (NO)
+    \item \textbf{Hardcoded Endpoints:} The implementation does not contain hardcoded IP addresses apart from "0.0.0.0" and "127.0.0.1", which are used as Helm values that will replace appropriate Kubernetes object properties in case local deployment using Kubernetes is selected.
+    Because these values are not used to point to other services, the hardcoded endpoint anti-pattern is not detected. (NO)
     
-    \item \textbf{No API Gateway:} Because of the presence of an API gateway, this anti-pattern is avoided.
+    \item \textbf{No API Gateway:} Because of the presence of an API gateway, this anti-pattern is avoided. (NO)
     
     \item \textbf{Shared Persistence:} In the "tye.yaml", which is a configuration file for Tye deployment tool, the same connection string to PostgreSQL database instance is used by "inventory", "product catalog" and "sale" microservices.
     According to the detection criteria, the application hence contains shared persistence anti-pattern. (YES)
     
-    \item \textbf{No CI/CD:} The repository includes a Travis CI file that triggers Docker image builds and pushes new images to Docker Hub upon accepted pull requests on master branch. (YES)
+    \item \textbf{No CI/CD:} The repository includes a Travis CI file that triggers Docker image builds and pushes new images to Docker Hub upon accepted pull requests on master branch. (NO)
     
     \item \textbf{Multiple Service Instances per Host:} Thanks to containerisation of services, there is no constraint that would cause deployment of all services on the same host. (NO)
     
@@ -1672,8 +2138,85 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
 \subsubsection{R7: Cinema Microservices}
 \label{subsubsec:R7}
 
+The next examined application is cinema microservice application, which consists of an API gateway, business microservices "booking", "cinema catalog", "movies", "notification" and "payment", and a single MongoDB instance shared by services, without any frontend service that provides a graphical UI to users.
+Unlike other examined applications in this study, the last commit on this repository has taken place in 2017, which suggests a "red flag" from a software engineering perspective since it has not been maintained for at least four years.
+Indeed, the project does not makes use of modern solutions such as Kubernetes and utilizes Docker Swarm, a cluster management tool for Docker images that is different from Docker "swarm mode" and not actively maintained, as stated in an official announcement (footnte XXX https://docs.docker.com/engine/swarm/).
+In addition, the implementation of the project is not quite self-explanatory and the blog post provided for explanation is outdated and not clear.
+Nonetheless, even though this project is not one of the reference projects from well-known software companies or good developer teams, this project is included in this study in order to take a look at changes in understanding microservice principles and used libraries or tools.
+Figure~\ref{fig:R7_arch} shows the architectural diagram of the application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{myImages/R7.png}
+\caption{Architectural Diagram of Cinema Microservice Application}
+\label{fig:R7_arch}
+\end{figure}
+
+The presence of each design pattern and anti-pattern is provided in Table~\ref{table:R7_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & – & Hardcoded Endpoints & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & – & No CI/CD & \cmark \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & – & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R7}
+    \label{table:R7_result}
+\end{table}
+
+Furthermore, a short comment about each item has been provided below.
+
 \begin{enumerate}
-    \item \textbf{API Gateway:} The application contains an API gateway implemented in Mode.js that routes requests to five business microservices. (YES)
+    \item \textbf{API Gateway:} The application contains an API gateway implemented in Node.js that routes requests to five business microservices.
+    The API definitions are specified in the "api.raml" files of service folders, which is consumed by API gateway for correct routing.
+    (YES)
     
     \item \textbf{Service Mesh with Sidecar:} The implementation does not contain sidecar proxies or instructions to deploy application on a service mesh. (NO)
     
@@ -1718,7 +2261,7 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{No API Gateway:} The use of an API gateway prevents no API gateway pattern in this application. (NO)
     
-    \item \textbf{Shared Persistence:} The application contains one MongoDB instance, shared by business microservices, therefore constitutes an example of shared persistence anti-pattern. (YES)
+    \item \textbf{Shared Persistence:} The application contains one MongoDB instance, shared by all five business microservices, therefore constitutes an example of shared persistence anti-pattern. (YES)
     
     \item \textbf{No CI/CD:} The repository does not make use of any CI/CD automation tool. (YES)
     
@@ -1731,8 +2274,81 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     \item \textbf{Local Logging:} Similarly, the service logs are not sent to a log collector service, hence the application contains the local logging anti-pattern. (YES)
 \end{enumerate}
 
-\subsubsection{R8: Dotnetcore Microservices}
+\subsubsection{R8: Dotnetcore Insurance Microservices}
 \label{subsubsec:R8}
+
+The eight examined project is a simplified insurance sales application implemented by Altkom Software (XXX) using .NET framework and compatible microservice components.
+The system consists of "document", "dashboard", "product", "pricing", "payment", "policy" and "policy search" business services, with additional "chat" and "auth" services, a Vue.js frontend app, an API gateway for routing, a RabbitMQ instance for message broker purposes.
+For persistence tasks, one single PostgreSQL instance is utilized for all services.
+The architectural diagram is shown in Figure~\ref{fig:R8_arch}, which is provided in the related repository of the application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{myImages/R8.png}
+\caption{Architectural Diagram of Dotnetcore Insurance Application}
+\label{fig:R8_arch}
+\end{figure}
+
+The presence of each design pattern and anti-pattern is presented in Table~\ref{table:R8_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & \cmark & No CI/CD & – \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & – & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R8}
+    \label{table:R8_result}
+\end{table}
+
+In the following pages, we provide short explanations about each microservice pattern and anti-pattern in the application.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The architecture contains an API gateway built wit .NET framework and named Ocelot (XXX), which makes it easier to integrate with .NET components.
@@ -1794,15 +2410,90 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     
     \item \textbf{Multiple Service Instances per Host:} Thanks to containerization of services, there is no absolute need to deploy multiple services to the same host. (NO)
     
-    \item \textbf{No API Versioning;} The application does not utilize API versioning to define API's of microservices in a versioned manner. (NO)
+    \item \textbf{No API Versioning;} The application does not utilize API versioning to define API's of microservices in a versioned manner. (YES)
     
     \item \textbf{No Health Check:} The implementation is an example of no health check anti-pattern since no health mechanism is detected in the application. (YES)
     
     \item \textbf{Local Logging:} Likewise, the implementation becomes an example of local logging since the architecture lacks a log aggregator service. (YES)
 \end{enumerate}
 
-\subsubsection{R9: Elgris Microservice App Example}
+\subsubsection{R9: Elgris Microservice To-Do App Example}
 \label{subsubsec:R9}
+
+The next examined application is an example to-do app, implemented by individual contributors, for exemplary purposes for microservice architecture.
+Similar to R7, the project is not actively maintained since 2018, yet it uses Docker Compose and Kubernetes, making it easier for inspection since it provides more modern organization of services.
+The systems contains a frontend service implemented in Vue.js and also takes on routing tasks as an API gateway.
+The business services include "Auth API" service in Go, "Users API" in Spring Boot, "TODOs API" in Node.js and "log message processor" in Python, with a Redis instance used only between "TODOs API and "log message processor".
+Last but not least, the system includes a Zipkin server instance that collect traces to construct distributed tracing data.
+The architectural diagram of the application is illustrated in Figure~\ref{fig:R9_arch}, adapted from the application repository.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{myImages/R9.png}
+\caption{Architectural Diagram of Example To-Do Application}
+\label{fig:R9_arch}
+\end{figure}
+
+The presence of design patterns and anti-patterns are indicated in Table~\ref{table:R9_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & \cmark & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & – & No API Gateway & – \T\B \\
+    \hline
+    API Composition & – & Shared Persistence & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & – & No CI/CD & \cmark \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & \cmark \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & \cmark \T\B \\
+    \hline
+    Health Check & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & \cmark & & \T\B \\
+    \hline
+    Log Aggregator & – &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & – &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R9}
+    \label{table:R9_result}
+\end{table}
+
+Next, we provide a short explanation about each pattern and anti-pattern below.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} The architecture contains a frontend service component written in Vue.js (XXX) that also acts as an API gateway by routing requests to "auth" and "to-do" services. (YES)
@@ -1865,8 +2556,81 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
     \item \textbf{Local Logging:} Similarly, this application becomes an example of local logging anti-pattern as a result of not utilizing a log aggregator service. (YES)
 \end{enumerate}
 
-\subsubsection{R10: Run Asp.Net Core Microservices}
+\subsubsection{R10: Run-Asp.NetCore-Microservices Application}
 \label{subsubsec:R10}
+
+The last examined application is the Run-Asp.NetCore-Microservices application, which is an e-commerce application that has microservice architecture and implemented using .NET microservice components.
+The architecture contains an API gateway, an aggregator service that serves additional API endpoints by combining calls from actual business microservices, four business microservices that have their own database instances, a RabbitMQ message broker instance and a web status service.
+All four business microservices have API endpoints defined using regular HTTP, while "discount" microservice has an additional API definition using gRPC protocol.
+The architectural diagram of the application is illustrated is Figure~\ref{fig:R10_arch}, found in the repository and displayed here as it is.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{myImages/R10.png}
+\caption{Architectural Diagram of Run-Asp.NetCore-Microservices Application}
+\label{fig:R10_arch}
+\end{figure}
+
+The presence of each design pattern and anti-pattern is indicated in Table~\ref{table:R10_result}.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2.2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \cmark \textbackslash – & \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+    \hline \hline
+    API Gateway & \cmark & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & – & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & – & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & – & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & \cmark \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & \cmark & No API Gateway & – \T\B \\
+    \hline
+    API Composition & \cmark & Shared Persistence & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & \cmark & No CI/CD & \cmark \T\B \\
+    \hline
+    Event Sourcing & – & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & – \T\B \\
+    \hline
+    Service Instance per Container & \cmark & No Health Check & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & – \T\B \\
+    \hline
+    Health Check & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & – & & \T\B \\
+    \hline
+    Log Aggregator & \cmark &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & \cmark &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R10}
+    \label{table:R10_result}
+\end{table}
+
+Below, the design patterns and anti-patterns in this application are concisely explained.
 
 \begin{enumerate}
     \item \textbf{API Gateway:} Similar to the project R8, the architecture contains Ocelot API gateway, which is a .Net microservice component that routes requests to the underlying four business microservices, according to the routing rules defined in "ocelot.json" file. (YES)
@@ -1936,6 +2700,101 @@ Starting from the project R1, the list of patterns and anti-patterns identified 
 
 \section{Discussion of Findings}
 \label{sec:discussion}
+
+Referring back to the second research question, the reason we conducted the study was to answer which, if any, of the microservice design patterns and anti-patterns show up in the popular open source microservice applications.
+In addition to the occurrence of individual design patterns and anti-patterns in those projects, it is also beneficial, we believe, to take a look at the number of appearance of design patterns and anti-patterns in the examined projects.
+Below, the table \ref{table:total_number} lists the total number of occurrence of patterns and anti-patterns detected during this study on the ten open source microservice projects.
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{ 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2em} 
+  | >{\centering\arraybackslash} m{16em} 
+  | >{\centering\arraybackslash} m{2em} | }
+    \hline
+    \rowcolor{bluepoli!40}
+    \textbf{Design Pattern} & \textbf{\#} & \textbf{Anti-Pattern} & \textbf{\#} \T\B \\
+    \hline \hline
+    API Gateway & 10 & Wrong Cut & – \T\B\\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Mesh with Sidecar & 3 & Nano Microservice & – \T\B \\
+    \hline
+    Service Registry \& Discovery & 8 & Mega Microservice & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Backends for Frontends & 1 & ESB Usage & – \T\B \\
+    \hline
+    Asynchronous Messaging & 7 & Hardcoded Endpoints & 4 \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Database per Service & 2 & No API Gateway & – \T\B \\
+    \hline
+    API Composition & 2 & Shared Persistence & 6 \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    CQRS & 5 & No CI/CD & 5 \T\B \\
+    \hline
+    Event Sourcing & 2 & Multiple Service Instances per Host & – \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Service Instance per VM & – & No API Versioning & 8 \T\B \\
+    \hline
+    Service Instance per Container & 10 & No Health Check & 4 \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Serverless & – & Local Logging & 7 \T\B \\
+    \hline
+    Health Check & 6 &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Distributed Tracing & 5 & & \T\B \\
+    \hline
+    Log Aggregator & 3 &  & \T\B \\
+    \hline
+    \rowcolor{bluepoli!10}
+    Circuit Breaker & 2 &  & \T\B \\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Total Number of Design Patterns and Anti-Patterns in Examined Projects}
+    \label{table:total_number}
+\end{table}
+
+First observation about the number of occurrences is that, there are two design patterns that are employed in all of the examined projects, namely, the API gateway and service instance per container patterns.
+The reason why the API gateway pattern is always utilized might be that, it is one of the design patterns that returns a substantial amount of value after a small investment, meaning that, it is relatively easier to understand and implement, also when it is combined with required frontend tasks, as seen in most of the examined projects, it also serves static assets to the browser and provides a single entry point to the backend services.
+For the service instance per container pattern, it reflects the "micro" aspect of microservice architectures quite well, provides developers with a deployment option that have an easier learning curve with respect to service instance per VM and serverless options, and alleviates the burden of implementing or configuring services to the specifics of underlying operating system.
+\\
+The second observation that draws attention immediately is that there are a number of patterns and anti-patterns that are not detected in any of the examined projects.
+About the deployment aspect, it might be stated that the service instance per VM and serverless patterns are not employed since they are relatively harder to learn and provides additional value with respect to per container pattern only in relatively specific cases.
+For the multiple service instance per host anti-pattern, we have stated in detection criteria that even though microservices are containerised, there is no mechanism to prevent the malpractice of deploying all containers to the same host, so we checked if two or more of the microservices in an application are containerised into the same Docker image.
+As a matter of fact, the containerisation of multiple services to the same container might be even harder than to containerize one service to one container image, since it would require finding more complex Docker base images than to find simpler base images such as "node:alpine" which contains Node.js run-time on top of a small Alpine Linux distribution, for services that need different run-times to be built, copied and run on top of the same Docker base image.
+As a result, we might state that services are containerized into individual images since it is easier to implement and provides better organization of the whole application.
+\\
+Coming to the architectural design patterns that are avoided in each examined application, we might observe that the design principles of microservice architectures are very well embraced and digested by the projects.
+The microservices are designed around business capabilities in a balanced way and the principle of "smart endpoints, dumb pipes" is put into practice in those designs.
+\\
+Next, we see that the three design patterns, namely, service registry and discovery, asynchronous messaging and health check, are employed more frequently with respect to the remaining ones.
+While service registry and discovery is a must for microservices to work in a distributed environment, we observe that through the use of health checks, the fault-tolerance aspect is highlighted in those applications.
+Additionally, the utilization of message queues supports the notion of fault-tolerance in a sense that the business microservices could consume messages sent by other services when they are up and running after they experience a run-time failure.
+\\
+Another observation about the numbers is that the most frequent anti-pattern has been no API versioning anti-pattern.
+Even though it is quite simple to implement API versioning as code, because the examined applications are not actual microservice products that are maintained by a number of different development teams, it might be deemed not necessary by developers of examined repositories to make use of API versioning practice.
+On the other hand, we see that even though the repositories are not actual software products, the developers of half of the repositories chose to utilize some sort of CI/CD mechanism to automatically build images or automatically test their code, as these practices are not about changing API definitions but to cope with increasing complexity as time progresses during development stage.
+\\
+Considering the next two most frequent patterns, we observe that although the distributed tracing and CQRS patterns are not trivial to implement, five of the repositories utilize those patterns, at least as part of some of their microservices.
+Either to visualize the business calls between services or to advertise their cloud platform's capabilities as being compatible with instrumentation libraries, the distributed tracing pattern is employed.
+Similarly, CQRS is employed together with event sourcing pattern to feature a commercial CQRS framework as in Eventuate framework examples in R4 and R5, or to promote a CQRS library in as in MediatR use cases in R1, R8 and R10, as part of the .NET framework.
+\\
+Next, we see that the data-related patterns are not very frequently utilized, probably as a result of small scope of applications, opting to share a single database instance or not utilizing any database instance.
+The relatively simple business logic of applications might also contribute to the fact that the developers did not choose to employ event sourcing and API composition as separate service patterns, considering that those pattern might complicate the architecture rather than transform complex logic into simpler handling mechanisms.
+\\
+Lastly, we observe that the log aggregator, circuit breaker and backends for frontends patterns have been the three least utilized patterns by the examined microservice projects.
+The reason why they are not frequently employed might be, as a result of our contemplation, that the log aggregator and circuit breaker solve problems that might be faced later on the production stage, as the application is used by users for some time, the architecture is verified to be working but the resilience of application is needed to be improved through circuit breaker and some action needed to be introduced to ease the problem solving tasks through a mechanism such as log aggregator.
+Even though it is better to incorporate those mechanisms during design stage for an actual microservice product, the implementation of these two design patterns is not prioritized by most examined projects.
+As for the backends for frontends pattern, it is embraced by only one project, namely R1, which is developed to be the reference microservice application by Microsoft for the use cases of features of .NET framework for microservice architecture, hence the backends for frontends pattern is implemented to show how developers can implement the same pattern in case they want to differentiate the kind of clients in their .NET microservice applications.
+
 
 % mention number of studies of pattern > studies of anti-patterns
 
