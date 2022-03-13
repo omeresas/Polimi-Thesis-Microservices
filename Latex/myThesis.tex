@@ -304,6 +304,8 @@ By sharing the experience after successful projects, similar to the evolution of
 On the flip side, there has also been sub-optimal solutions during this period, resulting from several factors, some of which might be lack of experience, misunderstanding of the microservice architecture or just old habits from SOA.
 In the same manner as design patterns, the anti-patterns of the microservice architecture has been identified by researchers and experienced engineers.
 In the next two sections, the design patterns and anti-patterns that exist in microservice architectures are explored.
+In doing so, in addition to the resources cited in appropriate places, Microsoft Docs for cloud patterns \cite{microsoft_docs} and microservice patterns website \cite{microserviceIO} have been consulted as main resources.
+For the anti-patterns, the two studies about microservice anti-patterns \cite{10.1145/3424771.3424812}\cite{9522227} have been utilized, details of which are provided as part of the argumentation related to one of the research questions of this study.
 
 \subsection{Design Patterns}
 \label{subsec:designpattern}
@@ -316,7 +318,7 @@ It sounds like a reverse proxy, but also has additional responsibilities like si
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{myImages/api_gateway.png}
+    \includegraphics[width=0.6\textwidth]{myImages/APIgw.png}
     \caption{An Example of an API Gateway Pattern, by Microsoft Docs under CC License}
     \label{fig:api_gateway}
 \end{figure}
@@ -345,7 +347,7 @@ The service mesh pattern is divided into two parts, namely, the control part and
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{myImages/service_mesh.png}
+    \includegraphics[width=0.75\textwidth]{myImages/mesh.png}
     \caption{An Application Architecture utilizing Service Mesh with Sidecar Proxy }
     \label{fig:service_mesh}
 \end{figure}
@@ -424,7 +426,7 @@ Figure~\ref{fig:rabbitmq} illustrates an example diagram that includes RabbitMQ 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{myImages/rabbitmq.png}
+    \includegraphics[width=0.9\textwidth]{myImages/asynch_messaging.png}
     \caption{RabbitMQ Message Broker with Pub/Sub Mechanism}
     \label{fig:rabbitmq}
 \end{figure}
@@ -456,14 +458,6 @@ The two ways of implementing a saga pattern are:
     The service that subscribed to that kind of event sees the emitted event and does its own logic and local transaction to its own database and emits another event for any service that listens for that kind of event.
     If all steps are successful, the last service will let the first service know by emitting an event.
     Otherwise, if a failure occurs in a step, the service that could not get its job done (in terms of logic or infrastructure) fires a failure event for the previous step, so the services that have worked before this step can sequentially perform rollbacks.
-    A diagram of choreography-based saga pattern is illustrated in Figure~\ref{fig:saga}.
-    
-    \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.65\textwidth]{myImages/saga.jpeg}
-    \caption{Choreography-based Saga Pattern}
-    \label{fig:saga}
-    \end{figure}
     
     \item Orchestration-based Saga: In this approach, unlike the above method, there is an orchestrator that manages the entire transaction.
     When a transaction order that is related to multiple services comes to the service, the service sends a command to the orchestrator.
@@ -506,12 +500,12 @@ A good solution to this problem is to use event sourcing pattern.
 Event sourcing persists the state of a business entity such as Order or a Customer as a sequence of state-changing events.
 Whenever the state of a business entity changes, a new event is fired from the respective microservice, and stored in a database named as the event store, which can be an ACID-compliant database, a time-series database or a database server specifically implemented for event sourcing pattern, such as EventStore (XXX).
 The most recent state of the application data is constructed by processing the events and storing the data in a materialised view that serves read-only queries.
-Embracing the eventual consistency paradigm, the materialised view can be updated according to the constraints of the domain of the application, by finding the most recent snapshot of the application data and processing the persisted events that have occurred since that snapshot. Figure~\ref{fig:event_sourcing} illustrates the flow and storage of the events in a regular application that makes use of event sourcing pattern.
+Embracing the eventual consistency paradigm, the materialised view can be updated according to the constraints of the domain of the application, by finding the most recent snapshot of the application data and processing the persisted events that have occurred since that snapshot. Figure~\ref{fig:event_sourcing} illustrates the flow and storage of the events in a possible software version tracking application that makes use of event sourcing pattern, where event store is benefited especially for temporal queries that show the state of the software in a particular point in time.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.70\textwidth]{myImages/event-sourcing.png}
-\caption{Event Sourcing Pattern}
+\includegraphics[width=1\textwidth]{myImages/event_store.png}
+\caption{Possible Use of Event Sourcing Pattern for a Software Version Tracking Application}
 \label{fig:event_sourcing}
 \end{figure}
 
