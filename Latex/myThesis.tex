@@ -212,8 +212,8 @@ Unlike a monolithic application, the system is not layered as database, back-end
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{myImages/monolithic-vs-microservices.png}
-    \caption{Monolithic vs Microservice Architecture}
+    \includegraphics[width=0.9\textwidth]{myImages/monovsmicro.png}
+    \caption{Monolithic vs Microservices Architecture}
     \label{fig:monovsmicro}
 \end{figure}
 
@@ -237,34 +237,28 @@ In the next section, each characteristic of the microservice architecture is exp
 \begin{itemize}
     \item Each microservice is developed by a small, cross-functional team.
     The team decides which programming language(s) and technology stack to choose to implement the microservice, and has their own CI/CD tools for testing, release and deployment.
-    Each microservice is considered not just a project, but a product, and the development teams are responsible also for the deployment and production processes of their microservice, in the Amazon's notion of "you build it, you run it" \cite{youbuild}.
+    Each microservice is considered not just a project, but a product, and the development teams are responsible also for the deployment and productions processes of their microservice, in the Amazon's notion of "you build it, you run it" \cite{youbuild}.
     
-    \item Each microservice is a light-weight component that is independently deployable. In case of a change in a particular library, systems that have multiple libraries in a single process like a monolithic architecture has to redeploy entire application. Instead, in a same scenario, having multiple services facilitates redeploying only the changed service. Moreover, this kind of ease in deployment enables the system to be more fault-tolerant and scalable in a more dynamic way, as illustrated Figure~\ref{fig:scalability}.
+    \item Each microservice is a light-weight component that is independently deployable. In case of a change in a particular library, systems that have multiple libraries in a single process like a monolithic architecture has to redeploy entire application. Instead, in a same scenario, having multiple services facilitates redeploying only the changed service. Moreover, this kind of ease in deployment enables the system to be more fault-tolerant and scalable in a more dynamic way, scaling only the desired services, as illustrated Figure~\ref{fig:scalability}, which is adapted from a figure in a blog \footnote{\href{https://martinfowler.com/articles/microservices.html}{https://martinfowler.com/articles/microservices.html}}.
     
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{myImages/scalable.png}
-    \caption{Scalability in Monolithic vs Microservice Apps}
+    \includegraphics[width=1\textwidth]{myImages/scalability.png}
+    \caption{Scalability in Monolithic vs Microservice Architectures}
     \label{fig:scalability}
     \end{figure}
 
     \item Microservices communicate with each other by means of network calls, using well-defined APIs, and simple protocols like REST over HTTP. While some other architectures incorporate smart (and heavy-weight) messaging mechanisms, such as Enterprise Service Buses (ESB) that can do routing, transformation, choreography and some business logic, the microservice architecture opt for simple communication infrastructure that can do basic routing of messages. In short, they have smart endpoints and dumb pipes.
-
+    
     \item Each microservice is a loosely-coupled business unit, that is responsible for a single part of the business capability.
-    Each model of a microservice is designed on a Bounded Context, which is a part of Domain Driven Design technique \cite{boundedcontext}. Conceptual model of the real world entities are decentralized, meaning that the representation (name) and modeling (attributes) of same real world entities are distinct. Figure~\ref{fig:micromodel} illustrates an example bounded context design and highlights the different representation of the same entity in different microservices.
+    Each model of a microservice is designed on a Bounded Context, which is part of Domain Driven Design technique \cite{boundedcontext}. Conceptual model of the real world entities are decentralized, meaning that the representation (name) and modeling (attributes) of same real world entities are distinct. Figure~\ref{fig:context} illustrates an example bounded context design and highlights the different representation of the same entity in different microservices.
     
     \begin{figure}[H]
     \centering
-    \subfloat[Same Concept as Different Model Entities in Different Microservices\label{fig:micromodel1}]{
-        \includegraphics[scale=0.4]{myImages/micromodel1.png}
-    }
-    \quad
-    \subfloat[Decomposing Traditional Data Models\label{fig:micromodel2}]{
-        \includegraphics[scale=0.45]{myImages/micromodel2.png}
-    }
-    \caption{A Microservices Design Using Bound Context Model per Microservice}
-    \label{fig:micromodel}
-\end{figure}
+    \includegraphics[width=0.93\textwidth]{myImages/context.png}
+    \caption{Decomposition methods using traditional vs. bounded context models}
+    \label{fig:context}
+    \end{figure}
 
     \item Just like the decentralized modeling, the persistence layer of the whole application is decentralized, in other words, each microservice and associated team is responsible for managing their own data. The team decides on which kind of database (SQL, NoSQL, graph, columnar, etc) they make use of, taking into consideration their own models and needs.
 
@@ -319,7 +313,7 @@ It sounds like a reverse proxy, but also has additional responsibilities like si
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{myImages/APIgw.png}
-    \caption{An Example of an API Gateway Pattern, by Microsoft Docs under CC License}
+    \caption{An example diagram of API gateway pattern}
     \label{fig:api_gateway}
 \end{figure}
 
@@ -348,7 +342,7 @@ The service mesh pattern is divided into two parts, namely, the control part and
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{myImages/mesh.png}
-    \caption{An Application Architecture utilizing Service Mesh with Sidecar Proxy }
+    \caption{An application architecture utilizing service mesh with sidecar proxy}
     \label{fig:service_mesh}
 \end{figure}
 
@@ -427,7 +421,7 @@ Figure~\ref{fig:rabbitmq} illustrates an example diagram that includes RabbitMQ 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{myImages/asynch_messaging.png}
-    \caption{RabbitMQ Message Broker with Pub/Sub Mechanism}
+    \caption{RabbitMQ message broker with pub/sub mechanism}
     \label{fig:rabbitmq}
 \end{figure}
 
@@ -505,7 +499,7 @@ Embracing the eventual consistency paradigm, the materialised view can be update
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/event_store.png}
-\caption{Possible Use of Event Sourcing Pattern for a Software Version Tracking Application}
+\caption{A possible use of event sourcing pattern for a software version tracking application}
 \label{fig:event_sourcing}
 \end{figure}
 
@@ -538,7 +532,7 @@ For the sake of a clear understanding of the two virtualization methods mentione
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.90\textwidth]{myImages/kubernetes_evo.png}
-\caption{Comparison and evolution of traditional, hypervisor-based and container-based deployment}
+\caption{Comparison and evolution of traditional, hypervisor-based and container-based deployment, by Kubernetes Documentation under CC-BY-4.0 license}
 \label{fig:hypervisor_vs_container}
 \end{figure}
 
@@ -633,11 +627,9 @@ Figure~\ref{fig:jaeger_trace} illustrates a detailed view of inter-service calls
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{myImages/trace-detail-ss.png}
-\caption{Visualization of inter-service calls and timing data by Jaeger}
+\caption{Visualization of inter-service calls and timing data in Jaeger, by Jaeger Documentation under CC-BY-4.0 license}
 \label{fig:jaeger_trace}
 \end{figure}
-
-% learn how to cite CC license for the figure
 
 As mentioned above, the distributed tracing pattern, similar to a service mesh, can be divided into two parts, an intrumentation or tracing part and the collection part.
 Unsurprisingly, in order for a system to have distributed tracing capability, these two parts must be compatible, in other words, they must adhere to the same API specification.
@@ -661,8 +653,8 @@ Figure~\ref{fig:circuit_breaker} shows the three states found in the circuit bre
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.60\textwidth]{myImages/circuit_breaker.png}
-\caption{State Diagram of Circuit Breaker Pattern}
+\includegraphics[width=0.60\textwidth]{myImages/circuit.png}
+\caption{State diagram of circuit breaker pattern}
 \label{fig:circuit_breaker}
 \end{figure}
 
@@ -1324,7 +1316,7 @@ The list of projects examined are given in Table~\ref{table:project_list}, with 
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{List of Examined Projects}
+    \caption{List of examined projects}
     \label{table:project_list}
 \end{table}
 
@@ -1343,7 +1335,7 @@ Figure~\ref{fig:R1_arch} shows the architectural diagram of the application, ada
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R1.png}
-\caption{Architectural Diagram of eShopOnContainers Application}
+\caption{Architectural diagram of eShopOnContainers application, adapted from diagram in repository under MIT license}
 \label{fig:R1_arch}
 \end{figure}
 
@@ -1402,7 +1394,7 @@ As a result of inspection for design patterns and anti-patterns, we present the 
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R1}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R1}
     \label{table:R1_result}
 \end{table}
 
@@ -1500,7 +1492,7 @@ The architectural diagram provided in the repository of the application is used 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R2.png}
-\caption{Architectural Diagram of GCP Online Boutique Application}
+\caption{Architectural diagram of GCP Online Boutique application, from repository under Apache 2.0 license}
 \label{fig:R2_arch}
 \end{figure}
 
@@ -1559,7 +1551,7 @@ The presence of design patterns and anti-patterns have been listed in Table~\ref
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R2}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R2}
     \label{table:R2_result}
 \end{table}
 
@@ -1652,7 +1644,7 @@ The architectural diagram is shown in Figure~\ref{fig:R3_arch}, modified from th
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{myImages/R3.png}
-\caption{Architectural Diagram of Piggy Metrics Application}
+\caption{Architectural diagram of Piggy Metrics application, adapted and modified from diagram in repository under MIT license}
 \label{fig:R3_arch}
 \end{figure}
 
@@ -1711,7 +1703,7 @@ The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R3}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R3}
     \label{table:R3_result}
 \end{table}
 
@@ -1801,7 +1793,7 @@ The Figure~\ref{fig:R4_arch}, which is provided in the application repository, d
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R4.png}
-\caption{Architectural Diagram of Event Sourcing \& CQRS Example Application}
+\caption{Architectural Diagram of Event Sourcing \& CQRS Example Application, by Chris Richardson under Apache 2.0 license}
 \label{fig:R4_arch}
 \end{figure}
 
@@ -1860,7 +1852,7 @@ The Table~\ref{table:R4_result} presents the presence of design patterns and ant
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R4}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R4}
     \label{table:R4_result}
 \end{table}
 
@@ -2014,7 +2006,7 @@ The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R5}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R5}
     \label{table:R5_result}
 \end{table}
 
@@ -2098,7 +2090,7 @@ The architectural diagram of the system is shown in Figure~\ref{fig:R6_arch}, wh
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R6.png}
-\caption{Architectural Diagram of CoolStore Web Application}
+\caption{Architectural Diagram of CoolStore Web Application, by Vietnam Developer Group under MIT license}
 \label{fig:R6_arch}
 \end{figure}
 
@@ -2157,7 +2149,7 @@ The presence of design patterns and anti-patterns are indicated in Table~\ref{ta
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R6}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R6}
     \label{table:R6_result}
 \end{table}
 
@@ -2296,7 +2288,7 @@ The presence of each design pattern and anti-pattern is provided in Table~\ref{t
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R7}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R7}
     \label{table:R7_result}
 \end{table}
 
@@ -2374,7 +2366,7 @@ The architectural diagram is shown in Figure~\ref{fig:R8_arch}, which is provide
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R8.png}
-\caption{Architectural Diagram of Dotnetcore Insurance Application}
+\caption{Architectural Diagram of Dotnetcore Insurance Application, by Altkom Software under Apache 2.0 license}
 \label{fig:R8_arch}
 \end{figure}
 
@@ -2433,7 +2425,7 @@ The presence of each design pattern and anti-pattern is presented in Table~\ref{
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R8}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R8}
     \label{table:R8_result}
 \end{table}
 
@@ -2578,7 +2570,7 @@ The presence of design patterns and anti-patterns are indicated in Table~\ref{ta
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R9}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R9}
     \label{table:R9_result}
 \end{table}
 
@@ -2656,7 +2648,7 @@ The architectural diagram of the application is illustrated is Figure~\ref{fig:R
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{myImages/R10.png}
-\caption{Architectural Diagram of Run-Asp.NetCore-Microservices Application}
+\caption{Architectural Diagram of Run-Asp.NetCore-Microservices Application, by Aspnetrun under MIT license}
 \label{fig:R10_arch}
 \end{figure}
 
@@ -2715,7 +2707,7 @@ The presence of each design pattern and anti-pattern is indicated in Table~\ref{
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of Microservice Design Patterns and Anti-Patterns in Repository R10}
+    \caption{Presence of microservice design patterns and anti-Patterns in repository R10}
     \label{table:R10_result}
 \end{table}
 
