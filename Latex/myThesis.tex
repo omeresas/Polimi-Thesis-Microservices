@@ -820,7 +820,7 @@ For the scope of this study, the following two research questions have been esta
     Which design patterns and anti-patterns exist in those prominent projects?
 \end{itemize}
 
-Through these two research questions, the goal of this study is to see the level of sophistication and finesse in which the microservice design patterns and anti-patterns are categorised in the academia and to validate the occurrence of microservice design patterns and anti-patterns mentioned in the academia on a limited set of open source microservice projects.
+Through these two research questions, the goal of this study is to see the level of sophistication and finesse in which the microservice design patterns and anti-patterns are categorized in the academia and to validate the occurrence of microservice design patterns and anti-patterns mentioned in the academia on a limited set of open source microservice projects.
 
 \section{Adopted Methodology}
 \label{sec:adopted_method}
@@ -1471,7 +1471,7 @@ Below, the particular implementation of design patterns and explanations about a
     \item \textbf{No CI/CD:} In the "workflows" folder the repository has ".yaml" files that define GitHub Actions (XXX) workflows and on the repository page the build status of each microservice is shown.
     Hence, the repository makes use of GitHub Actions (XXX) as their choice of CI/CD pipeline. (NO)
     
-    \item \textbf{Multiple Service Instances per Host:} The application does not containerise multiple services into one single container, so that it does not force multiple services to be deployed on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} The application does not containerize multiple services into one single container, so that it does not force multiple services to be deployed on the same host. (NO)
     
     \item \textbf{No API Versioning:} Even though implemented as an example and all endpoints have the same version number, the good practice is employed and the endpoints of microservices start with version numbers, for example, the "catalog" microservice has a GET endpoint "/api/v1/Catalog/items". (NO) 
     
@@ -1584,7 +1584,7 @@ To clarify each pattern or anti-pattern item, a few sentences are provided below
     
     \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as deployment option. (NO)
     
-    \item \textbf{Service Instance per Container:} The microservices are containerised into Docker images and the Kubernetes .yaml files are provided for running the entire application. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and the Kubernetes .yaml files are provided for running the entire application. (YES)
     
     \item \textbf{Serverless:} Although the application may be deployed using serverless approach by making additional effort, in the repository, no instructions about serverless deployment is provided. (NO)
     
@@ -1622,7 +1622,7 @@ To clarify each pattern or anti-pattern item, a few sentences are provided below
     
     \item \textbf{No CI/CD:} The repository has GitHub Actions continuous integration files that defines unit and other tests on pushes and master releases, as a result, no CI/CD anti-pattern is avoided. (NO)
     
-    \item \textbf{Multiple Service Instances per Host:} Since each service is containerised into its own container, the system does not force deploying multiple services on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Since each service is containerized into its own container, the system does not force deploying multiple services on the same host. (NO)
     
     \item \textbf{No API Versioning:} The frontend microservice does not utilize API versioning on the HTTP endpoints, while other microservices does not have versioned gRPC API definitions. (YES)
     
@@ -1738,7 +1738,7 @@ A few statements about each item below explains the related item concisely.
     
     \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as a readily provided deployment option. (NO)
     
-    \item \textbf{Service Instance per Container:} The microservices are containerised into Docker images and stored in DockerHub to be downloaded and instantiated by applying the provided docker-compose file. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and stored in DockerHub to be downloaded and instantiated by applying the provided docker-compose file. (YES)
     
     \item \textbf{Serverless:} Similar to other projects, no instructions about serverless deployment is provided deploy the application in the repository. (NO)
     
@@ -1772,7 +1772,7 @@ A few statements about each item below explains the related item concisely.
     
     \item \textbf{No CI/CD:} The repository uses Travis CI (XXX) to first trigger docker image builds on GitHub pushes, then triggers Codecov to carry out a code coverage test, and then deploys the new docker images automatically using continuous deployment method, or with one-click approach using continuous delivery option, depending on the configuration. (NO)
     
-    \item \textbf{Multiple Service Instances per Host:} Similar to the most examined projects, the microservices are containerised into docker images, hence not resulting in the absolute need to deploy all instances on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Similar to the most examined projects, the microservices are containerized into docker images, hence not resulting in the absolute need to deploy all instances on the same host. (NO)
     
     \item \textbf{No API Versioning:} The REST API endpoints do not have prefixes that implies API versioning practice. (YES)
     
@@ -1922,7 +1922,7 @@ Next, a short clarification about each item is provided below.
     
     \item \textbf{No CI/CD:} The repository does not contain a CI/CD mechanism. (YES)
     
-    \item \textbf{Multiple Service Instances per Host:} Also with this application, the microservices are containerised, preventing the multiple service instances per host deployment anti-pattern. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Also with this application, the microservices are containerized, preventing the multiple service instances per host deployment anti-pattern. (NO)
     
     \item \textbf{No API Versioning:} The REST endpoints do not contain any API versioning prefixes. (YES)
     
@@ -2040,7 +2040,7 @@ A short comment about each design pattern and anti-pattern is provided below.
     
     \item \textbf{Service Instance per Virtual Machine:} Similar to other repositories, there are no instructions or readily built VM images to deploy microservices as virtual machine images. (NO)
     
-    \item \textbf{Service Instance per Container:} The business microservices, API gateway and infrastructure microservices are containerised into Docker images. (YES)
+    \item \textbf{Service Instance per Container:} The business microservices, API gateway and infrastructure microservices are containerized into Docker images. (YES)
     
     \item \textbf{Serverless:} The repository does not contain instructions to deploy the application on a serverless platform. (NO)
     
@@ -2177,7 +2177,7 @@ A short description about each item is provided below.
     
     \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images for this deployment pattern to be employed. (NO)
     
-    \item \textbf{Service Instance per Container:} The microservices are containerised into Docker images to be instantiated using Docker Compose, Kubernetes or AKS. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images to be instantiated using Docker Compose, Kubernetes or AKS. (YES)
     
     \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment. (NO)
     
@@ -2460,7 +2460,7 @@ In the following pages, we provide short explanations about each microservice pa
     
     \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images or necessary instructions in the repository. (NO)
     
-    \item \textbf{Service Instance per Container:} The business and infrastructure microservices are containerised in this application and can be instantiated by applying .yml files by Docker Compose. (YES)
+    \item \textbf{Service Instance per Container:} The business and infrastructure microservices are containerized in this application and can be instantiated by applying .yml files by Docker Compose. (YES)
     
     \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment. (NO)
     
@@ -2782,9 +2782,9 @@ Below, the design patterns and anti-patterns in this application are concisely e
 \section{Discussion of Findings}
 \label{sec:discussion}
 
-Referring back to the second research question, the reason we conducted the study was to answer which, if any, of the microservice design patterns and anti-patterns show up in the popular open source microservice applications.
-In addition to the occurrence of individual design patterns and anti-patterns in those projects, it is also beneficial, we believe, to take a look at the number of appearance of design patterns and anti-patterns in the examined projects.
-Below, the table \ref{table:total_number} lists the total number of occurrence of patterns and anti-patterns detected during this study on the ten open source microservice projects.
+Referring back to the research questions, the reason why we conducted this study was to find answers to two research questions, which are about the taxonomy of design patterns and anti-patterns of microservices architecture and the presence of those patterns and anti-patterns in the popular open source microservice applications. 
+In addition to the main work, regarding the second research question about the presence of patterns and anti-patterns, it is also beneficial, we believe, to take a look at the number of appearance of design patterns and anti-patterns in the examined projects.
+Below, Table \ref{table:total_number} lists the total number of occurrence of patterns and anti-patterns detected during this study on the ten open source microservice projects.
 
 \begin{table}[H]
 \centering 
@@ -2844,43 +2844,71 @@ Below, the table \ref{table:total_number} lists the total number of occurrence o
 \end{table}
 
 First observation about the number of occurrences is that, there are two design patterns that are employed in all of the examined projects, namely, the API gateway and service instance per container patterns.
-The reason why the API gateway pattern is always utilized might be that, it is one of the design patterns that returns a substantial amount of value after a small investment, meaning that, it is relatively easier to understand and implement, also when it is combined with required frontend tasks, as seen in most of the examined projects, it also serves static assets to the browser and provides a single entry point to the backend services.
-For the service instance per container pattern, it reflects the "micro" aspect of microservice architectures quite well, provides developers with a deployment option that have an easier learning curve with respect to service instance per VM and serverless options, and alleviates the burden of implementing or configuring services to the specifics of underlying operating system.
+The reason why the API gateway pattern is always utilized might be that, it is one of the design patterns that returns a substantial amount of value after a small investment, meaning that, it is relatively easier to understand and implement.
+Also, when it is combined with required frontend tasks, as seen in most of the examined projects, it also serves static assets to the browser and provides a single entry point to the backend services.
+For the service instance per container pattern, it reflects the "micro" aspect of microservice architectures quite well, provides developers with a deployment option that have a smaller learning curve with respect to service instance per VM and serverless options, and alleviates the burden of implementing or configuring services to the specifics of underlying operating system.
 \\
 The second observation that draws attention immediately is that there are a number of patterns and anti-patterns that are not detected in any of the examined projects.
 About the deployment aspect, it might be stated that the service instance per VM and serverless patterns are not employed since they are relatively harder to learn and provides additional value with respect to per container pattern only in relatively specific cases.
-For the multiple service instance per host anti-pattern, we have stated in detection criteria that even though microservices are containerised, there is no mechanism to prevent the malpractice of deploying all containers to the same host, so we checked if two or more of the microservices in an application are containerised into the same Docker image.
+For the multiple service instance per host anti-pattern, we have stated in detection criteria that even though microservices are containerized, there is no mechanism to prevent the malpractice of deploying all containers to the same host, so we checked if two or more of the microservices in an application are containerized into the same Docker image.
 As a matter of fact, the containerisation of multiple services to the same container might be even harder than to containerize one service to one container image, since it would require finding more complex Docker base images than to find simpler base images such as "node:alpine" which contains Node.js run-time on top of a small Alpine Linux distribution, for services that need different run-times to be built, copied and run on top of the same Docker base image.
-As a result, we might state that services are containerized into individual images since it is easier to implement and provides better organization of the whole application.
+As a result, we might state that the microservices are in general containerized into individual images since it is easier to implement and provides better organization of the whole application.
 \\
-Coming to the architectural design patterns that are avoided in each examined application, we might observe that the design principles of microservice architectures are very well embraced and digested by the projects.
+Coming to the architectural anti-patterns that are avoided in each examined application, we might observe that the design principles of microservice architectures are very well embraced and digested by the projects.
 The microservices are designed around business capabilities in a balanced way and the principle of "smart endpoints, dumb pipes" is put into practice in those designs.
 \\
 Next, we see that the three design patterns, namely, service registry and discovery, asynchronous messaging and health check, are employed more frequently with respect to the remaining ones.
-While service registry and discovery is a must for microservices to work in a distributed environment, we observe that through the use of health checks, the fault-tolerance aspect is highlighted in those applications.
-Additionally, the utilization of message queues supports the notion of fault-tolerance in a sense that the business microservices could consume messages sent by other services when they are up and running after they experience a run-time failure.
+While service registry and discovery is a must for microservices to work in a distributed environment, we observe that through the use of health checks, the reliability aspect is also emphasized in those applications.
+Together with tools such as Kubernetes and in essence the feedback loop that pings health endpoints of services and creates or deletes pods accordingly, health check mechanism increases fault-tolerance abilities of the application.
+Additionally, the utilization of message queues is in alignment with the notion of fault-tolerance in the sense that, if implemented accordingly, the business microservices could consume messages sent by other services when they are up and running after they experience a run-time failure.
 \\
 Another observation about the numbers is that the most frequent anti-pattern has been no API versioning anti-pattern.
 Even though it is quite simple to implement API versioning as code, because the examined applications are not actual microservice products that are maintained by a number of different development teams, it might be deemed not necessary by developers of examined repositories to make use of API versioning practice.
-On the other hand, we see that even though the repositories are not actual software products, the developers of half of the repositories chose to utilize some sort of CI/CD mechanism to automatically build images or automatically test their code, as these practices are not about changing API definitions but to cope with increasing complexity as time progresses during development stage.
+On the other hand, we see that even though the repositories are not actual software products, the developers of half of the repositories chose to utilize some sort of CI/CD mechanism to automatically build images or automatically test their code, as these practices are not about changing API definitions but to cope with recurrent tasks through automation during development stage.
 \\
 Considering the next two most frequent patterns, we observe that although the distributed tracing and CQRS patterns are not trivial to implement, five of the repositories utilize those patterns, at least as part of some of their microservices.
-Either to visualize the business calls between services or to advertise their cloud platform's capabilities as being compatible with instrumentation libraries, the distributed tracing pattern is employed.
-Similarly, CQRS is employed together with event sourcing pattern to feature a commercial CQRS framework as in Eventuate framework examples in R4 and R5, or to promote a CQRS library in as in MediatR use cases in R1, R8 and R10, as part of the .NET framework.
+Visualization of inter-service calls and hence having some sort of "big-picture" view of business logic might be one of the biggest benefits for those projects utilizing distributed tracing across most of their services.
+On the other hand, from a subjective point-of-view, the use of CQRS pattern might be a case of "over-engineering" in those projects, since the applications do not have many microservices and have relatively simple business logic to implement, which might be also doable without segregating the read and write tasks.
+Therefore, CQRS pattern might be implemented for exemplary purposes and employed together with event sourcing pattern to feature a commercial CQRS framework as in Eventuate framework examples in R4 and R5, or to promote a CQRS library in as in MediatR use cases in R1, R8 and R10, as part of the .NET framework.
 \\
-Next, we see that the data-related patterns are not very frequently utilized, probably as a result of small scope of applications, opting to share a single database instance or not utilizing any database instance.
-The relatively simple business logic of applications might also contribute to the fact that the developers did not choose to employ event sourcing and API composition as separate service patterns, considering that those pattern might complicate the architecture rather than transform complex logic into simpler handling mechanisms.
+Next, we see that the data-related patterns are not very frequently utilized, probably as a result of small scope of applications, opting to share a single database instance or not utilizing any database instance at all.
+The relatively simple business logic of applications might also contribute to the fact that the developers did not choose to employ event sourcing and API composition as separate service patterns, considering that those patterns might complicate the architecture rather than transform complex logic into simpler handling mechanisms.
 \\
-Lastly, we observe that the log aggregator, circuit breaker and backends for frontends patterns have been the three least utilized patterns by the examined microservice projects.
-The reason why they are not frequently employed might be, as a result of our contemplation, that the log aggregator and circuit breaker solve problems that might be faced later on the production stage, as the application is used by users for some time, the architecture is verified to be working but the resilience of application is needed to be improved through circuit breaker and some action needed to be introduced to ease the problem solving tasks through a mechanism such as log aggregator.
-Even though it is better to incorporate those mechanisms during design stage for an actual microservice product, the implementation of these two design patterns is not prioritized by most examined projects.
+The last observation about the presence of patterns and anti-patterns is that the log aggregator, circuit breaker and backends for frontends patterns have been the three least utilized patterns by the examined microservice projects.
+The reason why they are not frequently employed might be, as a result of our contemplation, that the log aggregator and circuit breaker solve problems that might be faced later on the production stage.
+In other words, as the application is used by users for some time, the architecture is verified to be working but the resilience of application is needed to be improved through circuit breaker and some action is needed to be introduced to ease the problem solving and debugging tasks through a mechanism such as log aggregator.
+Even though it is better to incorporate those mechanisms during design stage for an actual microservice product, the implementation of these two design patterns is not prioritized by most examined projects in this study.
 As for the backends for frontends pattern, it is embraced by only one project, namely R1, which is developed to be the reference microservice application by Microsoft for the use cases of features of .NET framework for microservice architecture, hence the backends for frontends pattern is implemented to show how developers can implement the same pattern in case they want to differentiate the kind of clients in their .NET microservice applications.
-
+\\
+Aside from the observations stated above, we would like to note that there are a number of limitations involved in this study which might harm the reliability of the results.
+First, due to the manual inspection of source code, which mainly resulted from heterogeneity of technologies utilized in the projects, the number of projects examined was limited to ten, meaning that the small sample size of examined projects might result in reduced ability to generalise the results to other microservice projects.
+Particularly, the frequency of design patterns and anti-patterns in the examined projects might not be conserved in another study which might examine a different or larger set of microservice projects.
+\\
+The second limitation is that, to define "popularity" of projects, we chose to observe the GitHub stars of the projects, which basically state how many GitHub accounts add the particular project to their set of favourite projects or just saved them for later use or observation.
+As a result, in addition to the examined well-maintained projects, all of which has last commit dates in 2021, we added three not-relatively maintained microservice projects into the sample set.
+The two projects, R4 and R7, have been modified last in 2017, while R9 has the last commit date in 2018.
+Although those projects have relatively high number of GitHub stars, it is important to note that they might not be used, tinkered with or deployed by practitioners to learn about microservices architecture anymore, simply because they do not utilize common modern technologies, such as R7 using Docker Swarm instead of Kubernetes, or because they might not find answers to their questions about the projects because there are no more active contributors to those three projects.
+The limitation regarding finding most popular microservice projects nowadays might be removed to some extent in another study that also inspects commit dates and the heartbeat diagram of the projects on GitHub that visualise contributor activity in the past year.
+\\
+Lastly, for the sake of completion, we would like to repeat the limitation about not detecting the saga pattern and shared libraries anti-pattern in this study, since the detection of these two pattern and anti-pattern requires a deeper understating of the business logic and a more competent literacy in the utilized programming language and the framework, which would demand so much more time and effort from the researchers.
 
 % mention number of studies of pattern > studies of anti-patterns
 
 \chapter{Conclusion}
 \label{ch:conclusion}%
+
+With this study, we investigated the literature about classifications regarding microservice patterns and anti-patterns, and observed that there are indeed a number of different categorizations present in the studies.
+By taking into account the way these studies categorize the patterns and anti-patterns and by constructing our own argumentation, we presented our taxonomy proposal by suggesting to utilize "architectural", "deployment" and "monitoring \& reliability" categories, in order to provide a simple and valid structure in terms of classification for patterns and anti-patterns.
+Furthermore, we manually inspected ten open source microservice projects to see if those patterns and anti-patterns are actually present in implemented microservice architectures.
+We noticed that, among the set of design patterns and anti-patterns, there are two design patterns, namely the API gateway and service instance per container patterns, that are employed in each examined microservices project.
+Then, we made additional observations about the presence of microservice patterns and anti-patterns in those projects.
+\\
+We hope this study to be beneficial for students, researchers and developers who may want to learn about microservices architecture, the design patterns to utilize to solve common problems of microservices and anti-patterns to avoid during various stages of a microservice application lifecycle.
+Through our proposed classification, we aim to ease the learning curve regarding the patterns and anti-patterns by broadly structuring them, in addition to bringing another point-of-view regarding possible classifications in this area.
+Moreover, by providing concrete examples of microservice design patterns and anti-patterns through open source projects, we wish to support understanding of principles of microservices architecture.
+\\
+Regarding the future work on microservice patterns and anti-patterns, one valuable research effort could be to conduct studies on projects in a way that does not involve the limitations faced in this study.
+By inspecting more open source projects, the ability to generalise the result might be increased, and focusing on projects that make use of the same framework and the same technologies, a precise and thorough understanding of the implemented business logic could be achieved, enabling more observations about patterns and anti-patterns related to the logic of the application.
 
 %-------------------------------------------------------------------------
 %	BIBLIOGRAPHY
