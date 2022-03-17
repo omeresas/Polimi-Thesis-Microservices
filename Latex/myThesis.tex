@@ -189,13 +189,39 @@ Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole ch
 % --------------------------------------------------------------------------
 \chapter{Introduction}
 
+In the past decade, there is no doubt that there has been a constant change towards using online services in every part of our lives.
+Many people choose to do their various kinds of shopping through e-commerce sites, whether it is to buy clothing, grocery or different kinds of appliances.
+For entertainment purposes, people prefer to stream their favourite songs or movies through subscription-based services, instead of downloading and listening or watching them offline, let alone buying or renting hard-copies.
+Online housing services offer people a quick way of finding accommodation when needed, in addition to online taxi services helping them to go to a destination in a comfortable manner.
+These services conduct their operations in many countries around the world, serve millions of users each day and seem to be functional and avaliable all the time.
+These companies, to name a few, Amazon, eBay, Zalando, Netflix, Spotify, SoundCloud, Airbnb, Uber and Twitter, all share a common design choice in terms of how they built their systems, they made use of microservices architecture.
+\\
+In an effort to define microservices architecture in one sentence, basically, we might state that the microservices architecture is about creating a set of software components, each of which carry out tasks related to one business domain of the application, and is independent in the sense that they are treated as separate services, in terms of implementation and deployment by self-sufficient teams.
+As expected, this rather complex architecture contains a number of methods that varies in quality to solve common problems faced in microservices-architected applications.
+These methods are called design patterns and anti-patterns of microservices architecture, that are utilized or avoided to make the best of this architectural choice and see its promised advantages.
+\\
+In this study, we aim to explore these patterns and anti-patterns, specifically, in terms of classification in the literature and detection of them on a group of open source microservices projects.
+We aim to observe the way the patterns and anti-patterns are classified in the literature, check if there exists a common way of classification and propose our own taxonomy in case there is no consensus in the literature.
+Then, we select ten open source microservice projects and manually inspect source code to detect the design patterns and anti-patterns of microservices architecture, in order to observe the correlation between the "theory" in the literature and practical cases to some extent.
+To the best of our knowledge, there is no study that considers taxonomy of both patterns and anti-patterns of microservices architecture through literature review and related justification.
+Regarding inspection of projects for patterns and anti-patterns, however, there are two studies that conduct similar work, which are similar in the sense that they utilize manual inspection on projects to detect design patterns and anti-patterns from a holistic point-of-view, in other words, they do not look for one or two pattern or anti-patterns but inspect the project considering all kinds of pattern or anti-patterns.
+The researchers in the study \cite{8719492} inspect a set of thirty open source microservice projects using automated tools that check the dependency files (pom.xml or docker-compose.yml) of projects to detect utilized frameworks, and verify the use of the pattern by checking the documentation of the utilized framework.
+The researchers of the study \cite{10.1145/3424771.3424812} manually check sixty seven projects to detect anti-patterns, which they discover as a result of their systematic literature review for microservices anti-patterns.
+Our study differs from the two studies in considering not only design patterns or anti-patterns, but both of these good and bad practices, in addition to using only manual inspection on projects that use many different technologies.
+\\
+The chapter \ref{ch:art} starts by taking a look at the microservices architecture in more detail, by focusing on its principles and differences from other architectures, followed by a detailed description of each design pattern and anti-pattern.
+In the next chapter, \ref{ch:research_method} the aim of the study is presented by constructing two research questions, specifically, one regarding the taxonomy and another regarding the patterns and anti-patterns in open source microservices projects.
+Then, in chapter \ref{ch:results}, the results of our research process and answers to the two research questions are presented.
+Before conclusion, the results of our research and the general experience gained in this study are discussed in the section \ref{sec:discussion}.
+Lastly, the conclusion chapter \ref{ch:conclusion} ends this study by giving a short summary, in addition to mentioning possible contribution of this study to microservices literature and a few statements about future work.
+
 \chapter{State of the Art}
 \label{ch:art}%
 
 \section{Microservice Architecture}
 \label{sec:ms_arch}
 
-Although the microservice architecture style has already been a de-facto standard for some large tech companies, and is being embraced by numerous firms in the industry, because of the novelty of the architecture, not all developers and architects in the tech industry and researchers in the academia are aware of what it means and which paradigms it advertises.
+Although the microservice architecture style has already been a de-facto standard for some large tech companies, and is embraced today by numerous firms in the industry, because of the novelty of the architecture, not all developers and architects in the tech industry and researchers in the academia are aware of what it means and which paradigms it advertises.
 Microservice architecture is, not in the least meaning of the word, vastly different from the traditional way of building a web application, namely the monolithic architecture.
 Hence, it is a valuable effort to define microservice architecture, what it is about and describe features and trends which emerged from this rather unorthodox architecture.
 \\
@@ -243,7 +269,7 @@ In the next section, each characteristic of the microservice architecture is exp
     
     \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{myImages/scalability.png}
+    \includegraphics[width=0.95\textwidth]{myImages/scalability.png}
     \caption{Scalability in Monolithic vs Microservice Architectures}
     \label{fig:scalability}
     \end{figure}
@@ -2905,7 +2931,7 @@ Then, we made additional observations about the presence of microservice pattern
 \\
 We hope this study to be beneficial for students, researchers and developers who may want to learn about microservices architecture, the design patterns to utilize to solve common problems of microservices and anti-patterns to avoid during various stages of a microservice application lifecycle.
 Through our proposed classification, we aim to ease the learning curve regarding the patterns and anti-patterns by broadly structuring them, in addition to bringing another point-of-view regarding possible classifications in this area.
-Moreover, by providing concrete examples of microservice design patterns and anti-patterns through open source projects, we wish to support understanding of principles of microservices architecture.
+Moreover, by providing concrete examples of microservice design patterns and anti-patterns through open source projects, we wish to support understanding of microservices architecture principles.
 \\
 Regarding the future work on microservice patterns and anti-patterns, one valuable research effort could be to conduct studies on projects in a way that does not involve the limitations faced in this study.
 By inspecting more open source projects, the ability to generalise the result might be increased, and focusing on projects that make use of the same framework and the same technologies, a precise and thorough understanding of the implemented business logic could be achieved, enabling more observations about patterns and anti-patterns related to the logic of the application.
