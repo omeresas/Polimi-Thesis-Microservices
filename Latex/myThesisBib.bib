@@ -10,8 +10,9 @@
 
 @book{newman,
   title={Building Microservices: Designing Fine-Grained Systems},
-  author={Newman, S.},
+  author={Newman, Sam},
   year={2015},
+  pages={1-2},
   publisher={O'Reilly Media Inc.}
 }
 
@@ -25,27 +26,30 @@
   author       = {Microsoft Docs},
   title        = {Cloud Design Patterns},
   url          = {https://docs.microsoft.com/en-us/azure/architecture/patterns/},
-  urldate      = {2022-03-12}
+  urldate      = {2022-03-12},
+  year={2022}
 }
 
 @online{microdef,
-  author       = {Fowler, M.},
+  author       = {Martin Fowler},
   title        = {Microservices: a definition of this architectural term},
   url          = {https://martinfowler.com/articles/microservices.html},
-  urldate      = {2021-12-03}
+  urldate      = {2021-12-03},
+  year={2014}
 }
 
 @online{microserviceIO,
-  author       = {Richardson, C.},
-  title        = {Microservice Patterns,
+  author       = {Chris Richardson},
+  title        = {Microservice Patterns},
   url          = {https://microservices.io},
   urldate      = {2022-03-12}
 }
 
 @book{boundedcontext,
   title={.NET Microservices: Architecture for Containerized .NET Applications},
-  author={de la Torre, C.},
+  author={Cesar de la Torre and Bill Wagner and Mike Rousos},
   year={2021},
+  pages={29-30},
   publisher={Microsoft Corporation}
 }
 
@@ -60,7 +64,8 @@
   author       = {IBM Cloud Team},
   title        = {SOA vs. Microservices: What’s the Difference?},
   url          = {https://www.ibm.com/cloud/blog/soa-vs-microservices},
-  urldate      = {2021-12-07}
+  urldate      = {2021-12-07},
+  year={2021},
 }
 
 @online{soa_granularity,
@@ -70,16 +75,9 @@
   urldate      = {2021-12-07}
 }
 
-@book{twopc,
+@book{richardson_book,
   title={Microservice Patterns},
-  author={Richardson, C.},
-  year={2019},
-  publisher={Manning Publications Co.}
-}
-
-@book{event_sourcing_book,
-  title={Microservice Patterns},
-  author={Richardson, C.},
+  author={Chris Richardson},
   year={2019},
   publisher={Manning Publications Co.}
 }
@@ -88,7 +86,8 @@
   author       = {Microsoft Docs.},
   title        = {Event Sourcing Pattern},
   url          = {https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing},
-  urldate      = {2021-12-08}
+  urldate      = {2021-12-08},
+  year = {2022},
 }
 
 @inproceedings{li2019service,
@@ -118,6 +117,22 @@
   urldate      = {2021-12-13}
 }
 
+@online{hackernoon,
+  author       = {Ryan Dawson},
+  title        = {How Did Kubernetes Win the Container Orchestration War?},
+  url          = {https://hackernoon.com/how-did-kubernetes-win-the-container-orchestration-war-lp1l3x01},
+  urldate      = {2021-12-13},
+  year={2020}
+}
+
+@online{kubernetes_docs,
+  author       = {Kubernetes Documentation},
+  title        = {What is Kubernetes?},
+  url          = {https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/},
+  urldate      = {2021-12-13},
+  year={2021}
+}
+
 @article{eder2016hypervisor,
   title={Hypervisor-vs. container-based virtualization},
   author={Eder, Michael},
@@ -137,16 +152,24 @@
 
 @online{aws_lambda,
   author       = {AWS Lambda Documentation},
-  title        = {AWS Lambda FAQs},
-  url          = {hhttps://aws.amazon.com/lambda/faqs/},
+  title        = {AWS Lambda Frequently Asked Questions},
+  url          = {https://aws.amazon.com/lambda/faqs/},
   urldate      = {2021-12-14}
 }
 
 @article{montesi2016circuit,
-  title={Circuit breakers, discovery, and API gateways in microservices},
-  author={Montesi, Fabrizio and Weber, Janine},
-  journal={arXiv preprint arXiv:1609.05830},
-  year={2016}
+  author    = {Fabrizio Montesi and
+               Janine Weber},
+  title     = {Circuit Breakers, Discovery, and {API} Gateways in Microservices},
+  journal   = {CoRR},
+  volume    = {abs/1609.05830},
+  year      = {2016},
+  url       = {http://arxiv.org/abs/1609.05830},
+  eprinttype = {arXiv},
+  eprint    = {1609.05830},
+  timestamp = {Mon, 13 Aug 2018 16:46:02 +0200},
+  doi = {https://doi.org/10.48550/arXiv.1609.05830},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 % listed studies below
@@ -247,7 +270,7 @@
 	title = {A Pattern Language for Scalable Microservices-Based Systems},
 	url = {https://doi.org/10.1145/3241403.3241429},
 	year = {2018},
-	bdsk-url-1 = {https://doi.org/10.1145/3241403.3241429}}
+}
 
 @inproceedings{8719492,
 	author = {M{\'a}rquez, Gast{\'o}n and Astudillo, Hern{\'a}n},
@@ -256,7 +279,7 @@
 	pages = {31-40},
 	title = {Actual Use of Architectural Patterns in Microservices-Based Open Source Projects},
 	year = {2018},
-	bdsk-url-1 = {https://doi.org/10.1109/APSEC.2018.00017}}
+}
 
 
 @inproceedings{10.1007/978-3-319-74781-1_15,
@@ -307,9 +330,8 @@
 	publisher = {Association for Computing Machinery},
 	series = {EuroPLoP '20},
 	title = {On the Study of Microservices Antipatterns: A Catalog Proposal},
-	url = {https://doi.org/10.1145/3424771.3424812},
 	year = {2020},
-	bdsk-url-1 = {https://doi.org/10.1145/3424771.3424812}}
+}
 
 
 @inproceedings{8712355,
