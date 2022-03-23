@@ -102,10 +102,13 @@
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
 %----------------------------------------------------------------------------
-
+\usepackage[bottom]{footmisc}
 %----------------------------------------------------------------------------
 %	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
 %----------------------------------------------------------------------------
+\usepackage{graphicx}
+\newcommand{\Csharp}{%
+  {\settoheight{\dimen0}{C}C\kern-.05em \resizebox{!}{\dimen0}{\raisebox{\depth}{\# }}}}
 
 %----------------------------------------------------------------------------
 %	BEGIN OF YOUR DOCUMENT
@@ -127,12 +130,11 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Title Related to Microservices, % Title of the thesis
+	title=Design Patterns and Anti-Patterns in Microservices Architecture: A Taxonomy Proposal and Study on Open Source Projects, % Title of the thesis
 	name=Ömer Esas, % Author Name and Surname
 	course=Computer Science and Engineering - Ingegneria Informatica, % Study Programme (in Italian)
 	ID  = 917254,  % Student ID number (numero di matricola)
 	advisor= Prof. Elisabetta Di Nitto, % Supervisor name
-	coadvisor={Name Surname, Name Surname}, % Co-Supervisor name, remove this line if there is none
 	academicyear={2021-22},  % Academic Year
 } % These info will be put into your Title page 
 
@@ -726,20 +728,20 @@ Example libraries that implement the circuit breaker pattern include Netflix Hys
 As mentioned previously, microservices are designed using bounded context method, that is, each microservice is designed to carry out tasks related to one small business capability.
 One misconception for the separation of microservices is the construction of microservices in a layered fashion, as opposed to assigning one business capability per microservice.
 Designing microservices so that each microservice takes care of a major task from a technical perspective of the whole application is in fact a bad habit from SOA.
-To explain shortly and to not repeat the differences between SOA and microservices architectures, it is appropriate to say that, while designing microservices in a layered style like UI, logic and data increases re-usability of both code and data, it conflicts with the requirements needed for the microservice architecture to deliver its benefits.
+To explain shortly and to not repeat the differences between SOA and microservices architecture, it is appropriate to say that, while designing microservices in a layered style like UI, logic and data increases re-usability of both code and data, it conflicts with the requirements needed for the microservices architecture to deliver its benefits.
 The wrong cut anti-pattern causes deployments to be dependant on other services, breaks team independence and brings about high-coupling, since each business task would then require more microservices to be available.
 To avoid this pattern, microservices should be designed from a business perspective and the ownership of logic and data to a development team should be preserved.
 
 \subsubsection{Nano Microservice}
 \label{subsubsec:nano_microservice}
 
-Another anti-pattern due to bad design choices in terms of separation of microservices is the nano microservices anti-pattern.
+Another anti-pattern due to bad design choices in terms of separation of microservices is the nano microservice anti-pattern.
 Unlike the wrong cut anti-pattern, the nano microservice anti-pattern does not stem from a misconception of the design paradigm but the excess use of separation of business boundaries.
 As the name suggests, there might be cases that the microservices are designed so small that they cannot carry out business capabilities in a more or less indepedent way.
 Designing microservices unnecessarily small results in a larger number of microservices in the system, and increases communication overhead.
 This anti-pattern can also manifests itself as a cyclic dependency among a set of microservices, hinting at the fact that they are designed to be dependant on each other's logic or data to serve an outside request.
 To remedy this anti-pattern, the nano microservices can be re-designed around business capabilites, aimed at one business capability per microservice.
-In the case of cyclic dependencies and frequent calls related to one business request, the microservices that take part in the related cluster or cycle can merged into a single microservice, yet taking into consideration that the new microservice does not become a megaservice.
+In case of cyclic dependencies and frequent calls related to one business request, the microservices that take part in the related cluster or cycle can merged into a single microservice, while taking caution so that the new microservice does not become a megaservice.
 
 \subsubsection{Mega Microservice}
 \label{subsubsec:mega_microservice}
@@ -753,7 +755,7 @@ Refactoring a mega microservice into a couple of microservices can help ease the
 \subsubsection{ESB Usage}
 \label{subsubsec:esb_usage}
 
-In the subsection \ref{subsec:diff}, the differences between the microservice and service-oriented architectures have been explained and particular roles each architectural paradigm assigns to the message broker component have been discussed.
+In Section \ref{subsec:diff}, the differences between the microservice and service-oriented architectures have been explained and particular roles each architectural paradigm assigns to the message broker component have been discussed.
 Related to this difference, there is in fact an anti-pattern called ESB usage in the microservices world, that is based on the usage of ESB-like smart communication components in a microservice application.
 The use of communication components that additionally takes care of service registry and discovery, transformation and some business logic contradicts with the "smart endpoints, dumb pipes" principle of the microservice architecture.
 Rather than relying on the transformation of messages by an ESB, microservices should understand and handle different outlines of messages, register and discover services through a separate mechanism themselves.
@@ -764,12 +766,12 @@ Removing additional tasks such as these from the messaging component and using a
 
 For a microservice to be able to make a request to another microservice, the requesting microservice need to know the location of the provider microservice.
 The location of a microservice on the network is specificed via an IP address of its host and also a port number that is allocated for the process by the host in order to route network packets to the related process.
-For that reason, to be able to communicate on the network, microservices need to know IP addresses and the port numbers of microservices that they need to make a request to.
+For that reason, to be able to communicate on the network, microservices need to know IP addresses and the port numbers of other microservices that they need to make a request to.
 In short, there are two main methods to handle this task.
 The first solution is to delegate this task of knowing which microservice is where on the network to a separate microservice or an underlying infrastructure designed for microservice architectures, namely, using the service registry and discovery design pattern.
 The second way, however, is the anti-pattern that is about to be explained, the hardcoded endpoints anti-pattern.
 The solution of the second way, and the poor one, is explicitly stating the addresses of microservices through different mechanisms, such as writing in the source code or storing them in a configuration file or environment variable.
-Although this method can be used during the development process, it makes it harder to scale the services for the production stage, since it would be necessary to update all other microservice instances to know about the location of a new microservice deployment.
+Although this method can be used during the development process, it makes it harder to scale the services in the production stage, since it would be necessary to update all other microservice instances to know about the location of a new microservice deployment.
 In addition, using hardcoded endpoints undermines the benefits of an internal load balancer, if one is used to distribute some share of the traffic of requests to a recently instantiated microservice.
 Taking into consideration the promises proposed by the microservice architecture, it is quite beneficial and in some cases necessary to employ design patterns such as service registry and discovery that shapes the system in a way that allows those promises to be delivered.
 
@@ -779,19 +781,19 @@ Taking into consideration the promises proposed by the microservice architecture
 Similar to the two previous anti-patterns, the no API gateway anti-pattern is in fact the absence of a microservice design pattern, namely API gateway pattern.
 Without an API gateway, clients of the microservice application need to communicate directly with the microservice that are needed for a particular task.
 The clients have to know the location of multiple microservices and might have to send multiple requests for the resources they need.
-The auxiliary tasks such as authentication, without an API gateway, are needed to be done for each microservices.
-Lastly, and probably the biggest difficulty of not having an API gateway is that the clients need to know how the application is structured, in other words, the names, locations and capabilities of microservices need to be conveyed to the client side.
+The auxiliary tasks such as authentication, without an API gateway, are needed to be done for each microservice.
+Last and probably the biggest difficulty of not having an API gateway is that the clients need to know how the application is structured, in other words, the names, locations and capabilities of microservices need to be conveyed to the client side.
 For all these reasons, having an API gateway is of utmost importance for a microservice application to be able to communicate with the client in an effortless way.
 
 \subsubsection{Shared Persistence}
 \label{subsubsec:shared_persistence}
 
-In section \ref{subsec:chars}, while listing the general characteristics of the microservice architecture, it is stated that each microservice in general has its own persistence layer, meaning that each microservice deals with storing and managing its own data in its own database instance.
+In Section \ref{subsec:chars}, while listing the general characteristics of the microservices architecture, it is stated that each microservice in general has its own persistence layer, meaning that each microservice deals with storing and managing its own data in its own database instance.
 The shared persistence anti-pattern, as the name suggests, stem from using the same database record (entity, row or document) or the same database instance to serve requests from multiple microservices.
 It is important to note that, unlike many of the previous anti-patterns, the shared persistence anti-pattern contains a spectrum of choices that can be made to decide the extent how much flexibility is desired at the cost of duplication of data and less efficient use of infrastructure resources.
 Besides having one database instance per service, microservices can share a single database instance, a database schema in a database and even tables in a database schema.
 While the use of a single database maximizes re-usability, private database schemes and private database tables allow for various degrees of data privacy and ownership, at the expense of possible data duplication and redundancy in the database instance.
-In some cases, the decision to share data among multiple microservices may seem reasonable to developers and architects, however, it is crucial to remember that shared persistence anti-pattern diminishes team independence in the sense that changes to schema and table design need to be coordinated, and increases run-time coupling, since all microservices need a particular database instance to be up and running to serve a single business capability.
+In some cases, the decision to share data among multiple microservices may seem reasonable to developers and architects, however, it is crucial to remember that shared persistence anti-pattern diminishes team independence in the sense that changes to schema and table design need to be coordinated, hence increasing run-time coupling, since all microservices need a particular database instance to be up and running to serve a single business capability.
 
 \subsubsection{Shared Libraries}
 \label{subsubsec:shared_libraries}
@@ -799,15 +801,15 @@ In some cases, the decision to share data among multiple microservices may seem 
 Similar to the shared persistence anti-pattern, the shared libraries is a common anti-pattern in the sense that developers opt for sharing logic instead of data for this particular anti-pattern.
 Extracting common code to a library is one of the best practices in software development discipline, since it reduces development efforts by following "Don't repeat yourself" (DRY) principle.
 In addition, if there are multiple microservices on the same host, they can share a run-time library so that the resources of the host are best utilized.
-However, sharing both development and run-time libraries can be detrimental to the independent development principle of the microservice architecture.
+However, sharing both development and run-time libraries can be detrimental to the independent development principle of the microservices architecture.
 Because of sharing libraries, a change in the shared library requires careful coordination among teams, slowing down development speed in the long term. Furthermore, if the change is not coordinated well enough, an update on a shared library may cause significant changes in other microservices, potentially breaking the entire application.
 As a remedy, the run-time libraries can be refactored into a separate microservice, so that if there is a need to change the library, the change can be incrementally introduced, in other words, there can be separate instances that support both versions, or the library can a have versioned API.
-For the shared development libraries, developers should prefer code duplication instead of risking wrong abstraction so that the development efforts remain stable in the future.
+For the shared development libraries, developers should prefer code duplication instead of risking wrong abstraction so that the development efforts remain predictable in the future.
 
 \subsubsection{No CI/CD Tools}
 \label{subsubsec:no_cicd}
 
-One of the main pillars of the microservice architecture is creating teams that develop microservices that handles one business capability.
+One of the main pillars of the microservices architecture is creating teams that develop microservices that handle one business capability.
 The fine-grained decomposition allows teams to develop and maintain the microservice they own in an agile yet solid way.
 To support the integration of development and operation tasks, teams are encouraged to use CI/CD tools, which allows for faster delivery without compromising software quality.
 While it may seem easier to develop software without CI/CD tools at the first glance, the development and testing stage takes more time since a human agent needs to test the changed software part and possibly the whole software component, causing the time it takes to give feedback to developers to be longer.
@@ -830,7 +832,7 @@ In order not to break the communication between the altered microservice and oth
 In cases such as these, API versioning can help identify the version of the API to be used between the client and the modified microservice.
 The version of the API can be inserted in the URL path to be used by the client, or inserted as one of the custom headers in the HTTP request.
 In addition, the degree of the change made to the API can be clarified to some extent, by using semantic versioning method.
-The teams can coordinate and agree on a particular way of interpreting version numbers, or they also can make use of standization efforts such as SemVer.
+The teams can coordinate and agree on a particular way of interpreting version numbers, or they also can make use of standization efforts such as SemVer\footnote{\href{https://semver.org}{https://semver.org}}.
 In summary, utilizing API versioning is simple yet rewarding practice for microservices applications and not doing so may lead to inefficient communication efforts between teams.
 
 \subsubsection{No Health Check}
@@ -860,10 +862,10 @@ First, the research questions constructed for the study are introduced and in th
 For the scope of this study, the following two research questions have been established.
 
 \begin{itemize}
-    \item \textbf{RQ1}: Is there a consistent categorization or classification of design patterns and anti-patterns of microservice architectures in the academia?
+    \item \textbf{RQ1}: Is there a consistent categorization or classification of design patterns and anti-patterns of microservices architecture in the academia?
     If not, what could be an alternative way to structure those design patterns and anti-patterns?
     
-    \item \textbf{RQ2}: Are the design patterns and anti-patterns of microservice architectures also reflected in the popular microservice projects in the open source community?
+    \item \textbf{RQ2}: Are the design patterns and anti-patterns of microservices architecture also reflected in the popular microservice projects in the open source community?
     Which design patterns and anti-patterns exist in those prominent projects?
 \end{itemize}
 
@@ -886,24 +888,24 @@ To answer first research question, the following steps have been adopted.
     For this reason, the systematic mapping studies found in the literature review process have been consulted.
     Because these studies do not bring a classification, they have been labeled as secondary studies.
     
-    \item The contents of primary and secondary studies that are related to RQ1 have been summarized and under the light of findings a classification proposal is created in section \ref{subsec:classification_result}
+    \item The contents of primary and secondary studies that are related to RQ1 have been summarized and under the light of findings a classification proposal is created in Section \ref{subsec:classification_result}
 \end{itemize}
 
 Regarding the research method for the second research question, the work provided in the steps below have been conducted.
 
 \begin{itemize}
-    \item As a first step, open source projects implemented with a microservice architecture are searched in the repository hosting service GitHub \footnote{\href{https://github.com}{https://github.com}}.
+    \item As a first step, open source projects implemented with a microservice architecture are searched in the repository hosting service GitHub.
     The keyword pattern "microservice OR micro-service" have been utilized.
 
     \item The search result are sorted using "most stars" sorting option.
-    The rationale behind this decision is to see both the "text-book" microservice application example provided by software companies and other projects that are potentially being used for microservice architecture reference.
-    Although this decision does not result in a set of very high quality microservice applications with various design patterns implemented to solve microservice challenges, it is helpful in identifying the projects that has some visibility among the open source community and the patterns and anti-patterns that exist in those projects.
+    The rationale behind this decision is to see both the "text-book" microservice application examples provided by software companies and other projects that are potentially being used for microservice architecture reference.
+    Although this decision does not necessarily result in a set of very high quality microservice applications with various design patterns implemented to solve microservice challenges, it is helpful in identifying the projects that has some visibility among the open source community and the patterns and anti-patterns that exist in those projects.
     
-    \item The number of projects to be examined is selected as ten and accordingly ten microservice applications implemented either as a case study from software companies or example applications from individual or group of developers have been selected.
+    \item The number of projects to be examined is selected as ten and accordingly ten microservice applications implemented either as a case study from software companies or example applications from individuals or group of developers have been selected.
     The repositories that are software development tools implemented to aid in microservice application development, such as frameworks, libraries, tool-kits and microservice application templates are excluded.
     Additionally, the repositories that include microservice term but implemented as examples of other architectures, or application repositories that do no have the source code but only the readily-built Docker images are excluded, since neither kinds of applications are suitable for the investigation to be conducted.
     
-    \item Because of the technological heterogeneity that exist in both individual microservices in a microservice project and in the set of microservice projects to be examined, design patterns such as "saga" and "shared libraries" that requires a competent understanding of the programming language being used and a thorough comprehension of the business logic are excluded from the list of patterns and anti-patterns to be identified.
+    \item Because of the technological heterogeneity that exist in both individual microservices in a microservice project and in the set of microservice projects to be examined, two design patterns, namely "saga" and "shared libraries" which require a competent understanding of the programming language being used and a thorough comprehension of the business logic are excluded from the list of patterns and anti-patterns to be identified.
     
     \item For the detection of other design patterns and anti-patterns, manual inspection of the source code of the application has been carried out, and if available, explanation of the application in terms of technologies involved in the repository has been consulted.
     The reason automated code analysis has not been utilized is that, the projects are implemented using various languages, libraries and frameworks, so there are a number of ways these patterns and anti-patterns can exist, such as through annotations in source code or including a ".yaml" or similar file that is related to the pattern.
@@ -912,8 +914,8 @@ Regarding the research method for the second research question, the work provide
     Below, the methods used to detect patterns and anti-patterns have been described.
     
     \begin{itemize}
-        \item \textbf{API Gateway:} We checked the presence of an separate non-business microservice that makes calls to business microservices depending on the incoming requests, in cases where the connection to other services can be detected as source code of API gateway.
-        For applications that use a third-party API gateway component, we simply looked for a ".yaml", ".json", ".settings" or any similar file that involves routing logic rules, mostly depend on the URL of the requested resource.
+        \item \textbf{API Gateway:} We checked the presence of a separate non-business microservice that makes calls to business microservices depending on the incoming requests, in cases where the connection to other services can be detected in source code of API gateway.
+        For applications that use a third-party API gateway component, we simply looked for a ".yaml", ".json", ".settings" or any similar file that involves routing logic rules, which mostly depend on the URL of the requested resource.
         
         \item \textbf{Service Mesh with Sidecar:} We looked for dependencies that suggests the use of a common sidecar implementation, such as Linkerd, Envoy and Istio.
         We searched for those sidecar names in the source code, and examined repository to check whether there are deployment instructions to "turn on" those sidecars on a specific deployment platform.
@@ -921,7 +923,7 @@ Regarding the research method for the second research question, the work provide
         \item \textbf{Service Registry and Discovery:} The service registry and discovery pattern had two main ways to be utilized in the application, either through the use of a common service registry component (e.g., Eureka) or by delegating this mechanism to the infrastructure such as Kubernetes.
         In cases where Eureka is used, we examined source code of microservices to check if there are necessary code or annotation related to the Eureka service discovery.
         For cases that uses the service discovery of Kubernetes, we checked the service definitions inside Kubernetes ".yaml" files, that are constructed either on service basis or a single file that includes all service definitions.
-        For applications that use other infrastructures such as Docker Compose, Dapr, and Docker Swarm, we checked if the infrastructure provides service discovery if the application was to be deployed on a multi host platform.
+        For applications that use other infrastructures such as Docker Compose, Dapr, and Docker Swarm, we checked if the infrastructure provides service discovery in scenarios where the application is to be deployed on a multi host platform, by consulting official documentations and software forums.
         As a result of the research on this issue, we concluded Dapr and Docker Swarm provides service discovery if the services are deployed on multiple hosts, while Docker Compose networking is only useful if the services are deployed on the same host.
         
         \item \textbf{Backends for Frontends:} We looked for business services that have similar names and are related to the same business domain in the system, that might be implemented or configured in a slightly different way.
@@ -933,7 +935,7 @@ Regarding the research method for the second research question, the work provide
         
         \item \textbf{API Composition:} For the API composition pattern, in order to not misjudge and state the status of presence correctly, we decided to look only for API composer or aggregator services, which serve API endpoints that combine responses from multiple business microservices.
         The reason we omitted the inspection for API composition in the source code of business microservices is that, it would require understanding the business logic of the application, which might be doable for some small applications but would require a substantial amount of time and effort for applications that have, for example, nine or ten microservices which also use business abstractions or data-transfer objects provided by the utilized framework.
-        To spend less time on the business aspect of applications and to look for more patterns and anti-patterns in more projects, we made no observation about API composition done manually by business microservices and conclude that the application utilizes API composition pattern only if the architecture involves an API aggregator service.
+        To spend less time on the business aspect of applications and to look for more patterns and anti-patterns in more projects, we made no observation about API composition that is part of the business logic in business microservices and conclude that the application utilizes API composition pattern only if the architecture involves a separate API aggregator service.
         
         \item \textbf{CQRS:} We looked for microservices that deal only with query or command tasks, by inspecting the business logic of the services. 
         Additionaly, we searched for keywords "command", "query" and "handler" to see if a mechanism similar to CQRS has been implemented in the source code, possibly in the endpoint handlers of services.
@@ -952,7 +954,7 @@ Regarding the research method for the second research question, the work provide
         
         \item \textbf{Distributed Tracing:} Similar to health check method, we looked for trace generator libraries in source code and dependency files of services.
         To conclude the presence of distributed tracing pattern positively, we also checked if the architecture contains a trace collector such as Zipkin or Jaeger.
-        In cases the microservices are instrumented with trace generators but the architecture does not contain a trace collector service, we checked if the trace generators are compatible with any cloud provider trace collector component, and if compatible, concluded positively by justifying that the application is distributed tracing ready in a cloud environment.
+        In cases the microservices are instrumented with trace generators but the architecture does not contain a trace collector service, we checked if the trace generators are compatible with any cloud provider trace collector component, and if compatible, we concluded positively by justifying that the application is distributed-tracing-ready in a cloud environment.
         
         \item \textbf{Log Aggregator:} Similarly, we checked for structured logging libraries in the source code of services manually and for the presence of a log aggregator service in the architecture.
         Because the microservices are in general deployed to cloud platforms, to benefit from scalability in the best possible way, we also concluded positively if the application is ready for log monitoring component of a cloud platform.
@@ -960,17 +962,17 @@ Regarding the research method for the second research question, the work provide
         \item \textbf{Circuit Breaker:} For the circuit breaker pattern, we manually inspected the source code of services to see implementation or use of a circuit breaker library.
         In our criteria, we also checked for possible circuit breaker mechanism definition in the deployment on a service mesh scenario, if the service mesh ".yaml" configuration files are provided in the repository.
         
-        \item \textbf{Wrong Cut:} To detect the wrong cut anti-pattern, we checked whether the microservices are designed around domains that are be similar to actual business aspects or divisions that might be found in an application related to that area of expertise.
+        \item \textbf{Wrong Cut:} To detect the wrong cut anti-pattern, we checked whether the microservices are designed around domains that are similar to actual business aspects or divisions that might be found in an application related to that area of expertise.
         We checked the names of services and examined the source code to see whether one service is all about logic while some other service only deals with persistence tasks of multiple business services.
         For user interface tasks, we did not count the presence of a single frontend service as wrong cut anti-pattern, as separating also the user interface components per business domain is not a must-have for microservice architectures.
-        Concerning this, there is also the "micro-frontends" (XXX https://micro-frontends.org) paradigm which takes microservice mindset also to frontend components in a way that is not always present in microservice applications.
+        Concerning this, there is also the "micro-frontends"\footnotemark[62]\footnotetext[62]{\href{https://micro-frontends.org}{https://micro-frontends.org}} paradigm which takes microservice mindset also to frontend components in a way that is not always present in microservice applications.
         
         \item \textbf{Nano or Mega Microservice:} As for the imbalance in terms of business tasks, we simply judged the design of the application in a subjective way.
         Again, without trying to go deep and understand the business logic of all services, we checked for services that have much more or much less endpoints than other services to be able to state the service is a candidate for nano or mega microservice anti-pattern.
         Because the applications are exemplary applications, in general, the business services were expected to consist of simple endpoints such as "get all items" or "get item by ID".
         In these cases, we did not conclude that the microservice is a candidate for nano microservice anti-pattern, as the logic is not quite imbalanced considering the other business microservices have similar logic and the scope of the application is small in general.
         
-        \item \textbf{ESB Usage:} We checked whether the implementation contains a ESB component such as NServiceBus, Apache Camel or Tibco service bus, instead of simpler message brokers such as RabbitMQ or Kafka.
+        \item \textbf{ESB Usage:} We checked whether the implementation contains a ESB component such as NServiceBus\footnotemark[63]\footnotetext[63]{\href{https://particular.net/nservicebus}{https://particular.net/nservicebus}}, Apache Camel\footnotemark[64]\footnotetext[64]{\href{https://camel.apache.org}{https://camel.apache.org}} or Tibco Enterprise Message Service\footnotemark[65]\footnotetext[65]{\href{https://www.tibco.com/products/tibco-enterprise-message-service}{https://www.tibco.com/products/tibco-enterprise-message-service}}, instead of simpler message brokers such as RabbitMQ or Kafka.
         
         \item \textbf{Hardcoded Endpoints:} For hardcoded endpoints, we checked for hardcoded IP address and port number pairs that are used to locate services from one service or through configuration files.
         The port numbers are manually found in most cases inside Docker or Kubernetes files.
@@ -996,12 +998,10 @@ Regarding the research method for the second research question, the work provide
         \item \textbf{No Health Check:} We considered the presence of a health check pattern in the application and simply negated the result.
         In case the health check pattern is implemented for a subset of services, we concluded that the pattern is utilized to some degree, as most of these applications are built for exemplary purposes, and concluded that there is evidence about the concept and implementation of health check pattern in the application.
         
-        \item \textbf{Local Logging:} Similarly, we take into consideration the log aggregator pattern and negated its result.
+        \item \textbf{Local Logging:} Similarly, we took into consideration the log aggregator pattern and negated its result.
         As for the implementation for a subset of services, we followed the same reasoning that we did for health check aspect,
         and concluded negatively for this anti-pattern even if only some of services send their logs to a log collector service instance.
     \end{itemize}
-    
-    
 \end{itemize}
 
 
@@ -1386,7 +1386,7 @@ Figure~\ref{fig:R1_arch} shows the architectural diagram of the application, ada
 \label{fig:R1_arch}
 \end{figure}
 
-As a result of inspection for design patterns and anti-patterns, we present the Table~\ref{table:R1_result} which shows the presence of each pattern and anti-pattern in the application.
+As a result of inspection for design patterns and anti-patterns, we present Table~\ref{table:R1_result} which shows the presence of each pattern and anti-pattern in the application.
 
 \begin{table}[H]
 \centering 
@@ -1441,91 +1441,90 @@ As a result of inspection for design patterns and anti-patterns, we present the 
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R1}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R1}
     \label{table:R1_result}
 \end{table}
 
 Below, the particular implementation of design patterns and explanations about anti-patterns are provided.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The application uses two API gateways, one for web applications in browsers and another one for mobile clients using Xamarin-based (XXX) app.
-    The gateways are implemented using Envoy (XXX) proxies, which routes incoming requests from clients to internal microservices based on the route of the particular HTTP request.
-    The routing rules are specified by "envoy.yaml" files, which matches the HTTP requests with string prefixes and routes requests to hosts specified in the same "envoy.yaml" file. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The application uses two API gateways, one for web applications in browsers and another one for mobile clients using Xamarin-based app.
+    The gateways are implemented using Envoy\footnotemark[66]\footnotetext[66]{\href{https://www.envoyproxy.io}{https://www.envoyproxy.io}} proxies, which routes incoming requests from clients to internal microservices based on the route of the particular HTTP request.
+    The routing rules are specified by "envoy.yaml" files, which matches the HTTP requests with string prefixes and routes requests to hosts specified in the same "envoy.yaml" file.
     
     \item \textbf{Service Mesh with Sidecar:} Because of its complexity, the service mesh pattern is not employed throughout the eShopOnContainers application but only provided as a deployment option.
-    The required configuration files for configuring sidecars per microservice container are given as examples for two microservices, namely Linkerd (XXX) "ServiceProfile" files "basket-api-sp.yaml" and "catalog-api-sp.yaml" files.
-    The remaining instructions to deploy the application on Linkerd service mesh (installing Linkerd and then deploying the application on Kubernetes and so on) are presented in the deployment section of the repository. (YES)
+    The required configuration files for configuring sidecars per microservice container are given as examples for two microservices, namely Linkerd "ServiceProfile" files "basket-api-sp.yaml" and "catalog-api-sp.yaml" files.
+    The remaining instructions to deploy the application on Linkerd service mesh (installing Linkerd and then deploying the application on Kubernetes and so on) are presented in the deployment section of the repository.
     
     \item \textbf{Service Registry and Discovery:} The application is provided with both "docker-compose" yaml files, to deploy multiple containers on a single host, and Kubernetes yaml files, to deploy the containers on multiple hosts. 
-    The Kubernetes files are provided as Helm (XXX) yaml files, which is a package manager that is used to create template yaml files, called "Helm charts", and values to be used in those templates for Kubernetes, so that the deployment specifications can be changed easily without creating multiple Kubernetes files or changing them manually.
-    In short, the application does not include a microservice for service registry and discovery purposes but uses the service registry and discovery features of the underlying deployment infrastructure. (YES)
+    The Kubernetes files are provided as Helm\footnotemark[67]\footnotetext[67]{\href{https://helm.sh}{https://helm.sh}} yaml files, which is a package manager that is used to create template yaml files, called "Helm charts", and values to be used in those templates for Kubernetes, so that the deployment specifications can be changed easily without creating multiple Kubernetes files or changing them manually.
+    In short, the application does not include a microservice for service registry and discovery purposes but uses the service registry and discovery features of the underlying deployment infrastructure.
     
     \item \textbf{Backends for Frontends:} For mobile clients that use Xamarin mobile app and for web clients, there are two different API gateways and two different aggregator microservices.
-    While the routing rules for the API gateways are identical, the controllers for aggregator services are different, implying the fact that the returned data would be different based on the kind of the client. (YES)
+    While the routing rules for the API gateways are identical, the controllers for aggregator services are different, implying the fact that the returned data would be different based on the kind of the client.
     
     \item \textbf{Asynchronous Messaging:} The application uses the concept of events as part of some of the logic involved and proposes two kinds of message queues.
-    For on-premise use cases, the microservices use a RabbitMQ instance to communicate about events, while for on-cloud deployment, instead of RabbitMQ, the application offers integration with Azure Service Bus. (YES)
+    For on-premise use cases, the microservices use a RabbitMQ instance to communicate about events, while for on-cloud deployment, instead of RabbitMQ, the application offers integration with Azure Service Bus.
     
     \item \textbf{Database per Service:} Even though there is not an evidence detected that signals accessing the same data entry from multiple microservices, the three microservices "catalog", "ordering" and "identity" uses the same MySQL server instance to store their data, by creating their own database schema in the same database instance.
     The only other microservice that involves data storing and accessing is the "basket" microservice and it utilizes Redis key-value store as another container instance.
     At this point, it is important to note that this repository is created as an example to be tinkered by developers who are new to the microservice architecture and it is stressed by creators of this project in the Wiki page of repository that this decision is not ideal for microservice projects in production and is only taken to lower the infrastructure requirements for the application to let it run on also on hosts with lower computing resources.
-    Nonetheless, since the detection criteria for this pattern is set in this study such that each microservice that needs a data-related service should have its own database instance, it can be concluded that the database per service pattern is not employed in this application. (NO)
+    Nonetheless, since the detection criteria for this pattern is set in this study such that each microservice that needs a data-related service should have its own database instance, it can be concluded that the database per service pattern is not employed in this application.
     
     \item \textbf{API Composition:} As previously said, the application utilizes two aggregator services and the client requests that are data-wise complex are handled by those aggregator services.
-    Instead of regular HTTP requests, the aggregator services use gRPC protocol to communicate with "ordering", "catalog" and "basket microservices, take required data, execute logic to transform data into appropriate structure for response and respond to API gateways with HTTP responses. (YES)
+    Instead of regular HTTP requests, the aggregator services use gRPC protocol to communicate with "ordering", "catalog" and "basket microservices, take required data, execute logic to transform data into appropriate structure for response and respond to API gateways with HTTP responses.
     
     \item \textbf{CQRS:} The CQRS pattern is utilized to some degree inside the "ordering" microservice.
     The API definition of "ordering" service is divided into two command and query parts, where the command part involves commands and respective command handler classes, and the query part includes query classes that makes a connection to the database and returns the result.
     In contrary to using different data models for command and query, the two parts read or write data through the same "OrderAggregate" data model.
-    The implementation of these classes are aided by MediatR (XXX) library, created to help implement CQRS and mediator patterns in .NET platforms. (YES)
+    The implementation of these classes are aided by MediatR\footnotemark[68]\footnotetext[68]{\href{https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/microservice-application-layer-implementation-web-api}{https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/microservice-application-layer-implementation-web-api}} library, created to help implement CQRS and mediator patterns in .NET platforms.
     
-    \item \textbf{Event Sourcing:} Although the use of event concept is detected in the application, the architecture is not constructed in a way that there exists a separate event store for microservices to send and consume events. (NO)
+    \item \textbf{Event Sourcing:} Although the use of event concept is detected in the application, the architecture is not constructed in a way that there exists a separate event store for microservices to send and consume events.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not include service instance per VM as a deployment option with readily-built VM images. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not include service instance per VM as a deployment option with readily-built VM images.
 
     \item \textbf{Service Instance per Container:} The application utilizes one microservice instance per container deployment pattern as the default deployment method.
-    The containers can be instantiated locally using Docker Compose or Kubernetes or deployed onto cloud using Azure Kubernetes Service or any other Container-as-a-Service platform. (YES)
+    The containers can be instantiated locally using Docker Compose or Kubernetes or deployed onto cloud using Azure Kubernetes Service or any other Container-as-a-Service platform.
     
-    \item \textbf{Serverless:} Even though integration with Azure Functions is provided in a few sentences, the application is neither ready nor suitable to be deployed to a serverless environment since the microservices involved work with databases and replacing those databases with persistent cloud resources would not be trivial. (NO)
+    \item \textbf{Serverless:} Even though integration with Azure Functions is provided in a few sentences, the application is neither ready nor suitable to be deployed to a serverless environment since the microservices involved work with databases and replacing those databases with persistent cloud resources would not be trivial.
     
     \item \textbf{Health Check:} The microservices use built-in health monitoring feature of .NET platform and implement health check endpoint "\textbackslash hc" and liveness endpoint "\textbackslash liveness" in source code.
     The Kubernetes yaml files are decorated with liveness and readiness probes that makes HTTP requests to respective health check endpoints when the application is deployed on Kubernetes.
-    Additionaly, a separate microservice called "WebStatus" uses those endpoints as well and provides users with a UI in the browser that display the health status of each microservice. (YES)
+    Additionaly, a separate microservice called "WebStatus" uses those endpoints as well and provides users with a UI in the browser that display the health status of each microservice.
     
-    \item \textbf{Distributed Tracing:} In the application no distributed tracing client library or trace collector mechanism has been found. (NO)
+    \item \textbf{Distributed Tracing:} In the application no distributed tracing client library or trace collector mechanism has been found.
     
-    \item \textbf{Log Aggregator:} The application uses structured logging mechanism "Serilog" of .NET framework per microservice basis and "Seq" log collector service instantiated as a separate container during run-time.
-    Thanks to structured logging mechanism of Serilog and UI feature of Seq the logs can be inspected using different filters that involves tags, event types and application contexts. (YES)
+    \item \textbf{Log Aggregator:} The application uses structured logging mechanism Serilog\footnotemark[69]\footnotetext[69]{\href{https://serilog.net}{https://serilog.net}} of .NET framework per microservice basis and Seq\footnotemark[70]\footnotetext[70]{\href{https://datalust.co/seq}{https://datalust.co/seq}} log collector service instantiated as a separate container during run-time.
+    Thanks to structured logging mechanism of Serilog and UI feature of Seq the logs can be inspected using different filters that involves tags, event types and application contexts.
     
     \item \textbf{Circuit Breaker:} The system does not have a fully implemented circuit breaker pattern but uses retry logic implemented by sidecars when deployed on Linkerd service mesh.
-    Related to the circuit breaker, one microservice named "basket" has a "FailingMiddleware" example feature that can be enabled or disabled by HTTP calls, when "FailingMiddleware" is enabled, all calls to "basket" microservice returns a HTTP 500 response, and when disabled works normally. (NO)
+    Related to the circuit breaker, one microservice named "basket" has a "FailingMiddleware" example feature that can be enabled or disabled by HTTP calls, when "FailingMiddleware" is enabled, all calls to "basket" microservice returns a HTTP 500 response, and when disabled works normally.
     
     \item \textbf{Wrong Cut:} The application consists of "basket", "ordering", "catalog", "payment", "identity" business domain microservices and other infrastructure-related components, such as API gateways, API aggregator and log aggregators, web frontend and status microservices and an event bus.
-    Although the business domain microservices access to the same SQL database instance, the architecture is not layered as in traditional monolithic systems and does not have the wrong cut anti-pattern. (NO)
+    Although the business domain microservices access to the same SQL database instance, the architecture is not layered as in traditional monolithic systems and does not have the wrong cut anti-pattern.
     
-    \item \textbf{Nano or Mega Microservices:} The separation of business domains seems to reflect good practice of bounded context technique, so the microservices are not designed in a way that results in a nano or mega microservice anti-pattern. (NO. NO)
+    \item \textbf{Nano or Mega Microservices:} The separation of business domains seems to reflect good practice of bounded context technique, so the microservices are not designed in a way that results in a nano or mega microservice anti-pattern.
     
     \item \textbf{ESB Usage:} The application utilizes both synchronous and asynchronous calls, and for the asynchronous calls, it uses RabbitMQ, which is a simple message queue without advanced features of a typical ESB.
-    As a result, ESB usage anti-pattern is avoided in this application. (NO)
+    As a result, ESB usage anti-pattern is avoided in this application.
     
-    \item \textbf{Hardcoded Endpoints:} (0.0.0.0 and 127.0.0.1 exists, but does not count, add to detection method XXX)
-    The system makes use of Kubernetes service discovery and does not have hardcoded fully qualified IP addresses in the source code. (NO)
+    \item \textbf{Hardcoded Endpoints:} The system makes use of Kubernetes service discovery and does not have hardcoded fully qualified IP addresses in the source code.
     
-    \item \textbf{No API Gateway:} The architecture includes two API gateways that acts as intermediaries between frontend and microservices. (NO)
+    \item \textbf{No API Gateway:} The architecture includes two API gateways that acts as intermediaries between frontend and microservices.
     
-    \item \textbf{Shared Persistence:} The microservices access the same MySQL server instance even though create their own schemas, so it can be concluded that there exists shared persistence anti-pattern to some degree. (YES)
+    \item \textbf{Shared Persistence:} The microservices access the same MySQL server instance even though create their own schemas, so it can be concluded that there exists shared persistence anti-pattern to some degree.
     
-    \item \textbf{No CI/CD:} In the "workflows" folder the repository has ".yaml" files that define GitHub Actions (XXX) workflows and on the repository page the build status of each microservice is shown.
-    Hence, the repository makes use of GitHub Actions (XXX) as their choice of CI/CD pipeline. (NO)
+    \item \textbf{No CI/CD:} In the "workflows" folder the repository has ".yaml" files that define GitHub Actions\footnotemark[71]\footnotetext[71]{\href{https://github.com/features/actions}{https://github.com/features/actions}} workflows and on the repository page the build status of each microservice is shown.
+    Hence, the repository makes use of GitHub Actions as their choice of CI/CD pipeline.
     
-    \item \textbf{Multiple Service Instances per Host:} The application does not containerize multiple services into one single container, so that it does not force multiple services to be deployed on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} The application does not containerize multiple services into one single container, so that it does not force multiple services to be deployed on the same host.
     
-    \item \textbf{No API Versioning:} Even though implemented as an example and all endpoints have the same version number, the good practice is employed and the endpoints of microservices start with version numbers, for example, the "catalog" microservice has a GET endpoint "/api/v1/Catalog/items". (NO) 
+    \item \textbf{No API Versioning:} Even though implemented as an example and all endpoints have the same version number, the good practice is employed and the endpoints of microservices start with version numbers, for example, the "catalog" microservice has a GET endpoint "/api/v1/Catalog/items".
     
-    \item \textbf{No Health Check:} As explained in the health check pattern, the presence of health check endpoints and probing mechanism of Kuebrnetes prevents no health check anti-pattern. (NO)
+    \item \textbf{No Health Check:} As explained in the health check pattern, the presence of health check endpoints and probing mechanism of Kubernetes prevents no health check anti-pattern.
     
-    \item \textbf{Local Logging:} Thanks to the structured logging and log collector service, local logging anti-pattern is avoided in this application. (NO)
-\end{enumerate}
+    \item \textbf{Local Logging:} Thanks to the structured logging and log collector service, local logging anti-pattern is avoided in this application.
+\end{itemize}
 
 \subsubsection{R2: GCP Online Boutique Microservices}
 \label{subsubsec:R2}
@@ -1533,7 +1532,7 @@ Below, the particular implementation of design patterns and explanations about a
 The second examined application is Online Boutique application implemented by Google Cloud Platform, similar to eShopOnContainers application, to show some of the cloud technologies provided by GCP for microservice applications.
 The nine business microservices include "email service", "ad service", "payment service", "checkout service", "shipping service", "currency service", "product catalog service", "recommendatiton service" and "cart service", together with a Redis store for "cart service", a frontend app for static assets, single point of entry for HTTP calls and calling internal microservices using gRPC protocol.
 Additionally, the system contains a load generator for tinkering purposes.
-The microservices are implemented using Node.js, Python, Java, C# and Go, hence the application is a good example of polygot microservice architecture.
+The microservices are implemented using Node.js, Python, Java, \Csharp and Go, hence the application is a good example of polygot microservice architecture.
 The architectural diagram provided in the repository of the application is used as it is, in Figure~\ref{fig:R2_arch}.
 
 \begin{figure}[H]
@@ -1598,94 +1597,94 @@ The presence of design patterns and anti-patterns have been listed in Table~\ref
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R2}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R2}
     \label{table:R2_result}
 \end{table}
 
 To clarify each pattern or anti-pattern item, a few sentences are provided below.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The "frontend" microservice serves static web app assets (HTML, CSS, JS) and acts as an API gateway by making the appropriate gRPC calls to other business domain microservices when an HTTP request is made to an endpoint, providing the clients with a single entry point to communicate with microservices. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The "frontend" microservice serves static web app assets (HTML, CSS, JS) and acts as an API gateway by making the appropriate gRPC calls to other business domain microservices when an HTTP request is made to an endpoint, providing the clients with a single entry point to communicate with microservices.
     
     \item \textbf{Service Mesh with Sidecar:} Similar to the eShopOnContainers application, the use of a service mesh is provided as an option and sidecar configuration files are given for only one microservice.
     When the application is to be deployed to GCP cloud, by applying "istio-manifests.yaml" file, the "frontend" service can be injected with a sidecar and communicate with other GCP services for monitoring, profiling and other similar tasks. 
-    Additionaly, instructions for GCP service mesh Anthos are also provided. (YES)
+    Additionaly, instructions for GCP service mesh Anthos\footnotemark[72]\footnotetext[72]{\href{https://cloud.google.com/anthos/service-mesh}{https://cloud.google.com/anthos/service-mesh}} are also provided.
     
     \item \textbf{Service Registry and Discovery:} As with the previous project, the service registry and discovery tasks are delegated to Kubernetes.
-    The application of Kubernetes .yaml files containing Kubernetes "deployment" and "service" object descriptions per microservice container solves this critical aspect for the Online Boutique project. (YES)
+    The application of Kubernetes .yaml files containing Kubernetes "deployment" and "service" object descriptions per microservice container solves this critical aspect for the Online Boutique project.
     
-    \item \textbf{Backends for Frontends:} In this application, there is no multiple microservice implementations or detected configurations for different kinds of clients. (NO)
+    \item \textbf{Backends for Frontends:} In this application, there is no multiple microservice implementations or detected configurations for different kinds of clients.
     
     \item \textbf{Asynchronous Messaging:} The architecture does not contain a message broker such as RabbitMQ or any other temporary message storage mechanism.
-    Communication between microservices are done through the synchronous gRPC calls. (NO)
+    Communication between microservices are done through the synchronous gRPC calls.
     
     \item \textbf{Database per Service:} Out of the ten microservices, the only microservice that uses a database is the "cart" microservice, which stores and retrieves user's items in his/her shopping cart in Redis key-value store, instantiated as a separate container.
-    Because of the limited complexity of the application, the database per service pattern is not needed and utilized. (NO)
+    Because of the limited complexity of the application, the database per service pattern is not needed and utilized.
     
     \item \textbf{API Composition:} The "frontend" microservice makes calls to multiple microservices and combines the responses into one data structure to be rendered in an HTML template as a response to specific endpoints.
-    Because a separate aggregator service is not present, according to the detection criteria, the API composition pattern is not utilized. (NO)
+    Because a separate aggregator service is not present, according to the detection criteria, the API composition pattern is not utilized.
     
-    \item \textbf{CQRS:} The only microservices that reads and writes data is the "cart" microservice and there is no separation of read and write tasks that signals the presence of CQRS pattern. (NO)
+    \item \textbf{CQRS:} The only microservices that reads and writes data is the "cart" microservice and there is no separation of read and write tasks that signals the presence of CQRS pattern.
     
-    \item \textbf{Event Sourcing:} The application does not make use of notion of events and does not contain an event store. (NO)
+    \item \textbf{Event Sourcing:} The application does not make use of notion of events and does not contain an event store.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as deployment option. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as deployment option.
     
-    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and the Kubernetes .yaml files are provided for running the entire application. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and the Kubernetes .yaml files are provided for running the entire application.
     
-    \item \textbf{Serverless:} Although the application may be deployed using serverless approach by making additional effort, in the repository, no instructions about serverless deployment is provided. (NO)
+    \item \textbf{Serverless:} Although the application may be deployed using serverless approach by making additional effort, in the repository, no instructions about serverless deployment is provided.
     
-    \item \textbf{Health Check:} The health check mechanism is implemented by using Kubernetes liveness and readiness probes, configured to execute a health check utility for gRPC applications called "grpc-health-probe". (YES)
+    \item \textbf{Health Check:} The health check mechanism is implemented by using Kubernetes liveness and readiness probes, configured to execute a health check utility for gRPC applications called "grpc-health-probe"\footnotemark[73]\footnotetext[73]{\href{https://github.com/grpc-ecosystem/grpc-health-probe}{https://github.com/grpc-ecosystem/grpc-health-probe}}.
     
-    \item \textbf{Distributed Tracing:} Except for "payment" and "cart" microservices, all other services are instrumented with either StackDriver or Jaeger, which are OpenCensus-compatible tracing libraries.
-    Additionally, StackDriver library is compatible with GCP so that the tracing information can also be collected by Google Cloud Trace. (YES)
+    \item \textbf{Distributed Tracing:} Except for "payment" and "cart" microservices, all other services are instrumented with either StackDriver (renamed now as Google Cloud Operations\footnotemark[74]\footnotetext[74]{\href{https://cloud.google.com/products/operations}{https://cloud.google.com/products/operations}} or Jaeger, which are OpenCensus-compatible tracing libraries.
+    Additionally, StackDriver library is compatible with GCP so that the tracing information can also be collected by Google Cloud Trace\footnotemark[75]\footnotetext[75]{\href{https://cloud.google.com/trace}{https://cloud.google.com/trace}}.
     
     \item \textbf{Log Aggregator:} The presence of log aggregator mechanism depends on the selected deployment method.
     When deployed locally using Kubernetes, the logs of all microservices can be collected and saved to a file but cannot be analyzed efficiently since the logs might not have the same structure and text readers might not have filtering mechanisms helpful for particular log reading.
-    On the other hand, the deployment on GCP Google Kubernetes Engine (GKE) (XXX) method offers automatic structured logging and filtering options since containers are automatically injected with StackDriver logging agent when deployed on GKE. (YES)
+    On the other hand, the deployment on GCP Google Kubernetes Engine (GKE) method offers automatic structured logging and filtering options since containers are automatically injected with StackDriver logging agent when deployed on GKE.
     
-    \item \textbf{Circuit Breaker:} The application in its current state does not employ circuit breaker pattern but additional service mesh Istio configuration files can be created and applied to enable the tripping mechanism when deployed on Istio. (NO)
+    \item \textbf{Circuit Breaker:} The application in its current state does not employ circuit breaker pattern but additional service mesh Istio configuration files can be created and applied to enable the tripping mechanism when deployed on Istio.
     
     \item \textbf{Wrong Cut:} The architecture consists of one frontend/API gateway service, one load generator service for tinkering purposes and nine business domain microservices, namely "cart", "productcatalog", "currency", "payment", "shipping", "email", "checkout", "recommendation" and "ad" services, implemented in various programming languages, all executing logic based on their names.
-    As a result, the layered separation of wrong cut anti-pattern is not detected. (NO)
+    As a result, the layered separation of wrong cut anti-pattern is not detected.
     
     \item \textbf{Nano or Mega Microservices:} The gRPC API definitions are given "demo.proto" file, which is a gRPC file used to auto-generate client libraries according to API definitions in various languages.
     From this file, it is seen that each microservice has three or four API endpoints, implying that there is not significant difference in the amount of tasks the microservices carry out.
     As a side note, only the two "currency" and "frontend" microservices might be discussed as potential candidates for nano and mega microservices, respectively.
     Separating the task of converting currencies and updating on the latest conversion rates as a separate business domain and a microservice might be an excessive interpretation and be an example of nano microservice, while combining the frontend and API gateway tasks in a single microservice might constitute an example of mega microservice.
-    Nonetheless, considering the scope of the entire application, it is safe to conclude that there is not a big difference that would be seen in microservice applications with true nano or mega microservice anti-patterns. (NO)
+    Nonetheless, considering the scope of the entire application, it is safe to conclude that there is not a big difference that would be seen in microservice applications with true nano or mega microservice anti-patterns.
     
-    \item \textbf{ESB Usage:} The architecture does not contain any simple or advanced message broker mechanism. (NO)
+    \item \textbf{ESB Usage:} The architecture does not contain any simple or advanced message broker mechanism.
     
     \item \textbf{Hardcoded Endpoints:} One hardcoded IP address that is not excluded as explained in the adapted method section was "169.254.169.254", in the deployment files to be used to deploy the application on GCP cloud proud. 
     However, upon further investigation it has been seen that the mentioned IP address is a private IP address, not to be used on the Internet, and used by the containers to access the metadata of the hosting VM, when deployed on cloud.
     In this case, the IP address would be, when deployed on GCP, the metadata server of Google Cloud Engine (GCE), to be used to collect metadata of the VM hosting the container on cloud.
-    Therefore, even though the repository contains one hardcoded IP address, it is specific to one deployment scenario and is not relevant to the hardcoded endpoint anti-pattern, which is related to the absence of a service discovery mechanism. (NO)
+    Therefore, even though the repository contains one hardcoded IP address, it is specific to one deployment scenario and is not relevant to the hardcoded endpoint anti-pattern, which is related to the absence of a service discovery mechanism.
     
-    \item \textbf{No API Gateway:} The architecture contains one API gateway that acts as a single entry point. (NO)
+    \item \textbf{No API Gateway:} The architecture contains one API gateway that acts as a single entry point.
     
     \item \textbf{Shared Persistence:} In the application only one microservice uses a database and the other microservices do not access the instantiated database directly, but the the API definition.
-    Hence, the system does not have shared persistence anti-pattern. (NO)
+    Hence, the system does not have shared persistence anti-pattern.
     
-    \item \textbf{No CI/CD:} The repository has GitHub Actions continuous integration files that defines unit and other tests on pushes and master releases, as a result, no CI/CD anti-pattern is avoided. (NO)
+    \item \textbf{No CI/CD:} The repository has GitHub Actions continuous integration files that defines unit and other tests on pushes and master releases, as a result, no CI/CD anti-pattern is avoided.
     
-    \item \textbf{Multiple Service Instances per Host:} Since each service is containerized into its own container, the system does not force deploying multiple services on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Since each service is containerized into its own container, the system does not force deploying multiple services on the same host.
     
-    \item \textbf{No API Versioning:} The frontend microservice does not utilize API versioning on the HTTP endpoints, while other microservices does not have versioned gRPC API definitions. (YES)
+    \item \textbf{No API Versioning:} The frontend microservice does not utilize API versioning on the HTTP endpoints, while other microservices does not have versioned gRPC API definitions.
     
-    \item \textbf{No Health Check:} The system contains health check mechanisms offered by Kubernetes, therefore does not have the related anti-pattern. (NO)
+    \item \textbf{No Health Check:} The system contains health check mechanisms offered by Kubernetes, therefore does not have the related anti-pattern.
     
     \item \textbf{Local Logging:} Even though the architecture does not contain a separate log collector microservice, because the cloud deployment options include log aggregator mechanism, and the microservices are supposed to be deployed to the cloud in general, it would be inappropriate to conclude that the example project contains local logging anti-pattern.
-    Since the microservices are instrumented with StackDriver agent to be used for cloud deployment, the system does not contain local logging anti-pattern. (NO)
-\end{enumerate}
+    Since the microservices are instrumented with StackDriver agent to be used for cloud deployment, the system does not contain local logging anti-pattern.
+\end{itemize}
 
 \subsubsection{R3: Piggy Metrics}
 \label{subsubsec:R3}
 
 The next examined repository belongs to the Piggy Metrics application, designed as a financial budget application to demonstrate Spring Boot, Spring Cloud and Docker for microservice architectures.
 The three microservices "statistics service", "account service" and "notification service" constitute business domain microservices, while "auth service" deals with user authentication, each of the four services having their own MongoDB database instance.
-The implementation makes use of Spring Cloud components such. as API gateway Zuul, service discovery server Eureka, Spring Cloud support for service registry and Spring Cloud Config for centralized configuration for services.
-Last but not least, the architecture contains Turbine stream aggregator, which is used to collect performance metrics from services via Spring Cloud Bus component, which in turn uses a RabbitMQ message broker instance to collect and push metrics.
+The implementation makes use of Spring Cloud components such as API gateway Zuul\footnotemark[76]\footnotetext[77]{\href{https://github.com/Netflix/zuul}{https://github.com/Netflix/zuul}}, service discovery server Eureka, Spring Cloud support for service registry and Spring Cloud Config\footnotemark[77]\footnotetext[77]{\href{https://cloud.spring.io/spring-cloud-config/reference/html/}{https://cloud.spring.io/spring-cloud-config/reference/html/}} for centralized configuration for services.
+Last but not least, the architecture contains Turbine stream aggregator\footnotemark[78]\footnotetext[78]{\href{https://github.com/Netflix/Turbine}{https://github.com/Netflix/Turbine}}, which is used to collect performance metrics from services via Spring Cloud Bus\footnotemark[79]\footnotetext[79]{\href{https://spring.io/projects/spring-cloud-bus}{https://spring.io/projects/spring-cloud-bus}} component, which in turn uses a RabbitMQ message broker instance to collect and push metrics.
 The architectural diagram is shown in Figure~\ref{fig:R3_arch}, modified from the diagram in the repository in a way that reflects the current state of implementation, as the original diagram does not include ELK log aggregator mechanism and correctly shows the current state of the architecture.
 
 \begin{figure}[H]
@@ -1750,101 +1749,101 @@ The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R3}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R3}
     \label{table:R3_result}
 \end{table}
 
 A few statements about each item below explains the related item concisely.
 
-\begin{enumerate}
+\begin{itemize}
     \item \textbf{API Gateway:} The application is built around microservice framework Spring Cloud and the architecture contains microservice architecture components and features supported by Spring Cloud framework. 
-    One such component is the Zuul API gateway component, which is implemented by Netflix and open sourced later on as part of the set of open source distributed system components, namely  Netflix OSS (XXX).
+    One such component is the Zuul API gateway component, which is implemented by Netflix and open sourced later on as part of the set of open source distributed system components, namely  Netflix OSS.
     Thanks to the support of Spring Cloud framework, Zuul API gateway is enabled by specifying the respective module in "pom.xml" and stating the "@EnableZuulProxy" annotation in a Spring application.
-    The HTTP requests are automatically transmitted to underlying microservices according to the path matching routing rules defined in "gateway.yml" file, to be applied by the docker-compose file that instantiates all services. (YES)
+    The HTTP requests are automatically transmitted to underlying microservices according to the path matching routing rules defined in "gateway.yml" file, to be applied by the docker-compose file that instantiates all services.
     
-    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instruction to deploy the application on a service mesh or to inject individual microservices with a sidecar proxy. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instruction to deploy the application on a service mesh or to inject individual microservices with a sidecar proxy.
     
     \item \textbf{Service Registry and Discovery:} Another Netflix OSS component supported by Spring Cloud framework is the Eureka service registry component.
     Similar to the API gateway, service registry is enabled by a dependency in "pom.xml" and a "@EnableEurekaServer" annotation in a Spring application.
     The microservices that has "@EnableDiscoveryClient" annotation are automatically registered to the Eureka service registry and microservices can look up the location of other services by the service names.
-    The location of the Eureka instance is provided by Spring Cloud Config server to all microservice instances, which stores the configurations for microservices locally or points to a remote GitHub repository that stores the configurations. (YES)
+    The location of the Eureka instance is provided by Spring Cloud Config server to all microservice instances, which stores the configurations for microservices locally or points to a remote GitHub repository that stores the configurations.
     
-    \item \textbf{Backends for Frontends:} The repository does not contain different implementations of the same business or aggregator microservice instance or different endpoints for different kinds of clients. (NO)
+    \item \textbf{Backends for Frontends:} The repository does not contain different implementations of the same business or aggregator microservice instance or different endpoints for different kinds of clients.
     
-    \item \textbf{Asynchronous Messaging:} The business microservices only communicate with the API gateway microservice, which also serves static frontend assests to be client browser, and only communicates through synchronous HTTP requests.
+    \item \textbf{Asynchronous Messaging:} The business microservices only communicate with the API gateway microservice, which also serves static frontend assets to be client browser, and only communicates through synchronous HTTP requests.
     As a side note, the architecture contains one RabbitMQ instance not for conveying business domain related messages but for pushing application metrics to a monitoring service.
-    Because the business microservices only use synchronous communication, the asynchronous messaging pattern is not utilized. (NO)
+    Because the business microservices only use synchronous communication, the asynchronous messaging pattern is not utilized.
     
-    \item \textbf{Database per Service:} The three business microservices "account", "notification" and "statistics" each has their own separate MongoDB instances, which is the suggested solution that offers maximum separation of tasks in terms of data storage, access and deployment. (YES)
+    \item \textbf{Database per Service:} The three business microservices "account", "notification" and "statistics" each has their own separate MongoDB instances, which is the suggested solution that offers maximum separation of tasks in terms of data storage, access and deployment.
     
-    \item \textbf{API Composition:} The architecture does not contain any aggregator service that composes API calls to answer a complex query. (NO)
+    \item \textbf{API Composition:} The architecture does not contain any aggregator service that composes API calls to answer a complex query.
     
-    \item \textbf{CQRS:} There is no separation of command and query aspects per microservice or handler logic basis. (NO)
+    \item \textbf{CQRS:} There is no separation of command and query aspects per microservice or handler logic basis.
     
-    \item \textbf{Event Sourcing:} The communication mechanism does not utilize notion of messages and an event store is not present in the system. (NO)
+    \item \textbf{Event Sourcing:} The communication mechanism does not utilize notion of messages and an event store is not present in the system.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as a readily provided deployment option. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain VM images as a readily provided deployment option.
     
-    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and stored in DockerHub to be downloaded and instantiated by applying the provided docker-compose file. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images and stored in Docker Hub to be downloaded and instantiated by applying the provided docker-compose file.
     
-    \item \textbf{Serverless:} Similar to other projects, no instructions about serverless deployment is provided deploy the application in the repository. (NO)
+    \item \textbf{Serverless:} Similar to other projects, no instructions about serverless deployment is provided deploy the application in the repository.
     
     \item \textbf{Health Check:} The clients that register to the Eureka service registry periodically send heartbeat signals to the Eureka instance, in order to stay registered in the registry so that the other services can locate them.
-    Additionaly, Eureka provides a dashboard in the browser that displays the status of registered microservices. (YES)
+    Additionaly, Eureka provides a dashboard in the browser that displays the status of registered microservices.
     
     \item \textbf{Distributed Tracing:} The distributed tracing pattern is employed through the use of another component of the Spring Cloud ecosystem.
     As with other Spring Cloud libraries, the distributed tracing library Spring Cloud Sleuth is included as a dependency inside the "pom.xml" file, and it automatically tags the logs with the labels "spanId" and "traceId".
     The architecture does not contain a compatible trace collector service, such as a Zipkin server.
-    Nonetheless, because microservices are instrumented with trace generating instruments, it is concluded that the system is ready for enabling the distributed tracing mechanism. (YES)
+    Nonetheless, because microservices are instrumented with trace generating instruments, it is concluded that the system is ready for enabling the distributed tracing mechanism.
     
-    \item \textbf{Log Aggregator:} The application does not contain a log aggregator service. (NO)
+    \item \textbf{Log Aggregator:} The application does not contain a log aggregator service.
     
-    \item \textbf{Circuit Breaker:} The circuit breaker pattern is implemented through the use of Feign and Hystrix Spring Cloud libraries.
+    \item \textbf{Circuit Breaker:} The circuit breaker pattern is implemented through the use of Feign\footnotemark[80]\footnotetext[80]{\href{https://spring.io/projects/spring-cloud-openfeign}{https://spring.io/projects/spring-cloud-openfeign}} and Hystrix Spring Cloud libraries.
     Feign is a HTTP web client that makes implementing microservices easier by providing a set of tools often needed in microservice architectures, and Hystrix is, although can be used without Feign, one such tool that implements circuit breaker pattern.
-    Additionaly, by adding additional annotations, Hystrix provides users with a dashboard that displays whether the communication circuit is open or closed, number of errors and average latency of remote procedure calls. (YES)
+    Additionaly, by adding additional annotations, Hystrix provides users with a dashboard that displays whether the communication circuit is open or closed, number of errors and average latency of remote procedure calls.
     
     \item \textbf{Wrong Cut:} Similar to the other inspected microservice projects, the microservices are constructed around separate business domains.
     Being a banking system that displays incomes, outcomes and savings, the application consists of "accounts", "statistics" and "notifications" microservices with additional microservices that deals with API call routing, identity, performance monitoring, configuration and service discovery.
-    Because the core microservices are not layered as explained in the state-of-the-art section, the wrong cut anti-pattern is avoided. (NO)
+    Because the core microservices are not layered as explained in the state-of-the-art section, the wrong cut anti-pattern is avoided.
     
-    \item \textbf{Nano or Mega Microservices:} Considering the scope of the application, the number of HTTP endpoints of the three business microservices are similar and do not possess a difference that implies the presence of nano or mega microservices anti-patterns. (NO, NO)
+    \item \textbf{Nano or Mega Microservices:} Considering the scope of the application, the number of HTTP endpoints of the three business microservices are similar and do not possess a difference that implies the presence of nano or mega microservices anti-patterns.
     
-    \item \textbf{ESB Usage:} The application does not utilize a ESB component. (NO)
+    \item \textbf{ESB Usage:} The application does not utilize a ESB component.
     
-    \item \textbf{Hardcoded Endpoints:} The source code or configuration files do not contain a hardcoded IP address, as the architecture contains a service discovery mechanism. (NO)
+    \item \textbf{Hardcoded Endpoints:} The source code or configuration files do not contain a hardcoded IP address, as the architecture contains a service discovery mechanism.
     
-    \item \textbf{No API Gateway:} The system makes use of Zuul API gateway, preventing the related no API gateway anti-pattern. (NO)
+    \item \textbf{No API Gateway:} The system makes use of Zuul API gateway, preventing the related no API gateway anti-pattern.
     
-    \item \textbf{Shared Persistence:} The business microservices only access their own MongoDB instances directly, and use other REST API's when access to other kinds of data is needed. (NO)
+    \item \textbf{Shared Persistence:} The business microservices only access their own MongoDB instances directly, and use other REST API's when access to other kinds of data is needed.
     
-    \item \textbf{No CI/CD:} The repository uses Travis CI (XXX) to first trigger docker image builds on GitHub pushes, then triggers Codecov to carry out a code coverage test, and then deploys the new docker images automatically using continuous deployment method, or with one-click approach using continuous delivery option, depending on the configuration. (NO)
+    \item \textbf{No CI/CD:} The repository uses Travis CI\footnotemark[81]\footnotetext[81]{\href{https://travis-ci.org}{https://travis-ci.org}} to first trigger docker image builds on GitHub pushes, then triggers Codecov\footnotemark[82]\footnotetext[82]{\href{https://about.codecov.io}{https://about.codecov.io}} to carry out a code coverage test, and then deploys the new docker images automatically using continuous deployment method, or with one-click approach using continuous delivery option, depending on the configuration.
     
-    \item \textbf{Multiple Service Instances per Host:} Similar to the most examined projects, the microservices are containerized into docker images, hence not resulting in the absolute need to deploy all instances on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Similar to the most examined projects, the microservices are containerized into docker images, hence not resulting in the absolute need to deploy all instances on the same host.
     
-    \item \textbf{No API Versioning:} The REST API endpoints do not have prefixes that implies API versioning practice. (YES)
+    \item \textbf{No API Versioning:} The REST API endpoints do not have prefixes that implies API versioning practice.
     
-    \item \textbf{No Health Check:} The microservices make use of heartbeats to the Eureka service to employ health check pattern. (NO)
+    \item \textbf{No Health Check:} The microservices make use of heartbeats to the Eureka service to employ health check pattern.
     
-    \item \textbf{Local Logging:} As stated earlier, the application does not involve a log aggregation mechanism, causing local logging anti-pattern to exist and make log analysis more difficult. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} As stated earlier, the application does not involve a log aggregation mechanism, causing local logging anti-pattern to exist and make log analysis more difficult.
+\end{itemize}
 
 \subsubsection{R4: Event Sourcing \& CQRS Example Application}
 \label{subsubsec:R4}
 
-The fourth examined application is an example application for event sourcing and CQRS patterns, implemented by Eventuate team to demonstrate the use of their Eventuate Tram event store, which is a database for storing events that utilizes MySQL and Kafka under the hood.
+The fourth examined application is an example application for event sourcing and CQRS patterns, implemented by Eventuate\footnotemark[83]\footnotetext[83]{\href{https://eventuate.io}{https://eventuate.io}} team to demonstrate the use of their Eventuate Tram event store, which is a database for storing events that utilizes MySQL and Kafka under the hood.
 The business microservices are separated into two command and query sides.
-The command-side services include "customer command-side service", "account command-side service" and "transactions command-side service", while the query-side services "customer query-side service" and "account query-side service" deals with query tasks from the client.
+The command-side services include "customer command-side service", "account command-side service" and "transactions command-side service", while the query-side services "customer query-side service" and "account query-side service" deal with query tasks from the client.
 The business microservices and the API gateway are implemented as Spring Boot applications.
-The Figure~\ref{fig:R4_arch}, which is provided in the application repository, displays the architectural diagram of the application.
+Figure~\ref{fig:R4_arch}, which is provided in the application repository, displays the architectural diagram of the application.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R4.png}
-\caption{Architectural Diagram of Event Sourcing \& CQRS Example Application, by Chris Richardson under Apache 2.0 license}
+\caption{Architectural diagram of Event Sourcing \& CQRS example application, by Chris Richardson under Apache 2.0 license}
 \label{fig:R4_arch}
 \end{figure}
 
-The Table~\ref{table:R4_result} presents the presence of design patterns and anti-patterns detected in this application.
+Table~\ref{table:R4_result} presents the presence of design patterns and anti-patterns detected in this application.
 
 \begin{table}[H]
 \centering 
@@ -1899,102 +1898,101 @@ The Table~\ref{table:R4_result} presents the presence of design patterns and ant
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R4}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R4}
     \label{table:R4_result}
 \end{table}
 
 Next, a short clarification about each item is provided below.
 
-\begin{enumerate}
+\begin{itemize}
     \item \textbf{API Gateway:} The application uses a Spring Boot application implemented as a API gateway.
-    The routing rules are defined in a "application.properties" file based on the specifics of the HTTP request. (YES)
+    The routing rules are defined in a "application.properties" file based on the specifics of the HTTP request.
     
-    \item \textbf{Service Mesh with Sidecar:} The repository does not include instructions to deploy the application on a service mesh and the microservices are not injected with a sidecar proxy that makes the application ready for service mesh option. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The repository does not include instructions to deploy the application on a service mesh and the microservices are not injected with a sidecar proxy that makes the application ready for service mesh option.
     
     \item \textbf{Service Registry and Discovery:} The architecture does not contain a separate service registry such as Eureka and in its current state, does not utilize a infrastructure platform such as Kubernetes.
     The only deployment option readily provided is through the use of a "docker-compose" file, that is used to create a cluster (set of nodes in which containers are instantiated), and a network that is useful only in the case the cluster is created on the same physical machine.
     In other words, the service discovery mechanism provided in this application in its current state only works if the entire application is deployed to the same host.
-    Because the application does not utilize a separate service registry and discovery mechanism or one from underlying infrastructure, the service registry and discovery pattern is not employed. (NO)
+    Because the application does not utilize a separate service registry and discovery mechanism or one from underlying infrastructure, the service registry and discovery pattern is not employed.
     
-    \item \textbf{Backends for Frontends:} The system does not have different aggregators, different implementations or endpoints of microservices depending on the kind of the client. (NO)
+    \item \textbf{Backends for Frontends:} The system does not have different aggregators, different implementations or endpoints of microservices depending on the kind of the client.
     
     \item \textbf{Asynchronous Messaging:} The microservices employ the communication through messages and events indirectly by means of a separate event store, which is similar to a message broker but implemented also a persistent data store that stores and relays events as abstractions of data.
-    The pattern that captures this mechanism is called event sourcing, and since event sourcing is one way of embracing asynchronous messaging pattern, this application can be said to also have the asynchronous messaging pattern. (YES)
+    The pattern that captures this mechanism is called event sourcing, and since event sourcing is one way of embracing asynchronous messaging pattern, this application can be said to also have the asynchronous messaging pattern.
     
-    \item \textbf{Database per Service:} In this architecture the persistence tasks are delegated to the event store and individual microservice do not make use additional databases, except for two query services that create view-only schemas in MongoDB.
-    Because the databases do not have their own database instances, database per service pattern is not utilized. (NO)
+    \item \textbf{Database per Service:} In this architecture the persistence tasks are delegated to the event store and individual microservice do not make use additional databases, except for two query services that create view-only schemes in MongoDB.
+    Because the databases do not have their own database instances, database per service pattern is not utilized.
     
-    \item \textbf{API Composition:} Because the system does not have aggregator or query-specific microservices, the API composition pattern is not utilized. (NO)
+    \item \textbf{API Composition:} Because the system does not have aggregator or query-specific microservices, the API composition pattern is not utilized.
     
     \item \textbf{CQRS:} The business domain microservices are separated into command and query microservices.
     The microservices that handle the command duties include "customer command-side", "account command-side" and "transactions command-side" services, while there are "customer query-side" and "account query-side" services that execute query needs.
     As the name of the project suggests, the application is designed to separate the two tasks to the full extent and create independent microservices for command and query side.
-    For this reason, the CQRS pattern can be said to be entirely adopted in this application. (YES)
+    For this reason, the CQRS pattern can be said to be entirely adopted in this application.
     
     \item \textbf{Event Sourcing:} As previously stated, the microservices communicate through events and delegate persistence needs to an independent event store instance.
-    The application uses Eventuate Local (XXX) component for the event store instance, which is an open source event store built using MySQL and Kafka.
-    Similar to CQRS pattern, the application is built to be an example case for event sourcing pattern, specifically showcasing an open source event store and a SaaS version to be deployed on AWS, therefore employs the event sourcing pattern. (YES)
+    The application uses Eventuate Local\footnotemark[84]\footnotetext[84]{\href{https://github.com/eventuate-local/eventuate-local}{https://github.com/eventuate-local/eventuate-local}} component for the event store instance, which is an open source event store built using MySQL and Kafka.
+    Similar to CQRS pattern, the application is built to be an example case for event sourcing pattern, specifically showcasing an open source event store and a SaaS version to be deployed on AWS, therefore employs the event sourcing pattern.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain readily-built VM images as a deployment option. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain readily-built VM images as a deployment option.
     
-    \item \textbf{Service Instance per Container:} The individual microservices are containerized into separate Docker images, making deployment using containers the go-to option for the application. (YES)
+    \item \textbf{Service Instance per Container:} The individual microservices are containerized into separate Docker images, making deployment using containers the go-to option for the application.
     
-    \item \textbf{Serverless:} In its current state, the repository does not contain instructions to deploy the application using the serverless approach. (NO)
+    \item \textbf{Serverless:} In its current state, the repository does not contain instructions to deploy the application using the serverless approach.
     
-    \item \textbf{Health Check:} The microservices offer "/health" endpoints thanks to the Spring Boot Actuator library.
+    \item \textbf{Health Check:} The microservices offer "/health" endpoints thanks to the Spring Boot Actuator\footnotemark[85]\footnotetext[85]{\href{https://docs.spring.io/spring-boot/docs/1.5.22.RELEASE/reference/html/production-ready-endpoints.html}{https://docs.spring.io/spring-boot/docs/1.5.22.RELEASE/reference/html/production-ready-endpoints.html}} library.
     However, the architecture lacks an infrastructure or service discovery server that pings the endpoints during run-time to ensure the liveness of services or take action accordingly.
-    For this reason, the health check pattern is not utilized. (NO)
+    For this reason, the health check pattern is not utilized.
     
-    \item \textbf{Distributed Tracing:} The microservices are not instrumented with trace generating libraries and there does not exists a trace collector service. (NO)
+    \item \textbf{Distributed Tracing:} The microservices are not instrumented with trace generating libraries and there does not exists a trace collector service.
     
-    \item \textbf{Log Aggregator:} Similarly, the system does not contain a log aggregation mechanism. (NO)
+    \item \textbf{Log Aggregator:} Similarly, the system does not contain a log aggregation mechanism.
+
+    \item \textbf{Circuit Breaker:} The microservices do not make use of circuit breaker libraries offered by Spring Cloud framework and there is no infrastructure like a service mesh that readily offers the circuit breaking mechanism.
     
-    \item \textbf{Circuit Breaker:} The microservices do not make use of circuit breaker libraries offered by Spring Cloud framework and there is no infrastructure like a service mesh that readily offers the circuit breaking mechanism. (NO)
-    
-    \item \textbf{Wrong Cut:} By separating the duties in terms of business domains and not using technical layered architecture, the wrong cut anti-pattern is preventing in this application. (NO)
+    \item \textbf{Wrong Cut:} By separating the duties in terms of business domains and not using technical layered architecture, the wrong cut anti-pattern is preventing in this application.
     
     \item \textbf{Nano or Mega Microservices:} The system consists of three command-handling "customer", "account" and "money transfer" microservices,  and two query-handling "customer" and "account" microservices, in addition to an API gateway and an event store.
-    Regarding the scope of the microservices, there is no difference among microservice that would result in a nano or mega microservice anti-pattern. (NO,NO)
+    Regarding the scope of the microservices, there is no difference among microservice that would result in a nano or mega microservice anti-pattern.
     
-    \item \textbf{ESB Usage:} The architecture does not contain an ESB for communication purposes. (NO)
+    \item \textbf{ESB Usage:} The architecture does not contain an ESB for communication purposes.
     
-    \item \textbf{Hardcoded Endpoints:} The implementation contains hardcoded endpoints anti-pattern by specifying host addresses of all five microservices as "localhost" inside the "application.properties" file, which API gateway component uses to configure the routing of incoming requests. (YES)
+    \item \textbf{Hardcoded Endpoints:} The implementation contains hardcoded endpoints anti-pattern by specifying host addresses of all five microservices as "localhost" inside the "application.properties" file, which API gateway component uses to configure the routing of incoming requests.
     
-    \item \textbf{No API Gateway:} The architecture makes use of a Spring Boot application as API gateway component, hence avoiding the no API gateway anti-pattern. (NO)
+    \item \textbf{No API Gateway:} The architecture makes use of a Spring Boot application as API gateway component, hence avoiding the no API gateway anti-pattern.
     
     \item \textbf{Shared Persistence:} The persistence needs of all microservices is handled by the same event store instance.
     However, this design choice is related to the particular persistence mechanism selected for the application, which is using the event source pattern.
     For this reason, the common use of the same event store instance is not regarded as the shared persistence anti-pattern, which usually implies using a traditional database instance for multiple microservices. 
-    Nonetheless, because the two query-side services make use of a single MongoDB instance in the sense that they create their own data models tailored for queries results in shared persistence anti-pattern, as the failure in the shared database instance might effect the both query services. (YES)
+    Nonetheless, because the two query-side services make use of a single MongoDB instance in the sense that they create their own data models tailored for queries results in shared persistence anti-pattern, as the failure in the shared database instance might effect the both query services.
     
-    \item \textbf{No CI/CD:} The repository does not contain a CI/CD mechanism. (YES)
+    \item \textbf{No CI/CD:} The repository does not contain a CI/CD mechanism.
     
-    \item \textbf{Multiple Service Instances per Host:} Also with this application, the microservices are containerized, preventing the multiple service instances per host deployment anti-pattern. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Also with this application, the microservices are containerized, preventing the multiple service instances per host deployment anti-pattern.
     
-    \item \textbf{No API Versioning:} The REST endpoints do not contain any API versioning prefixes. (YES)
+    \item \textbf{No API Versioning:} The REST endpoints do not contain any API versioning prefixes.
     
-    \item \textbf{No Health Check:} Although the microservices provide "/health" endpoints, no health check mechanism is implemented. (YES)
+    \item \textbf{No Health Check:} Although the microservices provide "/health" endpoints, no health check mechanism is implemented.
     
-    \item \textbf{Local Logging:} As stated in the relative pattern, the absence of log aggregation mechanism results in local logging anti-pattern in this application. (YES)
-    
-\end{enumerate}
+    \item \textbf{Local Logging:} As stated in the relative pattern, the absence of log aggregation mechanism results in local logging anti-pattern in this application.
+\end{itemize}
 
 \subsubsection{R5: Food-to-Go Application}
 \label{subsubsec:R5}
 
 The fifth examined application is the Food-to-Go (FTGO) application, implemented as a food ordering platform to be used by both customers and restaurants.
-The application illustrates a number of microservice design patterns since it is also implemented as an example of design patterns explained in his book by Chris Richardson (XXX https://www.chrisrichardson.net).
+The application illustrates a number of microservice design patterns since it is also implemented as an example of design patterns explained in his book by software architect Chris Richardson\footnotemark[86]\footnotetext[86]{\href{https://www.chrisrichardson.net}{https://www.chrisrichardson.net}}.
 The business microservices include "accounting", "consumer", "restaurant", "delivery", "order" and "order history".
-For message broker purposes, Eventuate CDC (Change-Data-Capture) framework is used, which utilizes Kafka, Apache Zookeeper and MySQL under the hood.
-In addition, although omitted from set of patterns to be examined in this study, saga pattern is implemented using Eventuate Tram framework for coordinating distributed business transaction across multiple microservices.
-The persistence tasks of six microservices are handled by one MySQL database instance, while "order history" service uses a DynamoDB Local SQL database instance.
+For message broker purposes, Eventuate CDC (Change-Data-Capture)\footnotemark[87]\footnotetext[87]{\href{https://eventuate.io/docs/manual/eventuate-tram/latest/cdc-configuration.html}{https://eventuate.io/docs/manual/eventuate-tram/latest/cdc-configuration.html}} framework is used, which utilizes Kafka, Apache Zookeeper and MySQL under the hood.
+In addition, although omitted from set of patterns to be examined in this study, saga pattern is implemented using Eventuate Tram\footnotemark[88]\footnotetext[88]{\href{https://eventuate.io/abouteventuatetram.html}{https://eventuate.io/abouteventuatetram.html}} framework for coordinating distributed business transaction across multiple microservices.
+The persistence tasks of six microservices are handled by one MySQL database instance, while "order history" service uses a DynamoDB\footnotemark[89]\footnotetext[89]{\href{https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html}{https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html}} Local (downloadable version of DynamoDB) SQL database instance.
 Last but not least, a Zipkin instance in included in the application to collect trace data from API gateway and the order service.
-The architectural diagram is illustrated in Figure~\ref{fig:R5_arch}.
+The architectural diagram of the application is illustrated in Figure~\ref{fig:R5_arch}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R5.png}
-\caption{Architectural Diagram of Food-to-Go Application}
+\caption{Architectural diagram of Food-to-Go application}
 \label{fig:R5_arch}
 \end{figure}
 
@@ -2053,91 +2051,91 @@ The presence of each pattern and anti-pattern is displayed in Table~\ref{table:R
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R5}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R5}
     \label{table:R5_result}
 \end{table}
 
 A short comment about each design pattern and anti-pattern is provided below.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The implementation of the FTGO application uses Spring Cloud Gateway component as the API gateway of the application.
-    The routing rules are specified using the related route builder classes of Spring Cloud Gateway according to the specifics of the HTTP requests.
-    Additionally, for exemplary purposes, the repository contains another API gateway implemented by an API query language GraphQL (XXX), which defines APIs using types and fields, unlike REST APIs that define endpoints. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The implementation of the FTGO application uses Spring Cloud Gateway\footnotemark[90]\footnotetext[90]{\href{https://spring.io/projects/spring-cloud-gateway}{https://spring.io/projects/spring-cloud-gateway}} component as the API gateway of the application.
+    The routing rules are specified in the source code using the related route builder classes of Spring Cloud Gateway according to the specifics of the HTTP requests.
+    Additionally, for exemplary purposes, the repository contains another API gateway implemented by an API query language GraphQL\footnotemark[91]\footnotetext[91]{\href{https://graphql.org}{https://graphql.org}}, which defines APIs using types and fields, unlike REST APIs that define endpoints.
     
-    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instructions to deploy the application on a service mesh and there is no microservices detected that has a sidecar injected. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instructions to deploy the application on a service mesh and there is no microservices detected that has a sidecar injected.
     
     \item \textbf{Service Registry and Discovery:} The application uses the service registry and discovery mechanism of Kubernetes.
-    Apart from this option, the architecture does not contain a service registry microservice. (YES)
+    Apart from this option, the architecture does not contain a service registry microservice.
     
-    \item \textbf{Backends for Frontends:} The application does not contain different versions of microservices, aggregators or API gateways depending on the client. (NO)
+    \item \textbf{Backends for Frontends:} The application does not contain different versions of microservices, aggregators or API gateways depending on the client.
     
-    \item \textbf{Asynchronous Messaging:} The architecture uses Eventuate Tram (XXX) framework, MySQL and Apache Kafka to implement asynchronous messaging pattern.
-    Eventuate Tram framework makes it easier for microservices to publish and consume domain events and commands, with the help of a compatible message broker such as Kafka for message exchange and a compatible database such as MySQL for message persistence purposes. (YES)
+    \item \textbf{Asynchronous Messaging:} The architecture uses Eventuate Tram framework, MySQL and Apache Kafka to implement asynchronous messaging pattern.
+    Eventuate Tram framework makes it easier for microservices to publish and consume domain events and commands, with the help of a compatible message broker such as Kafka for message exchange and a compatible database such as MySQL for message persistence purposes.
     
     \item \textbf{Database per Service:} The application contains one DynamoDB Local instance that "order history" service uses, while the remaining six business microservices access to their own database schemas in only one MySQL instance.
-    According to the criteria set in this study, this is not the best practice for data persistence needs for microservices, therefore the database per service pattern is not fully utilized. (NO)
+    According to the criteria set in this study, this is not the best practice for data persistence needs for microservices, therefore the database per service pattern is not fully utilized.
     
-    \item \textbf{API Composition:} The architecture does not contain separate API aggregator services although the complex business logic might involve composition of responds from multiple services. (NO)
+    \item \textbf{API Composition:} The architecture does not contain separate API aggregator services although the complex business logic might involve composition of responds from multiple services.
     
     \item \textbf{CQRS:} The "order history" microservice is designed to consume domain events published by other microservices and update the view-only database created in DynamoDB Local instance.
     In other words, while other business microservices both handle write and read requests from client, the "order history" service does not serve any write requests directly from the user and acts as a query-only microservice.
-    Although the CQRS pattern is not utilized for all kinds of microservices, the "order" and "order history" microservices can be counted as an example of CQRS mechanism. (YES)
+    Although the CQRS pattern is not utilized for all kinds of microservices, the "order" and "order history" microservices can be counted as an example of CQRS mechanism.
     
-    \item \textbf{Event Sourcing:} The event sourcing pattern is utilized in the "account" microservice, which processes events stored in the event store Eventuate Local by making use of event processing methods provided by Eventuate Client framework for Java language. (YES)
+    \item \textbf{Event Sourcing:} The event sourcing pattern is utilized in the "account" microservice, which processes events stored in the event store Eventuate Local by making use of event processing methods provided by Eventuate Client\footnotemark[92]\footnotetext[92]{\href{https://eventuate.io/docs/java/eventuate-client-framework-for-java.html}{https://eventuate.io/docs/java/eventuate-client-framework-for-java.html}} framework for Java language.
     
-    \item \textbf{Service Instance per Virtual Machine:} Similar to other repositories, there are no instructions or readily built VM images to deploy microservices as virtual machine images. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} Similar to other repositories, there are no instructions or readily built VM images to deploy microservices as virtual machine images.
     
-    \item \textbf{Service Instance per Container:} The business microservices, API gateway and infrastructure microservices are containerized into Docker images. (YES)
+    \item \textbf{Service Instance per Container:} The business microservices, API gateway and infrastructure microservices are containerized into Docker images.
     
-    \item \textbf{Serverless:} The repository does not contain instructions to deploy the application on a serverless platform. (NO)
+    \item \textbf{Serverless:} The repository does not contain instructions to deploy the application on a serverless platform.
     
-    \item \textbf{Health Check:} With the help of Spring Boot Actuator library, which implements "/health" endpoints for microservices automatically, and Kubernetes probing to the implemented health endpoints, the health check pattern is utilized. (YES)
+    \item \textbf{Health Check:} With the help of Spring Boot Actuator library, which implements "/health" endpoints for microservices automatically, and Kubernetes probing to the implemented health endpoints, the health check pattern is utilized.
     
     \item \textbf{Distributed Tracing:} The distributed tracing pattern is implemented for exemplary purposes to show the communication only between API gateway and "order" service.
-    The instrumentation library used to generate traces is the Spring Cloud Sleuth library, while a Zipkin server is chosen to collect the traces and present trace data with a user interface.
-    Even though not all microservices are instrumented, the presence of intrumentation libraries and trace collector service shows that the distributed tracing pattern is employed to a considerable extent. (YES)
+    The instrumentation library used to generate traces is the Spring Cloud Sleuth\footnotemark[93]\footnotetext[93]{\href{https://spring.io/projects/spring-cloud-sleuth}{https://spring.io/projects/spring-cloud-sleuth}} library, while a Zipkin server is chosen to collect the traces and present trace data with a user interface.
+    Even though not all microservices are instrumented, the presence of intrumentation libraries and trace collector service shows that the distributed tracing pattern is employed to a considerable extent.
     
-    \item \textbf{Log Aggregator:} In the architecture there is no log aggregator service. (NO)
+    \item \textbf{Log Aggregator:} In the architecture there is not any log aggregator service.
     
-    \item \textbf{Circuit Breaker:} Similarly, there is no circuit breaker library or the use of a circuit breaking infrastructure feature that suggests the presence of circuit breaker pattern. (NO)
+    \item \textbf{Circuit Breaker:} Similarly, there is no circuit breaker library or the use of a circuit breaking infrastructure feature that suggests the presence of circuit breaker pattern.
     
-    \item \textbf{Wrong Cut:} The business logic is separated into "consumer", "restaurant", "order", "kitchen", "accounting", "delivery" and "order history" microservices and not into technical layers, hence the wrong cut anti-pattern is avoided. (NO)
+    \item \textbf{Wrong Cut:} The business logic is separated into "consumer", "restaurant", "order", "kitchen", "accounting", "delivery" and "order history" microservices and not into technical layers, hence the wrong cut anti-pattern is avoided.
     
     \item \textbf{Nano or Mega Microservices:} Taking into account the fact that this application is implemented as an example of a number of design patterns, the complex business logic, different communication and persistence mechanisms result in a fairly complex application.
-    However, noting that the nano or mega microservice anti-patterns are related to the difference in the relative share of business tasks among microservices, there is no such unequal distribution of business tasks that would suggest the presence of the mentioned anti-patterns. (NO, NO)
+    However, noting that the nano or mega microservice anti-patterns are related to the difference in the relative share of business tasks among microservices, there is no such unequal distribution of business tasks that would suggest the presence of the mentioned anti-patterns.
     
-    \item \textbf{ESB Usage:} The implementation does not include an ESB component. (NO)
+    \item \textbf{ESB Usage:} The implementation does not include an ESB component.
     
-    \item \textbf{Hardcoded Endpoints:} The application uses service discovery mechanism of Kubernetes and does not contain any hardcoded endpoints. (NO)
+    \item \textbf{Hardcoded Endpoints:} The application uses service discovery mechanism of Kubernetes and does not contain any hardcoded endpoints.
     
-    \item \textbf{No API Gateway:} Thanks to the use of Spring Cloud Gateway component, no API gateway anti-pattern is prevented in this application. (NO)
+    \item \textbf{No API Gateway:} Thanks to the use of Spring Cloud Gateway component, no API gateway anti-pattern is prevented in this application.
     
-    \item \textbf{Shared Persistence:} Except the "order history" service, other six microservices access to the same MySQL database instance, even though they create their own schemas.
-    As previously said, according to the criteria set in this study, the absence of separate database instances is count as shared persistence anti-pattern, such as in this case. (YES)
+    \item \textbf{Shared Persistence:} Except the "order history" service, other six microservices access to the same MySQL database instance, even though they create their own schemes.
+    As previously said, according to the criteria set in this study, the absence of separate database instances is count as shared persistence anti-pattern, such as in this case.
     
-    \item \textbf{No CI/CD:} The repository contains CircleCI configuration files as that enables continuous integration. (YES)
+    \item \textbf{No CI/CD:} The repository contains CircleCI\footnotemark[94]\footnotetext[94]{\href{https://circleci.com}{https://circleci.com}} configuration files as that enables continuous integration.
     
-    \item \textbf{Multiple Service Instances per Host:} Having separate Docker images for individual microservices prevents the absolute need to deploy all services to the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Having separate Docker images for individual microservices prevents the absolute need to deploy all services to the same host.
     
-    \item \textbf{No API Versioning:} There is no API versioning detected as part of the API endpoints. (YES)
+    \item \textbf{No API Versioning:} There is no API versioning detected as part of the API endpoints, resulting in the presence of this anti-pattern.
     
-    \item \textbf{No Health Check:} The use of Spring Boot Actuator and Kubernetes health check mechanisms prevents no health check anti-pattern. (NO)
+    \item \textbf{No Health Check:} The use of Spring Boot Actuator and Kubernetes health check mechanisms prevents no health check anti-pattern.
     
-    \item \textbf{Local Logging:} The absence of a log aggregation mechanism results in local logging anti-pattern in this application. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} The absence of a log aggregation mechanism results in local logging anti-pattern in this application.
+\end{itemize}
 
 \subsubsection{R6: CoolStore Microservices}
 \label{subsubsec:R6}
 
-The sixth examined application is the CoolStore microservices application, which is a simple e-commerce application that is implemented to demonstrate primarily the utilization of Microsoft Tye tool and Dapr microservice run-time for microservice applications implemented using .NET framework.
+The sixth examined application is the CoolStore microservices application, which is a simple e-commerce application that is implemented to demonstrate primarily the utilization of Microsoft Tye\footnotemark[95]\footnotetext[95]{\href{https://github.com/dotnet/tye}{https://github.com/dotnet/tye}} tool and Dapr\footnotemark[96]\footnotetext[96]{\href{https://dapr.io}{https://dapr.io}} microservice run-time for microservice applications implemented using .NET framework.
 The architecture consists of five business services, namely the "identity app", "inventory app", "product catalog app", "shopping app" and "sale app", with the addition of an API gateway and frontend web application.
-All of the services are instrumented with Dapr sidecars, which are similar to service mesh sidecar, but help with developing microservice applications by providing service invocation, state management and such, rather than focusing on the infrastructure related tasks. (XXX footnote dapr)
+All of the services are instrumented with Dapr sidecars, which are similar to service mesh sidecar, but help with developing microservice applications by providing service invocation, state management and such, rather than focusing on the infrastructure related tasks.
 The architectural diagram of the system is shown in Figure~\ref{fig:R6_arch}, which is provided in the repository and displayed below as it is.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R6.png}
-\caption{Architectural Diagram of CoolStore Web Application, by Vietnam Developer Group under MIT license}
+\caption{Architectural diagram of CoolStore web application, by Vietnam Developer Group under MIT license}
 \label{fig:R6_arch}
 \end{figure}
 
@@ -2164,7 +2162,7 @@ The presence of design patterns and anti-patterns are indicated in Table~\ref{ta
     \rowcolor{bluepoli!10}
     Backends for Frontends & – & ESB Usage & – \T\B \\
     \hline
-    Asynchronous Messaging & \cmark & Hardcoded Endpoints & - \T\B \\
+    Asynchronous Messaging & \cmark & Hardcoded Endpoints & \cmark \T\B \\
     \hline
     \rowcolor{bluepoli!10}
     Database per Service & – & No API Gateway & – \T\B \\
@@ -2196,87 +2194,91 @@ The presence of design patterns and anti-patterns are indicated in Table~\ref{ta
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R6}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R6}
     \label{table:R6_result}
 \end{table}
 
 A short description about each item is provided below.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The architecture contains an API gateway built with .NET framework that routes incoming requests to four business domain microservices. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The architecture contains an API gateway built with .NET framework that routes incoming requests to four business domain microservices, with rules specified in the source code in "Startup.cs" file in API Gateway folder.
     
     \item \textbf{Service Mesh with Sidecar:} The repository contains configuration files that injects Istio sidecars to services when the application is deployed on Azure Kubernetes Service and the service mesh Istio is installed.
-    Additionally, the application uses Dapr run-time, which is similar to a service mesh in injecting sidecars and controlling via a control plane, but focuses more on aiding developers with business related tasks, such as service invocation, state management and publish/subscribe mechanism (XXX). (YES)
+    Additionally, the application uses Dapr run-time, which is similar to a service mesh in injecting sidecars and controlling via a control plane, but focuses more on aiding developers with business related tasks, such as service invocation, state management and publish/subscribe mechanism\footnotemark[97]\footnotetext[97]{\href{https://docs.dapr.io/concepts/overview/}{https://docs.dapr.io/concepts/overview/}}.
     
-    \item \textbf{Service Registry and Discovery:} The application uses service registry and discovery mechanism of Dapr run-time. (YES)
+    \item \textbf{Service Registry and Discovery:} The application utilizes Tye tool, which aims to simplify microservices implementation and deployment by creating Docker files, images and pushing them to Docker Hub, generating Kubernetes files (called "manifests) and deploying applications to Kubernetes, in a way that works the same or require minimal configuration for both local and cloud deployment options\footnotemark[98]\footnotetext[98]{\href{https://github.com/dotnet/tye/blob/main/docs/reference/service_discovery.md}{Service discovery of Tye in more detail}}.
+    For service registry and discovery tasks, after deploying the application using "tye run" command to apply rules in "tye.yaml", Tye deploys the services on Kubernetes and uses Kubernetes service registry and discovery under the hood.
+    Service invocation between services is handled by combination of Dapr sidecars and Tye tool, which is enabled by specifying Dapr extension in "tye.yaml" file, which is explained more using a separate project in related directory of Tye documentation\footnotemark[99]\footnotetext[99]{\href{https://github.com/dotnet/tye/blob/main/docs/recipes/dapr.md}{https://github.com/dotnet/tye/blob/main/docs/recipes/dapr.md}}.
     
-    \item \textbf{Backends for Frontends:} The implementation does not contain different services or aggregators for different kinds of clients. (NO)
+    \item \textbf{Backends for Frontends:} The implementation does not contain different services or aggregators for different kinds of clients.
     
-    \item \textbf{Asynchronous Messaging:} The Dapr run-time provides publish/subscribe mechanism for events by making use of one of the compatible message brokers, such as Redis store in this case. (YES)
+    \item \textbf{Asynchronous Messaging:} The Dapr run-time provides publish/subscribe mechanism for events by making use of one of the compatible message brokers, such as Redis store in this case.
     
-    \item \textbf{Database per Service:} The implementation makes use of one PostgreSQL database instance, hence database per service pattern is not employed. (NO)
+    \item \textbf{Database per Service:} The implementation makes use of one PostgreSQL database instance, hence database per service pattern is not employed.
     
-    \item \textbf{API Composition:} The architecture does not contain any aggregator service. (NO)
+    \item \textbf{API Composition:} The architecture does not contain any aggregator service.
     
-    \item \textbf{CQRS:} There is no division of tasks into command and query services in the project. (NO)
+    \item \textbf{CQRS:} There is no division of tasks into command and query services in the project.
     
-    \item \textbf{Event Sourcing:} Similarly, the architecture does not involve an event store that enables event sourcing pattern. (NO)
+    \item \textbf{Event Sourcing:} Similarly, the architecture does not involve an event store that enables event sourcing pattern.
     
-    \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images for this deployment pattern to be employed. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images for this deployment pattern to be employed.
     
-    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images to be instantiated using Docker Compose, Kubernetes or AKS. (YES)
+    \item \textbf{Service Instance per Container:} The microservices are containerized into Docker images to be instantiated using Docker Compose, Kubernetes or Azure AKS.
     
-    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment. (NO)
+    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment.
     
-    \item \textbf{Health Check:} The application uses health check feature of .NET framework and probing function of Kubernetes to the "/healthz" endpoints. (YES)
+    \item \textbf{Health Check:} The application uses health check feature of .NET framework and probing function of gRPC health check utility\footnotemark[73] found in R2, specified to be executed by Kubernetes to the "/healthz" endpoints.
     
-    \item \textbf{Distributed Tracing:} The Dapr sidecars that run along the microservices generate trace data, while a compatible trace collector service, Zipkin server in this case, collects the traces and provides users with an interface for querying traces. (YES)
+    \item \textbf{Distributed Tracing:} The Dapr sidecars that run along the microservices generate trace data, while a compatible trace collector service, Zipkin server in this case, collects the traces and provides users with an interface for querying traces.
     
     \item \textbf{Log Aggregator:} The architecture uses Serilog structured logger for logging events and Dapr provides ability to send the logs to a compatible log collector, such as Fluentd server or Azure OMS cloud service.
-    However, because the architecture does not contain a log aggregator in its current state, the log aggregator pattern is not utilized. (NO)
+    However, because the architecture does not contain a log aggregator in its current state, the log aggregator pattern is not utilized.
     
-    \item \textbf{Circuit Breaker:} The application does not apply circuit breaker pattern through libraries or as an enabled capability through underlying infrastructure. (NO)
+    \item \textbf{Circuit Breaker:} The application does not apply circuit breaker pattern through libraries or as an enabled capability through underlying infrastructure.
     
     \item \textbf{Wrong Cut:} The application is intended to be an e-commerce application and business microservices are separated into "identity", "inventory", "product catalog", "shopping cart" and "sale" microservices.
-    Since the application is not separated into technical layers, the wrong cut anti-pattern is avoided. (NO)
+    Since the application is not separated into technical layers, the wrong cut anti-pattern is avoided.
+
+    \item \textbf{Nano or Mega Microservices:} Regarding the division of business tasks and the fact that each service has three or four API endpoints, there is no difference in size between microservices that resembles nano or mega microservice anti-pattern.
     
-    \item \textbf{Nano or Mega Microservices:} Regarding the division of business tasks and the fact that each service has three or four API endpoints, there is no difference in size between microservices that resembles nano or mega microservice anti-pattern. (NO)
+    \item \textbf{ESB Usage:} The architecture does not contain any ESB component.
     
-    \item \textbf{ESB Usage:} The architecture does not contain any ESB component. (NO)
+    \item \textbf{Hardcoded Endpoints:} The implementation contains IP addresses such as "0.0.0.0" and "127.0.0.1" as part of Helm values, however these variables are not used while replacing variables with actual values in creating Kubernetes manifests.
+    The application uses service discovery mechanism of Tye and Kubernetes in case the application is deployed using Tye, which does not utilize any hardcoded endpoints in this case.
+    In other cases where the microservices are instantiated one-by-one in the same host, the folders of each service contain "appsettings.json" files that have key-value pairs, pointing to, for example, identity service by specifying "http://localhost:5001".
+    Because of these cases, we could state that the implementation contains hardcoded endpoints that can be used to locate services, in case the actual service discovery mechanism by Tye and Kubernetes are not utilized in the deployment of application.
     
-    \item \textbf{Hardcoded Endpoints:} The implementation does not contain hardcoded IP addresses apart from "0.0.0.0" and "127.0.0.1", which are used as Helm values that will replace appropriate Kubernetes object properties in case local deployment using Kubernetes is selected.
-    Because these values are not used to point to other services, the hardcoded endpoint anti-pattern is not detected. (NO)
-    
-    \item \textbf{No API Gateway:} Because of the presence of an API gateway, this anti-pattern is avoided. (NO)
+    \item \textbf{No API Gateway:} Because of the presence of an API gateway, this anti-pattern is avoided.
     
     \item \textbf{Shared Persistence:} In the "tye.yaml", which is a configuration file for Tye deployment tool, the same connection string to PostgreSQL database instance is used by "inventory", "product catalog" and "sale" microservices.
-    According to the detection criteria, the application hence contains shared persistence anti-pattern. (YES)
+    According to the detection criteria, the application hence contains shared persistence anti-pattern.
     
-    \item \textbf{No CI/CD:} The repository includes a Travis CI file that triggers Docker image builds and pushes new images to Docker Hub upon accepted pull requests on master branch. (NO)
+    \item \textbf{No CI/CD:} The repository includes a Travis CI file that triggers Docker image builds and pushes new images to Docker Hub upon accepted pull requests on master branch.
     
-    \item \textbf{Multiple Service Instances per Host:} Thanks to containerisation of services, there is no constraint that would cause deployment of all services on the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Thanks to containerisation of services, there is no constraint that would cause deployment of all services on the same host.
     
-    \item \textbf{No API Versioning:} The endpoints do no contain API version numbers. (YES)
+    \item \textbf{No API Versioning:} The endpoints do no contain API version numbers.
     
-    \item \textbf{No Health Check:} The application implements and pings health check endpoints. (NO)
+    \item \textbf{No Health Check:} The application implements and pings health check endpoints.
     
-    \item \textbf{Local Logging:} The absence of a log aggregator service results in local logging anti-pattern in this application. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} The absence of a log aggregator service results in local logging anti-pattern in this application.
+\end{itemize}
 
 \subsubsection{R7: Cinema Microservices}
 \label{subsubsec:R7}
 
 The next examined application is cinema microservice application, which consists of an API gateway, business microservices "booking", "cinema catalog", "movies", "notification" and "payment", and a single MongoDB instance shared by services, without any frontend service that provides a graphical UI to users.
 Unlike other examined applications in this study, the last commit on this repository has taken place in 2017, which suggests a "red flag" from a software engineering perspective since it has not been maintained for at least four years.
-Indeed, the project does not makes use of modern solutions such as Kubernetes and utilizes Docker Swarm, a cluster management tool for Docker images that is different from Docker "swarm mode" and not actively maintained, as stated in an official announcement (footnte XXX https://docs.docker.com/engine/swarm/).
+Indeed, the project does not makes use of modern solutions such as Kubernetes and utilizes Docker Swarm, a cluster management tool for Docker images that is different from Docker "swarm mode" and not actively maintained, as stated in an official announcement\footnotemark[100]\footnotetext[100]{\href{https://docs.docker.com/engine/swarm/}{https://docs.docker.com/engine/swarm/}}.
 In addition, the implementation of the project is not quite self-explanatory and the blog post provided for explanation is outdated and not clear.
-Nonetheless, even though this project is not one of the reference projects from well-known software companies or good developer teams, this project is included in this study in order to take a look at changes in understanding microservice principles and used libraries or tools.
+Nonetheless, even though this project is not one of the reference projects from well-known software companies or good developer teams, this project is included in this study in order to take a look at changes over the years in understanding of microservice principles and used libraries and tools.
 Figure~\ref{fig:R7_arch} shows the architectural diagram of the application.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{myImages/R7.png}
-\caption{Architectural Diagram of Cinema Microservice Application}
+\caption{Architectural diagram of Cinema microservices application}
 \label{fig:R7_arch}
 \end{figure}
 
@@ -2335,77 +2337,76 @@ The presence of each design pattern and anti-pattern is provided in Table~\ref{t
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R7}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R7}
     \label{table:R7_result}
 \end{table}
 
 Furthermore, a short comment about each item has been provided below.
 
-\begin{enumerate}
+\begin{itemize}
     \item \textbf{API Gateway:} The application contains an API gateway implemented in Node.js that routes requests to five business microservices.
-    The API definitions are specified in the "api.raml" files of service folders, which is consumed by API gateway for correct routing.
-    (YES)
+    The API definitions are specified using RAML\footnotemark[101]\footnotetext[101]{\href{https://raml.org}{https://raml.org}} API definition tool in the "api.raml" files of service folders, which is consumed by API gateway for correct routing.
     
-    \item \textbf{Service Mesh with Sidecar:} The implementation does not contain sidecar proxies or instructions to deploy application on a service mesh. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The implementation does not contain sidecar proxies or instructions to deploy application on a service mesh.
     
-    \item \textbf{Service Registry and Discovery:} The architecture uses service discovery mechanism of Docker Swarm mode, which is similar to Kubernetes in providing multi-host networking and embedded DNS server. (YES)
+    \item \textbf{Service Registry and Discovery:} The architecture uses service discovery mechanism of Docker Swarm mode, which is similar to Kubernetes in providing multi-host networking and embedded DNS server.
     
-    \item \textbf{Backends for Frontends:} Similarly, there is no different implementations of services or aggregators depending on the kind of the client. (NO)
+    \item \textbf{Backends for Frontends:} Similarly, there is no different implementations of services or aggregators depending on the kind of the client.
     
-    \item \textbf{Asynchronous Messaging:} The microservices do not use events and message queues but only use synchronous HTTP calls. (NO)
+    \item \textbf{Asynchronous Messaging:} The microservices do not use events and message queues but only use synchronous HTTP calls.
     
     \item \textbf{Database per Service:} The application contains one MongoDB instance with two replica sets, which holds the same data for redundancy and high-availability purposes.
-    Because the microservices do not have their own database instances, the database per service pattern is not employed. (NO)
+    Because the microservices do not have their own database instances, the database per service pattern is not employed.
     
-    \item \textbf{API Composition:} The application does not contain a separate API composer service. (NO)
+    \item \textbf{API Composition:} The application does not contain a separate API composer service.
     
-    \item \textbf{CQRS:} The microservices are not grouped into command and query groups in this application. (NO)
+    \item \textbf{CQRS:} The microservices are not grouped into command and query groups in this application.
     
-    \item \textbf{Event Sourcing:} Similarly, the system does not involve an event store. (NO)
+    \item \textbf{Event Sourcing:} Similarly, the system does not involve an event store.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain readily built VM images. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not contain readily built VM images.
     
-    \item \textbf{Service Instance per Container:} The repository does not contain readily built Docker images, however the deployment scripts build one Docker image per service, hence the service instance per container pattern can be said to be employed. (YES)
+    \item \textbf{Service Instance per Container:} The repository does not contain readily built Docker images, however the deployment scripts build one Docker image per service, hence the service instance per container pattern can be said to be employed.
     
-    \item \textbf{Serverless:} There is no instructions for serverless deployment in the repository. (NO)
+    \item \textbf{Serverless:} There is no instructions for serverless deployment in the repository.
     
-    \item \textbf{Health Check:} No manual or readily-provided health check mechanisms are detected in the application. (NO)
+    \item \textbf{Health Check:} No manual or readily-provided health check mechanisms are detected in the application.
     
-    \item \textbf{Distributed Tracing:} Similarly, the services are not instrumented with trace generator mechanisms. (NO)
+    \item \textbf{Distributed Tracing:} Similarly, the services are not instrumented with trace generator mechanisms.
     
-    \item \textbf{Log Aggregator:} The architecture does not include a log aggregator service or structured log creation that can easily integrate with such a service. (NO)
+    \item \textbf{Log Aggregator:} The architecture does not include a log aggregator service or structured log creation that can easily integrate with such a service.
     
-    \item \textbf{Circuit Breaker:} No circuit breaker feature is implemented or used from libraries or infrastructure services. (NO)
+    \item \textbf{Circuit Breaker:} No circuit breaker feature is implemented or used from libraries or infrastructure services.
     
     \item \textbf{Wrong Cut:} The system is intended to be movie querying and ticket purchasing system, so the implemented microservices are "movie", "cinema catalog", "booking", "payment" and "notification", with an API gateway.
-    Because of the absence of the technical layers related to domain separation tasks, wrong cut anti-pattern is avoided in this example application. (NO)
+    Because of the absence of the technical layers related to domain separation tasks, wrong cut anti-pattern is avoided in this example application.
     
     \item \textbf{Nano or Mega Microservices:} The scope of the application is quite small and each microservice handles two or three REST endpoints.
-    For this reason, there is no nano or mega microservice anti-pattern detected in this application. (NO)
+    For this reason, there is no nano or mega microservice anti-pattern detected in this application.
     
-    \item \textbf{ESB Usage:} The implementation does not contain any ESB component. (NO)
+    \item \textbf{ESB Usage:} The implementation does not contain any ESB component.
     
-    \item \textbf{Hardcoded Endpoints:} The connection to Docker host and replica servers are constructed using hardcoded private IP addresses in the implementation and integration test code. (YES)
+    \item \textbf{Hardcoded Endpoints:} The connection to Docker host and database servers are constructed using hardcoded private IP addresses "tcp://192.168.99.100:2376" and "192.168.99.100:27017, 192.168.99.101:27017 and 192.168.99.102:27017" in the implementation and integration test code.
     
-    \item \textbf{No API Gateway:} The use of an API gateway prevents no API gateway pattern in this application. (NO)
+    \item \textbf{No API Gateway:} The use of an API gateway prevents no API gateway pattern in this application.
     
-    \item \textbf{Shared Persistence:} The application contains one MongoDB instance, shared by all five business microservices, therefore constitutes an example of shared persistence anti-pattern. (YES)
+    \item \textbf{Shared Persistence:} The application contains one MongoDB instance, shared by all five business microservices, therefore constitutes an example of shared persistence anti-pattern.
     
-    \item \textbf{No CI/CD:} The repository does not make use of any CI/CD automation tool. (YES)
+    \item \textbf{No CI/CD:} The repository does not make use of any CI/CD automation tool.
     
-    \item \textbf{Multiple Service Instances per Host:} Similar to other applications, containerisation of services prevent multiple service instances per host anti-pattern. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Similar to other applications, containerisation of services prevent multiple service instances per host anti-pattern.
     
-    \item \textbf{No API Versioning:} There is no API version prefixes detected in the definition of endpoints. (YES)
+    \item \textbf{No API Versioning:} There is no API version prefixes detected in the definition of endpoints.
     
-    \item \textbf{No Health Check:} The absence of a health check mechanism results in no health check anti-pattern for this application. (YES)
+    \item \textbf{No Health Check:} The absence of a health check mechanism results in no health check anti-pattern for this application.
     
-    \item \textbf{Local Logging:} Similarly, the service logs are not sent to a log collector service, hence the application contains the local logging anti-pattern. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} Similarly, the service logs are not sent to a log collector service, hence the application contains the local logging anti-pattern.
+\end{itemize}
 
 \subsubsection{R8: Dotnetcore Insurance Microservices}
 \label{subsubsec:R8}
 
-The eight examined project is a simplified insurance sales application implemented by Altkom Software (XXX) using .NET framework and compatible microservice components.
+The eight examined project is a simplified insurance sales application implemented by Altkom Software\footnotemark[102]\footnotetext[102]{\href{https://github.com/asc-lab}{https://github.com/asc-lab}} using .NET framework and compatible microservice components.
 The system consists of "document", "dashboard", "product", "pricing", "payment", "policy" and "policy search" business services, with additional "chat" and "auth" services, a Vue.js frontend app, an API gateway for routing, a RabbitMQ instance for message broker purposes.
 For persistence tasks, one single PostgreSQL instance is utilized for all services.
 The architectural diagram is shown in Figure~\ref{fig:R8_arch}, which is provided in the related repository of the application.
@@ -2413,7 +2414,7 @@ The architectural diagram is shown in Figure~\ref{fig:R8_arch}, which is provide
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{myImages/R8.png}
-\caption{Architectural Diagram of Dotnetcore Insurance Application, by Altkom Software under Apache 2.0 license}
+\caption{Architectural diagram of Dotnetcore insurance application, by Altkom Software under Apache 2.0 license}
 \label{fig:R8_arch}
 \end{figure}
 
@@ -2472,83 +2473,83 @@ The presence of each design pattern and anti-pattern is presented in Table~\ref{
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R8}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R8}
     \label{table:R8_result}
 \end{table}
 
 In the following pages, we provide short explanations about each microservice pattern and anti-pattern in the application.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The architecture contains an API gateway built wit .NET framework and named Ocelot (XXX), which makes it easier to integrate with .NET components.
-    Ocelot routes incoming HTTP requests to business microservices according to the rules specified in the json file "ocelot.json". (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The architecture contains an API gateway built with .NET framework and named Ocelot\footnotemark[103]\footnotetext[103]{\href{https://github.com/ThreeMammals/Ocelot}{https://github.com/ThreeMammals/Ocelot}}, which makes it easier to integrate with .NET components.
+    Ocelot routes incoming HTTP requests to business microservices according to the rules specified in the JSON file "ocelot.json".
     
-    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instructions to inject sidecars or deploy the application on a service mesh. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The repository does not contain instructions to inject sidecars or deploy the application on a service mesh.
     
     \item \textbf{Service Registry and Discovery:} The application uses Eureka service discovery server and discovery clients for microservices that registers microservices to the Eureka discovery server.
-    For this project, Steeltoe (XXX) discovery client is used on microservices, which is a .NET discovery client implementation that is compatible with Eureka discovery server. (YES)
+    For this project, Steeltoe\footnotemark[104]\footnotetext[104]{\href{https://github.com/SteeltoeOSS/Steeltoe}{https://github.com/SteeltoeOSS/Steeltoe}} discovery client is used on microservices, which is a .NET discovery client implementation that is compatible with Eureka discovery server.
     
-    \item \textbf{Backends for Frontends:} There is no custom aggregators or microservices implemented regarding the particular kind of the client. (NO)
+    \item \textbf{Backends for Frontends:} There is no custom aggregators or microservices implemented regarding the particular kind of the client.
     
-    \item \textbf{Asynchronous Messaging:} The implementation contains a RabbitMQ message broker instance that relays business domain events between microservices. (YES)
+    \item \textbf{Asynchronous Messaging:} The implementation contains a RabbitMQ message broker instance that relays business domain events between microservices.
     
-    \item \textbf{Database per Service:} The architecture contains one PostgreSQL database instance which is accessed by multiple business microservices, therefore does not qualify for the actual database per service pattern in this application. (NO)
+    \item \textbf{Database per Service:} The architecture contains one PostgreSQL database instance which is accessed by multiple business microservices, therefore does not qualify for the actual database per service pattern in this application.
     
-    \item \textbf{API Composition:} There is no API composer microservice found in this project. (NO)
+    \item \textbf{API Composition:} There is no API composer microservice found in this project.
     
     \item \textbf{CQRS:} Similar to the examined project R2, the segregation of command and query tasks is implemented not on the entire application level but inside microservices with different handlers for the two tasks, by making use of MediatR library, which helps implement CQRS pattern in .NET microservices.
     For example, the "policy" service separates "create policy" command from "get policy details" query, by utilizing different data models required for these two tasks.
     Similarly, the "product" service separates commands that creates new products or changes the state of the products, from queries that return product details by product ID.
     Additionally, there are also services that utilizes only the command or query related tasks.
-    For example, the "dashboard" service only conducts queries that returns information about sales of the staff, while "pricing" service only executes price calculation commands based on a number of parameters. (YES)
+    For example, the "dashboard" service only conducts queries that returns information about sales of the staff, while "pricing" service only executes price calculation commands based on a number of parameters.
     
     \item \textbf{Event Sourcing:} In this architecture there is no event store used to implement event sourcing pattern.
-    As a side note, the microservices use MartenDB (XXX) tool, which is similar to an ORM in making it easier to talk to database entities by making use of classes, but also offers features such as enabling PostgreSQL databases to be used as a document database or an event store.
-    However, in this application, MartenDB is not used as an event store but as an intermediary for PostgreSQL by microservices. (NO)
+    As a side note, the microservices use MartenDB\footnotemark[105]\footnotetext[105]{\href{https://github.com/JasperFx/marten}{https://github.com/JasperFx/marten}} tool, which is similar to an ORM in making it easier to talk to database entities by making use of classes, but also offers features such as enabling PostgreSQL databases to be used as a document database or an event store.
+    However, in this application, MartenDB is not used as an event store but as an intermediary for PostgreSQL by microservices.
     
-    \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images or necessary instructions in the repository. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} There is no readily built VM images or necessary instructions in the repository.
     
-    \item \textbf{Service Instance per Container:} The business and infrastructure microservices are containerized in this application and can be instantiated by applying .yml files by Docker Compose. (YES)
+    \item \textbf{Service Instance per Container:} The business and infrastructure microservices are containerized in this application and can be instantiated by applying .yml files by Docker Compose.
     
-    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment. (NO)
+    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment.
     
-    \item \textbf{Health Check:} No manual or built-in health check mechanism is found in the application. (NO)
+    \item \textbf{Health Check:} No manual or built-in health check mechanism is found in the application.
     
-    \item \textbf{Distributed Tracing:} The microservices are not instrumented and the architecture does not contain a trace collector service. (NO)
+    \item \textbf{Distributed Tracing:} The microservices are not instrumented and the architecture does not contain a trace collector service.
     
-    \item \textbf{Log Aggregator:} Although the "policy" and "pricing" services use Serilog that can be used with a log aggregator, the architecture does not contain a log aggregator service. (NO)
+    \item \textbf{Log Aggregator:} Although the "policy" and "pricing" services use Serilog that can be used with a log aggregator, the architecture does not contain a log aggregator service.
     
-    \item \textbf{Circuit Breaker:} The "policy" microservice, by making use of Polly (XXX) circuit breaker library for .NET services, implements a simple retry logic in the "PricingClient.cs" file.
+    \item \textbf{Circuit Breaker:} The "policy" microservice, by making use of Polly\footnotemark[106]\footnotetext[106]{\href{https://github.com/App-vNext/Polly}{https://github.com/App-vNext/Polly}} circuit breaker library for .NET services, implements a simple retry logic in the "PricingClient.cs" file.
     In case an "HttpRequestException" occurs, the policy service is configured to retry up to three times the request.
-    However, because the full circuit breaker feature is not used in this service or any other service, the circuit breaker pattern is not utilized in this application. (NO)
+    However, because the full circuit breaker feature is not used in this service or any other service, the circuit breaker pattern is not utilized in this application.
     
     \item \textbf{Wrong Cut:} The application is intended to be a portal for insurance policy salespeople, hence the designed microservices are "document", "dashboard", "product", "pricing", "payment", "policy" and "policy search" services.
-    Because the system is divided regarding business domains and not technical layers, the wrong cut anti-pattern is prevented in this application. (NO)
+    Because the system is divided regarding business domains and not technical layers, the wrong cut anti-pattern is prevented in this application.
     
-    \item \textbf{Nano or Mega Microservices:} Regarding the scope of the application, there is no imbalance detected about the amount of tasks dedicated to each service that would result in a nano or mega microservice anti-pattern. (NO)
+    \item \textbf{Nano or Mega Microservices:} Regarding the scope of the application, there is no imbalance detected about the amount of tasks dedicated to each service that would result in a nano or mega microservice anti-pattern.
     
-    \item \textbf{ESB Usage:} The architecture does not contain a ESB component for communication purposes. (NO)
+    \item \textbf{ESB Usage:} The architecture does not contain a ESB component for communication purposes.
     
-    \item \textbf{Hardcoded Endpoints:} Although the microservices have a number of .json files that points to "localhost" and specific port numbers to be able to reach to other microservices, those files are intended to be used only in development stage and the setting files used in containerized deployment using Docker does not contain hardcoded endpoints to specific microservices. (NO)
+    \item \textbf{Hardcoded Endpoints:} Although the microservices have a number of "launchSettings.json" files that points to "localhost" and specific port numbers, those files are intended to be used only in development stage by .NET tools (such as Visual Studio Code or dotnet-cli) and the setting files used in containerized deployment using Docker does not contain hardcoded endpoints to specific microservices.
     
-    \item \textbf{No API Gateway:} The application uses Ocelot API gateway which prevents no API gateway anti-pattern. (NO)
+    \item \textbf{No API Gateway:} The application uses Ocelot API gateway which prevents no API gateway anti-pattern.
     
-    \item \textbf{Shared Persistence:} The business microservices access the same single PostgreSQL instance, hence become an example of shared persistence anti-pattern in this study. (YES)
+    \item \textbf{Shared Persistence:} The business microservices access the same single PostgreSQL instance, hence become an example of shared persistence anti-pattern in this study.
     
-    \item \textbf{No CI/CD:} The repository makes use of Travis CI to instantiate database and run tests upon accepted pull requests. (NO)
+    \item \textbf{No CI/CD:} The repository makes use of Travis CI to instantiate database and run tests upon accepted pull requests.
     
-    \item \textbf{Multiple Service Instances per Host:} Thanks to containerization of services, there is no absolute need to deploy multiple services to the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} Thanks to containerization of services, there is no absolute need to deploy multiple services to the same host.
     
-    \item \textbf{No API Versioning;} The application does not utilize API versioning to define API's of microservices in a versioned manner. (YES)
+    \item \textbf{No API Versioning;} The application does not utilize API versioning to define API's of microservices in a versioned manner.
     
-    \item \textbf{No Health Check:} The implementation is an example of no health check anti-pattern since no health mechanism is detected in the application. (YES)
+    \item \textbf{No Health Check:} The implementation is an example of no health check anti-pattern since no health mechanism is detected in the application.
     
-    \item \textbf{Local Logging:} Likewise, the implementation becomes an example of local logging since the architecture lacks a log aggregator service. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} Likewise, the implementation becomes an example of local logging since the architecture lacks a log aggregator service.
+\end{itemize}
 
 \subsubsection{R9: Elgris Microservice To-Do App Example}
 \label{subsubsec:R9}
 
-The next examined application is an example to-do app, implemented by individual contributors, for exemplary purposes for microservice architecture.
+The next examined application is an example to-do app, implemented by individual contributors, for exemplary purposes for microservices architecture.
 Similar to R7, the project is not actively maintained since 2018, yet it uses Docker Compose and Kubernetes, making it easier for inspection since it provides more modern organization of services.
 The systems contains a frontend service implemented in Vue.js and also takes on routing tasks as an API gateway.
 The business services include "Auth API" service in Go, "Users API" in Spring Boot, "TODOs API" in Node.js and "log message processor" in Python, with a Redis instance used only between "TODOs API and "log message processor".
@@ -2617,72 +2618,72 @@ The presence of design patterns and anti-patterns are indicated in Table~\ref{ta
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R9}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R9}
     \label{table:R9_result}
 \end{table}
 
 Next, we provide a short explanation about each pattern and anti-pattern below.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} The architecture contains a frontend service component written in Vue.js (XXX) that also acts as an API gateway by routing requests to "auth" and "to-do" services. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} The architecture contains a frontend service component written in Vue.js that also acts as an API gateway by routing requests to "auth" and "to-do" services.
     
-    \item \textbf{Service Mesh with Sidecar:} The microservices do not use sidecar proxies and there is no instruction provided to deploy the application on a service mesh. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The microservices do not use sidecar proxies and there is no instruction provided to deploy the application on a service mesh.
     
-    \item \textbf{Service Registry and Discovery:} The service registry and discovery tasks are delegated to Kubernetes by defining the "deployment" and "service" Kubernetes objects per microservice basis. (YES)
+    \item \textbf{Service Registry and Discovery:} The service registry and discovery tasks are delegated to Kubernetes by defining the "deployment" and "service" Kubernetes objects per microservice basis.
     
-    \item \textbf{Backends for Frontends:} In terms of responses to requests, there is no differentiation based on the kind of the requesting client. (NO)
+    \item \textbf{Backends for Frontends:} In terms of responses to requests, there is no differentiation based on the kind of the requesting client.
     
-    \item \textbf{Asynchronous Messaging:} The architecture contains a Redis instance for demonstrating message queueing mechanism in a microservice application.
-    Basically, it acts as a message buffer between "to-do" and "log message processor" services. (YES)
+    \item \textbf{Asynchronous Messaging:} The architecture contains a Redis instance for demonstrating message queuing mechanism in a microservice application.
+    Basically, it acts as a message buffer between "to-do" and "log message processor" services.
     
-    \item \textbf{Database per Service:} None of the microservices in this example use a database for persistence purposes. (NO)
+    \item \textbf{Database per Service:} None of the microservices in this example use a database for persistence purposes.
     
-    \item \textbf{API Composition:} The architecture does not contain a microservice that is implemented solely for composing API's of different services. (NO)
+    \item \textbf{API Composition:} The architecture does not contain a microservice that is implemented solely for composing API's of different services.
     
-    \item \textbf{CQRS:} There is no separation of the two tasks in microservice or handler level in this application. (NO)
+    \item \textbf{CQRS:} There is no separation of the two tasks in microservice or handler level in this application.
     
-    \item \textbf{Event Sourcing:} The application does not use notion of events and does not contain an event store. (NO)
+    \item \textbf{Event Sourcing:} The application does not use notion of events and does not contain an event store.
     
-    \item \textbf{Service Instance per Virtual Machine:} The microservices are not built into VM images in this repository. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The microservices are not built into VM images in this repository.
     
-    \item \textbf{Service Instance per Container:} Similar to other examples, the microservices are built into Docker images to be instantiated by Docker Compose, Kubernetes or any other appropriate tool. (YES)
+    \item \textbf{Service Instance per Container:} Similar to other examples, the microservices are built into Docker images to be instantiated by Docker Compose, Kubernetes or any other appropriate tool.
     
-    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment pattern. (NO)
+    \item \textbf{Serverless:} The repository does not contain instructions for serverless deployment pattern.
     
-    \item \textbf{Health Check:} There is no manual or automatically featured health endpoint in services and no probing mechanism defined in Kubernetes .yaml files. (NO)
+    \item \textbf{Health Check:} There is no manual or automatically featured health endpoint in services and no probing mechanism defined in Kubernetes .yaml files.
     
-    \item \textbf{Distributed Tracing:} All of the microservices are instrumented with Zipkin trace generator libraries in the programming languages they are written, and the architecture contains a Zipkin trace collector server that collects generated traces to display trace data in its UI. (YES)
+    \item \textbf{Distributed Tracing:} All of the microservices are instrumented with Zipkin trace generator libraries in the programming languages they are written, and the architecture contains a Zipkin trace collector server that collects generated traces to display trace data in its UI.
     
     \item \textbf{Log Aggregator:} Although one microservice is named as "message log processor", it only prints a subset of log messages generated by one single "to-do" microservice.
-    Because the microservices lack structured log generation and an appropriate log collector, this example application does not utilize log aggregator pattern. (NO)
+    Because the microservices lack structured log generation and an appropriate log collector, this example application does not utilize log aggregator pattern.
     
-    \item \textbf{Circuit Breaker:} No circuit breaker mechanism code or library is detected in this application. (NO)
+    \item \textbf{Circuit Breaker:} No circuit breaker mechanism code or library is detected in this application.
     
     \item \textbf{Wrong Cut:} The application is intended as a To-Do creator with simple authentication mechanism.
     Accordingly, the designed microservices are "frontend", "auth", "users", "to-do" and "message log processor", with an additional Redis instance used as message queue.
-    Although there are only two actual business microservices, namely "users" and "to-do", and the remaining microservices are either microservice architecture components such as "frontend" and "message queue" or cross-cutting services such as "auth", in our interpretation, it would be incorrect to conclude that the application contains the wrong cut anti-pattern, since the small scope of the application resulted in a few business microservices and the architecture is not layered into three main UI, logic and persistence layers seen in microservice applications that have the wrong cut anti-pattern. (NO)
+    Although there are only two actual business microservices, namely "users" and "to-do", and the remaining microservices are either microservice architecture components such as "frontend" and "message queue" or cross-cutting services such as "auth", in our interpretation, it would be incorrect to conclude that the application contains the wrong cut anti-pattern, since the small scope of the application resulted in a few business microservices and the architecture is not layered into three main UI, logic and persistence layers seen in microservice applications that have the wrong cut anti-pattern.
     
-    \item \textbf{Nano or Mega Microservice:} Similarly,the "message log processor" would be a candidate for nano microservice anti-pattern in a regular microservice application, however, the small scope of this example makes it incorrect, in our interpretation, to conclude that the example contains a nano microservice anti-pattern. (NO)
+    \item \textbf{Nano or Mega Microservice:} Similarly,the "message log processor" would be a candidate for nano microservice anti-pattern in a regular microservice application, however, the small scope of this example makes it incorrect, in our interpretation, to conclude that the example contains a nano microservice anti-pattern.
     
-    \item \textbf{ESB Usage:} The architecture does not contain a ESB component. (NO)
+    \item \textbf{ESB Usage:} The architecture does not contain a ESB component.
     
-    \item \textbf{Hardcoded Endpoints:} Although the application uses service registry and discovery mechanism of Kubernetes, the source code contains the hardcoded IP addresses followed by the port number, such as "http://127.0.0.1:8081" in "index.js" file of frontend to point to the "auth" service, in case Kubernetes is not for deployment and all microservices are deployed to the same host.
-    In contrary to the detection criteria, because the address "127.0.0.1" is used to point to another service in the source code, this case constitutes as an example of hardocded endpoints anti-pattern. (YES)
+    \item \textbf{Hardcoded Endpoints:} Although the application uses service registry and discovery mechanism of Kubernetes, the source code contains the hardcoded IP addresses followed by the port number, such as "http://127.0.0.1:8081" in "index.js" file of frontend to point to the "auth" service, in case Kubernetes is used not for deployment and all microservices are deployed to the same host.
+    Because the address "127.0.0.1" is used to point to another service in the source code, this case constitutes as an example of hardocded endpoints anti-pattern.
     
-    \item \textbf{No API Gateway:} The presence of frontend service that acts like an API gateway prevents no API gateway anti-pattern by serving a single entry point to the microservices. (NO)
+    \item \textbf{No API Gateway:} The presence of frontend service that acts like an API gateway prevents no API gateway anti-pattern by serving a single entry point to the microservices.
     
-    \item \textbf{Shared Persistence:} Because of the lack of any persistence mechanism, the shared persistence anti-pattern is not detected in this application. (NO)
+    \item \textbf{Shared Persistence:} Because of the lack of any persistence mechanism, the shared persistence anti-pattern is not detected in this application.
     
-    \item \textbf{No CI/CD:} The repository does not use any CI/CD tool for automation purposes. (YES)
+    \item \textbf{No CI/CD:} The repository does not use any CI/CD tool for automation purposes.
     
-    \item \textbf{Multiple Service Instance per Host:} There is no absolute need for multiple service instance per host anti-pattern to occur in this application, thanks to individual containerization of microservices. (NO)
+    \item \textbf{Multiple Service Instance per Host:} There is no absolute need for multiple service instance per host anti-pattern to occur in this application, thanks to individual containerization of microservices.
     
-    \item \textbf{No API Versioning:} The endpoints of services do not utilize API versioning, hence causing this application to be an example of no API versioning anti-pattern. (YES)
+    \item \textbf{No API Versioning:} The endpoints of services do not utilize API versioning, hence causing this application to be an example of no API versioning anti-pattern.
     
-    \item \textbf{No Health Check:} The lack of health check mechanisms results in no health check anti-pattern in this implementation. (YES)
+    \item \textbf{No Health Check:} The lack of health check mechanisms results in no health check anti-pattern in this implementation.
     
-    \item \textbf{Local Logging:} Similarly, this application becomes an example of local logging anti-pattern as a result of not utilizing a log aggregator service. (YES)
-\end{enumerate}
+    \item \textbf{Local Logging:} Similarly, this application becomes an example of local logging anti-pattern as a result of not utilizing a log aggregator service.
+\end{itemize}
 
 \subsubsection{R10: Run-Asp.NetCore-Microservices Application}
 \label{subsubsec:R10}
@@ -2690,12 +2691,12 @@ Next, we provide a short explanation about each pattern and anti-pattern below.
 The last examined application is the Run-Asp.NetCore-Microservices application, which is an e-commerce application that has microservice architecture and implemented using .NET microservice components.
 The architecture contains an API gateway, an aggregator service that serves additional API endpoints by combining calls from actual business microservices, four business microservices that have their own database instances, a RabbitMQ message broker instance and a web status service.
 All four business microservices have API endpoints defined using regular HTTP, while "discount" microservice has an additional API definition using gRPC protocol.
-The architectural diagram of the application is illustrated is Figure~\ref{fig:R10_arch}, found in the repository and displayed here as it is.
+The architectural diagram of the application is illustrated in Figure~\ref{fig:R10_arch}, which is found in the repository and displayed here as it is.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{myImages/R10.png}
-\caption{Architectural Diagram of Run-Asp.NetCore-Microservices Application, by Aspnetrun under MIT license}
+\caption{Architectural diagram of Run-Asp.NetCore-Microservices application, by Aspnetrun under MIT license}
 \label{fig:R10_arch}
 \end{figure}
 
@@ -2754,77 +2755,79 @@ The presence of each design pattern and anti-pattern is indicated in Table~\ref{
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Presence of microservice design patterns and anti-Patterns in repository R10}
+    \caption{Presence of microservice design patterns and anti-patterns in repository R10}
     \label{table:R10_result}
 \end{table}
 
 Below, the design patterns and anti-patterns in this application are concisely explained.
 
-\begin{enumerate}
-    \item \textbf{API Gateway:} Similar to the project R8, the architecture contains Ocelot API gateway, which is a .Net microservice component that routes requests to the underlying four business microservices, according to the routing rules defined in "ocelot.json" file. (YES)
+\begin{itemize}
+    \item \textbf{API Gateway:} Similar to the project R8, the architecture contains Ocelot API gateway, which is a .Net microservice component that routes requests to the underlying four business microservices, according to the routing rules defined in "ocelot.json" file.
     
-    \item \textbf{Service Mesh with Sidecar:} The microservices are not injected with sidecars and the repository does not contain instructions for deployment on a service mesh. (NO)
+    \item \textbf{Service Mesh with Sidecar:} The microservices are not injected with sidecars and the repository does not contain instructions for deployment on a service mesh.
     
-    \item \textbf{Service Registry and Discovery:} The application uses the networking feature of Docker, which provides service registry and discovery only on a single host.
-    Because the application lacks a service registry and discovery mechanism that is suitable for deployment in a actual distributed setting, the service registry and discovery pattern is not employed in this example. (NO)
+    \item \textbf{Service Registry and Discovery:} The application uses Docker, which provides service registry and discovery only on a single host in case a "network" in "docker-compose.yml" is defined.
+    The application does not even define a network a single host using this feature and calls services using "localhost" and port numbers.
+    Because the application lacks a service registry and discovery mechanism that is suitable for deployment in a actual distributed setting, the service registry and discovery pattern is not employed in this example.
     
     \item \textbf{Backends for Frontends:} The architecture contains an aggregator service, which could be used for a different kind of client.
-    However, including the aggregator service, none of the microservices differentiate responses to the API calls based on the kind of client, and for this reason, the backends for frontends pattern is not utilized by this application. (NO)
+    However, including the aggregator service, none of the microservices differentiate responses to the API calls based on the kind of client, and for this reason, the backends for frontends pattern is not utilized by this application.
     
     \item \textbf{Asynchronous Messaging:} The two of the business microservices utilize RabbitMQ message broker instance for asynchronous communication, in a publish/subscribe manner.
-    Specifically, the "basket" microservice publishes "BasketCheckout" event, while the "ordering" service consumes the events put into the "BasketCheckout" event queue. (YES)
+    Specifically, the "basket" microservice publishes "BasketCheckout" event, while the "ordering" service consumes the events put into the "BasketCheckout" event queue.
     
-    \item \textbf{Database per Service:} All four business microservices have their own SQL or No-SQL database instances. (YES)
+    \item \textbf{Database per Service:} All four business microservices have their own SQL or NoSQL database instances.
     
     \item \textbf{API Composition:} The "shopping" microservice is an example of an API composer microservice.
-    While it does not apply complex logic, it serves one endpoint by making calls to actual "catalog", "basket" and "ordering" business microservices and transforming the responses into a single data structure. (YES)
+    While it does not apply complex logic, it serves one endpoint by making calls to actual "catalog", "basket" and "ordering" business microservices and transforming the responses into a single data structure.
     
     \item \textbf{CQRS:} Similar to examined .NET microservice applications, the CQRS pattern is implemented as an example inside one business microservice.
-    In this example, the "ordering" microservice separates checkout, create and delete order commands from order queries by making use of .NET CQRS library MediatR. (YES)
+    In this example, the "ordering" microservice separates checkout, create and delete order commands from order queries by making use of .NET CQRS library MediatR.
     
-    \item \textbf{Event Sourcing:} Although the implementation makes use of the notion of events for communication, the system lacks and event store for event sourcing pattern to be utilized. (NO)
+    \item \textbf{Event Sourcing:} Although the implementation makes use of the notion of events for communication, the system lacks and event store for event sourcing pattern to be utilized.
     
-    \item \textbf{Service Instance per Virtual Machine:} The repository does not include readily built VM images or instruction to build and deploy them in an appropriate setting. (NO)
+    \item \textbf{Service Instance per Virtual Machine:} The repository does not include readily built VM images or instruction to build and deploy them in an appropriate setting.
     
-    \item \textbf{Service Instance per Container:} The business and auxiliary microservices are containerized into individual Docker images, making service instance per container deployment pattern to be the go-to option for this application. (YES)
+    \item \textbf{Service Instance per Container:} The business and auxiliary microservices are containerized into individual Docker images, making service instance per container deployment pattern to be the go-to option for this application.
     
-    \item \textbf{Serverless:} Similar to other projects, the repository does not provide instructions to deploy the application on a serverless platform. (NO)
+    \item \textbf{Serverless:} Similar to other projects, the repository does not provide instructions to deploy the application on a serverless platform.
     
-    \item \textbf{Health Check:} The individual microservices implement "/hc" health check endpoints by utilizing the .NET health check endpoint feature, while a separate watchdog service named "WebStatus" pings the health check endpoints of services and display the status of services in a simple UI in the browser. (YES)
+    \item \textbf{Health Check:} The individual microservices implement "/hc" health check endpoints by utilizing the .NET health check endpoint feature, while a separate watchdog service named "WebStatus" pings the health check endpoints of services and display the status of services in a simple UI in the browser.
     
-    \item \textbf{Distributed Tracing:} The microservices are not instrumented with a trace generator client and the system is missing a trace collector service such as Zipkin. (NO)
+    \item \textbf{Distributed Tracing:} The microservices are not instrumented with a trace generator client and the system is missing a trace collector service such as Zipkin.
     
     \item \textbf{Log Aggregator:} The microservices make use of Serilog for structured logging in microservices, an ElasticSearch instance for log storage and filtering purposes and a Kibana instance for log visualisation.
-    Because the architecture contains all basic elements of log aggregation, it can be concluded that this application is indeed a good example of log aggregator pattern. (YES)
+    Because the architecture contains all basic elements of log aggregation, it can be concluded that this application is indeed a good example of log aggregator pattern.
     
     \item \textbf{Circuit Breaker:} The frontend service and the "shopping" aggregator utilize Polly library to implement circuit breaking mechanism.
-    Unlike the examined project R8, the services use not only the retry mechanism but actual circuit breaking feature of Polly library, by specifying the number of allowed exceptions and the time period the circuit stays in the open state. (YES)
+    Unlike the examined project R8, the services use not only the retry mechanism but actual circuit breaking feature of Polly library, by specifying the number of allowed exceptions and the time period the circuit stays in the open state.
     
     \item \textbf{Wrong Cut:} The application is intended to be an example e-commerce website, so the designed microservices are "catalog", "basket", "ordering", "discount" and "shopping aggregator", along with an API gateway, event bus and monitoring services.
-    Similar to other examples, this application is not layered into three technical layers and hence does not contain the wrong cut anti-pattern. (NO)
+    Similar to other examples, this application is not layered into three technical layers and hence does not contain the wrong cut anti-pattern.
     
-    \item \textbf{Nano or Mega Microservices:} None of the microservices seem to be a nano or mega microservice since each service handles a couple of ordinary GET and POST requests. (NO)
+    \item \textbf{Nano or Mega Microservices:} None of the microservices seem to be a nano or mega microservice since each service handles a couple of ordinary GET and POST requests.
     
-    \item \textbf{ESB Usage:} The system does not contain an ESB component. (NO)
+    \item \textbf{ESB Usage:} The system does not contain an ESB component.
     
-    \item \textbf{Hardcoded Endpoints:} The implementation contains host name "localhost" in API gateway and health status checking microservice in order to point to the host of the microservices for routing and health checking purposes.
-    Because the host name is used to locating the host of the service from another service, the application contains the hardcoded endpoints anti-pattern. (YES)
+    \item \textbf{Hardcoded Endpoints:} The implementation of application contains URLs such as "http://localhost:8000/hc" in "appsettings.json" file of web health status checking service to locate services to be checked, and URLs to "catalog", "basket" and "ordering" services in the "appsettings.json" file of API composer "shopping" service, such as "'CatalogUrl':'http://localhost:8000'".
+    In addition, locating the services from API gateway is done through specifying "localhost" as hosts of services and specifying port numbers of services in "ocelot.json" file, although they are not fully qualified hardcoded endpoints but hardcoded specifications to be consumed by API gateway to locate business microservices for routing purposes.
+    Because of these cases, the application contains the hardcoded endpoints anti-pattern.
     
-    \item \textbf{No API Gateway:} The presence of the Ocelot API gateway prohibits the no API gateway anti-pattern in this application. (NO)
+    \item \textbf{No API Gateway:} The presence of the Ocelot API gateway prohibits the no API gateway anti-pattern in this application.
     
-    \item \textbf{Shared Persistence:} The business microservices have their own different database instances and no shared connection string is detected in Docker Compose .yaml files. (NO)
+    \item \textbf{Shared Persistence:} The business microservices have their own different database instances and no shared connection string is detected in Docker Compose .yaml files.
     
-    \item \textbf{No CI/CD:} The repository does no contain any automation file to trigger a CI/CD mechanism. (YES)
+    \item \textbf{No CI/CD:} The repository does no contain any automation file to trigger a CI/CD mechanism.
     
-    \item \textbf{Multiple Service Instances per Host:} The business and auxiliary microservices are containerized into individual Docker images, preventing the requirement to deploy all instances to the same host. (NO)
+    \item \textbf{Multiple Service Instances per Host:} The business and auxiliary microservices are containerized into individual Docker images, preventing the requirement to deploy all instances to the same host.
     
     \item \textbf{No API Versioning:} The endpoints of the microservices contain "api/v1/" prefix, even though the only version used is v1.
-    Although the version number does not seem to change during any stage of software development lifecycle, because the repository is intended to be an example microservice architecture and not an actual product to be deployed in production stage, the practice of API versioning can be said to be employed in this application. (NO)
+    Although the version number does not seem to change during any stage of software development lifecycle, because the repository is intended to be an example microservice architecture and not an actual product to be deployed in production stage, the practice of API versioning can be said to be employed in this application.
     
-    \item \textbf{No Health Check:} The health check mechanisms explain in the related item prevents no health check anti-pattern for this application. (NO)
+    \item \textbf{No Health Check:} The health check mechanisms explain in the related item prevents no health check anti-pattern for this application.
     
-    \item \textbf{Local Logging:} Lastly, the application avoids local logging anti-pattern by employing a structured logging tool and a log aggregator service. (NO)
-\end{enumerate}
+    \item \textbf{Local Logging:} Lastly, the application avoids local logging anti-pattern by employing a structured logging tool and a log aggregator service.
+\end{itemize}
 
 \section{Discussion of Findings}
 \label{sec:discussion}
@@ -2854,7 +2857,7 @@ Below, Table \ref{table:total_number} lists the total number of occurrence of pa
     \rowcolor{bluepoli!10}
     Backends for Frontends & 1 & ESB Usage & – \T\B \\
     \hline
-    Asynchronous Messaging & 7 & Hardcoded Endpoints & 4 \T\B \\
+    Asynchronous Messaging & 7 & Hardcoded Endpoints & 5 \T\B \\
     \hline
     \rowcolor{bluepoli!10}
     Database per Service & 2 & No API Gateway & – \T\B \\
@@ -2968,14 +2971,6 @@ By inspecting more open source projects, the ability to generalise the result mi
 %	APPENDICES
 %-------------------------------------------------------------------------
 
-\cleardoublepage
-\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
-\appendix
-\chapter{Appendix A}
-If you need to include an appendix to support the research in your thesis, you can place it at the end of the manuscript.
-An appendix contains supplementary material (figures, tables, data, codes, mathematical proofs, surveys, \dots)
-which supplement the main results contained in the previous chapters.
-
 % LIST OF FIGURES
 \listoffigures
 
@@ -2994,7 +2989,6 @@ which supplement the main results contained in the previous chapters.
         BC & Bounded Context \\[2px]
         CI/CD & Continuous Integration / Continuous Delivery \\[2px]
         CaaS & Container-as-a-Service \\[2px]
-        CQRS & Command Query Responsibility Segregation \\[2px]
         DDD & Domain Driven Design \\[2px]
         DNS & Domain Name System \\[2px]
         DevOps & A combination of software development and IT operations \\[2px]
@@ -3002,8 +2996,6 @@ which supplement the main results contained in the previous chapters.
         ESB & Enterprise Service Bus \\[2px]
         HTTP & Hypertext Transfer Protocol \\[2px]
         IaaS & Infrastructure-as-a-Service \\[2px]
-        IOT & Internet of Things \\[2px]
-        JSON & Javascript Object Notation \\[2px]
         LOC & Lines of Code \\[2px]
         MSMQ & Microsoft Messaging Queuing \\[2px]
         NoSQL & Not-Only-SQL, to refer to different kinds of non-relational databases \\[2px]
@@ -3011,7 +3003,6 @@ which supplement the main results contained in the previous chapters.
         QoS & Quality of Service \\[2px]
         REST & Representational State Transfer \\[2px]
         RESTful API & an API that adheres to REST principles \\[2px]
-        SOA & Service Oriented Architecture \\[2px]
         SOAP & Simple Object Access Protocol \\[2px]
         SQL & Structured Query Language \\[2px]
         SSH & Secure Shell \\[2px]
@@ -3022,9 +3013,24 @@ which supplement the main results contained in the previous chapters.
     \end{tabular}
 \end{table}
 
+
+
 % ACKNOWLEDGEMENTS
 \chapter*{Acknowledgements}
-Here you might want to acknowledge someone.
+
+First and foremost, I would like to thank my advisor Prof. Elisabetta Di Nitto for her kind support and guidance throughout my thesis.
+Her suggestion of the topic of microservices excited me at the beginning, since a study about a novel software architecture would help me learn about different aspects of modern software development and see the big picture by connecting several theoretical parts, and in doing so, preparing me to my new career as a software engineer, graduated with a masters degree from one of the best universities in Europe.
+As I started my initial research about the topic, I started to realize how big the knowledge gap is that I have regarding this area and technologies around this architecture.
+Nonetheless, thanks to the encouragement, never-ending patience and assistance of Prof. Di Nitto, I continued my study on microservices and created a work that I am proud of today.
+\\
+Next, I would like to acknowledge the authorities of Politecnico di Milano regarding the "Diritto allo Studio Universitario" scholarship that they provided me during the course of my masters degree.
+Without this financial aid, it would be much more difficult to continue my studies that require me to work long hours while stressing financially in a foreign country for me.
+\\
+I would also like to thank all of my friends in Italy and my family in Turkey for the support they showed and the joy they brought to my life during this chapter of my life.
+In addition to the academic achievement, these few years have definitely been remarkable for me in the sense that I got to experience more in life, learn lessons and expand my vision.
+\\
+As I am writing these words now, my two brothers Tarık and İlke are studying hard for their university and high school entrance exams.
+I would like to dedicate my work to them in the hope that they will be able to pass their exams, enter a good university and a good high school and take their first steps in their happy and successful lives.
 
 \cleardoublepage
 
