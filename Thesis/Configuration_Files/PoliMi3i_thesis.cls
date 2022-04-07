@@ -86,13 +86,11 @@
 \RequirePackage{xkeyval} % Handling keyword options.
 
 % Define keys for title pages
-\newif\if@cosupervisorexist\@cosupervisorexistfalse
 \define@key[OIST]{title}{title}{\def\thesistitle{#1}}
 \define@key[OIST]{title}{course}{\def\course{#1}}
 \define@key[OIST]{title}{name}{\def\name{#1}}
 \define@key[OIST]{title}{ID}{\def\ID{#1}}
 \define@key[OIST]{title}{advisor}{\def\advisor{#1}}
-\define@key[OIST]{title}{coadvisor}{\def\coadvisor{#1}\@cosupervisorexisttrue}
 \define@key[OIST]{title}{academicyear}{\def\academicyear{#1}}
 \define@key[OIST]{title}{course}{\def\course{#1}}
 
@@ -129,8 +127,6 @@
 			Student ID: {\ID}
 			\\
 			Advisor: {\advisor}
-			\\
-			Co-advisors: {\coadvisor}
 			\\
 			Academic Year: {\academicyear}
 			}

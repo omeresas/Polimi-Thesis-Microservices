@@ -130,7 +130,7 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Design Patterns and Anti-Patterns in Microservices Architecture: A Taxonomy Proposal and Study on Open Source Projects, % Title of the thesis
+	title=Design Patterns and Anti-Patterns in Microservices Architecture: A Classification Proposal and Study on Open Source Projects, % Title of the thesis
 	name=Ömer Esas, % Author Name and Surname
 	course=Computer Science and Engineering - Ingegneria Informatica, % Study Programme (in Italian)
 	ID  = 917254,  % Student ID number (numero di matricola)
@@ -155,19 +155,37 @@ Our analysis shows that there does not exist a general agreement in the academia
 Regarding the presence of design patterns and anti-patterns, we selected ten open source microservices applications, which have the highest number of stars on GitHub, excluding tool-kits, frameworks and libraries from the search result.
 Through a manual process on these projects, we found that while some design patterns and anti-patterns can be verified to exist in practical cases, there are also some patterns and anti-patterns which are rare, if not absent at all.
 In conclusion, we discuss the results found and experiences gained in this study, before adding a few statements about future work.
-
 \\
-
+\\
 \textbf{Keywords:} Microservice, design pattern, anti-pattern, classification, open source project % Keywords
 
 % ABSTRACT IN ITALIAN
 \chapter*{Abstract in lingua italiana}
-XXX TO BE DONE AFTER FINAL VERSION OF ENGLISH ABSTRACT
 
-Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole chiave.
+Mentre i giganti della tecnologia hanno adottato con successo l'architettura dei microservizi negli ultimi dieci anni, lì
+è stato un aumento della ricerca sui microservizi nel mondo accademico e un maggiore interesse
+da molte aziende verso questo metodo di costruzione distribuito, fault-tolerant e
+applicazioni complesse. Ulteriori ricerche ed esperienze pratiche hanno portato all'emergere di
+diversi modi desiderabili e indesiderabili per risolvere i problemi dei sistemi basati su microservizi,
+chiamati modelli di progettazione e anti-modelli di microservizi. In questo studio, diamo un'occhiata
+il mondo accademico attraverso la revisione della letteratura e nei casi pratici attraverso l'apertura popolare
+progetti di microservizi di origine. Miriamo a scoprire se esiste una classificazione in
+il mondo accademico in merito a pattern e anti-pattern di microservizi e ne propone uno nel caso
+non c'è consenso, oltre a indagare l'effettiva presenza di questi pattern e
+anti-pattern manualmente in dieci note applicazioni open source basate su microservizi.
+La nostra analisi mostra che non esiste un accordo generale nel mondo accademico in
+termini di classificazione dei pattern e degli anti-pattern dei microservizi, quindi abbiamo proposto
+la nostra tassonomia cercando di trovare un terreno comune e fornendo una giustificazione pertinente.
+Per quanto riguarda la presenza di design pattern e anti-pattern, abbiamo selezionato dieci open source
+applicazioni di microservizi, che hanno il numero più alto di stelle su GitHub, escluse
+toolkit, framework e librerie dal risultato della ricerca. Attraverso un processo manuale su
+questi progetti, abbiamo scoperto che mentre alcuni modelli di progettazione e anti-modelli possono essere verificati
+esistere in casi pratici, ci sono anche alcuni modelli e anti-modelli che sono rari,
+se non del tutto assente. In conclusione, discutiamo dei risultati trovati e delle esperienze maturate
+questo studio, prima di aggiungere alcune affermazioni sul lavoro futuro.
 \\
 \\
-\textbf{Parole chiave:} qui, vanno, le parole chiave, della tesi % Keywords (italian)
+\textbf{Parole chiave:} Microservizio, design pattern, anti-pattern, classificazione, progetto open source % Keywords (italian)
 
 %----------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
@@ -246,7 +264,7 @@ Focusing on each element of this design decision will bring about more clarity a
 \\
 First, the microservice architecture divide the system into parts, as other architectural styles do, based on various points of views of the system.
 Single Responsibility Principle, one of the famous SOLID principles of software engineering, promotes the idea that every module, class or a function in a computer program should have responsibility over a single part of that program's functionality, and it should encapsulate that part\footnote{\href{https://docs.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles}{Microsoft Docs: Architectural Principles}}.
-The microservice architecture takes that idea to the extreme and encourages developing independent microservices that tackles just one business functionality.
+The microservice architecture takes that idea to the extreme and encourages developing independent microservices that tackle just one business functionality.
 Unlike a monolithic application, the system is not layered as database, back-end and front-end, or more generally, data, logic and UX layers, but consists of microservices that are created around business capabilities, as displayed in Figure~\ref{fig:monovsmicro}.
 
 \begin{figure}[H]
@@ -888,7 +906,7 @@ To answer first research question, the following steps have been adopted.
     For this reason, the systematic mapping studies found in the literature review process have been consulted.
     Because these studies do not bring a classification, they have been labeled as secondary studies.
     
-    \item The contents of primary and secondary studies that are related to RQ1 have been summarized and under the light of findings a classification proposal is created in Section \ref{subsec:classification_result}
+    \item The contents of primary and secondary studies that are related to RQ1 have been summarized and under the light of findings a classification proposal is developed in Section \ref{subsec:classification_result}
 \end{itemize}
 
 Regarding the research method for the second research question, the work provided in the steps below have been conducted.
@@ -976,9 +994,7 @@ Regarding the research method for the second research question, the work provide
         
         \item \textbf{Hardcoded Endpoints:} For hardcoded endpoints, we checked for hardcoded IP address and port number pairs that are used to locate services from one service or through configuration files.
         The port numbers are manually found in most cases inside Docker or Kubernetes files.
-        For IP addresses, we opted for simple regular expression \begin{verbatim}
-            \b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b
-        \end{verbatim}
+        For IP addresses, we opted for simple regular expression "\textbackslash b\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash b"
         that finds four numbers up to three digits separated by dots, such as "0.0.0.0" but also "999.999.999.999", since there was already few items in the search result.
         We inspected the found cases to see if it is indeed related to a bad practice about service discovery, and omitted cases where the IP addresses such as "0.0.0.0" and "127.0.0.1", in addition to word "localhost", are used in tests for the individual microservices, or for starting servers and binding them to localhost inside Docker containers.
         In short, we tried to inspect the use of hardcoded IPs and port numbers in a way that separates the cases where they are used to by-pass the service discovery mechanism from cases where they are used for testing or legitimate server starting code from the point of view inside the Docker container.
@@ -2889,7 +2905,7 @@ Below, Table \ref{table:total_number} lists the total number of occurrence of pa
     \hline
     \end{tabular}
     \\[10pt]
-    \caption{Total Number of Design Patterns and Anti-Patterns in Examined Projects}
+    \caption{Total number of design patterns and anti-patterns in examined projects}
     \label{table:total_number}
 \end{table}
 
