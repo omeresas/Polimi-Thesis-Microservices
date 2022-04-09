@@ -133,15 +133,14 @@
 \section{Introduction}
 \label{sec:introduction}
 
-As tech giants such as Amazon, Netflix and Uber adopted microservices architecture successfully in the past decade, there has been an increase in the microservices research in the academia and greater interest from many companies towards this method of building distributed, fault-tolerant and complex applications.
-More research and practical experience led to the emergence of several desirable and undesirable ways of solving problems faced in microservice-based systems, called microservices design patterns and anti-patterns.
-In this study, we aim to explore these patterns and anti-patterns, specifically, in terms of classification in the literature and detection of them on a group of open source microservices projects.
-We aim to observe the way the patterns and anti-patterns are classified in the literature, check if there exists a common way of classification and propose our own taxonomy in case there is no consensus in the literature.
+As tech giants such as Amazon, Netflix and Uber adopted microservices architecture successfully in the past decade, there has been greater interest from the academia and the industry towards the microservices architecture and its principles.
+The attempts to implement applications using microservices architecture led to the emergence of desirable and undesirable ways of solving common problems faced in distributed applications, namely the design patterns and anti-patterns.
+In this study, , we aim to observe the way the design patterns and anti-patterns are classified in the literature, check if there exists a common way of classification and propose our own taxonomy in case there is no consensus in the literature.
 Then, we select ten open source microservice projects and manually inspect source code to detect the design patterns and anti-patterns of microservices architecture, in order to observe the correlation between the "theory" in the literature and practical cases to some extent.
 \\
 To the best of our knowledge, there are two studies in the literature that are similar to our work.
-The researchers of the first similar study\cite{8719492} inspect a set of thirty open source microservice projects using automated tools that check the dependency files and verify the use of the pattern by checking the documentation of the utilized framework.
-The researchers of the second similar study\cite{10.1145/3424771.3424812} manually check sixty seven projects to detect anti-patterns, which they discover as a result of their systematic literature review for microservices anti-patterns.
+The researchers of the first similar study \cite{8719492} inspect a set of thirty open source microservice projects using automated tools that check the dependency files and verify the use of the pattern by checking the documentation of the utilized framework.
+The researchers of the second similar study \cite{10.1145/3424771.3424812} manually check sixty seven projects to detect anti-patterns, which they discover as a result of their systematic literature review for microservices anti-patterns.
 Our study differs from the two studies in considering not only design patterns or anti-patterns, but both of these good and bad practices, in addition to using only manual inspection on projects that use many different technologies.
 
 %-----------------------------------------------------------------------------
@@ -151,71 +150,61 @@ Our study differs from the two studies in considering not only design patterns o
 \section{State of the Art}
 \label{sec:State of the Art}
 
-To be able to explain the methodology and the results of this study, we see it fit to describe microservices architecture and list its design patterns and anti-patterns, which are obtained from Microsoft Cloud patterns website\cite{microsoft_docs}, microservice patterns book\cite{richardson_book} and two studies about microservices anti-patterns\cite{10.1145/3424771.3424812}\cite{9522227}.
-Although we present only the names of design patterns and anti-patterns here to keep it concise, they are explained in detail in the main thesis paper.
+%Before presenting the research methodology and the results, we briefly explain the microservices %architecture, and the design patterns and anti-patterns around this structure.
 
 \subsection{Microservices Architecture}
 \label{subsec:microservice}
 
 In essence, microservice-based applications consists of a number of small software services, that are designed to carry out one business capability of the application.
-The system is not divided into technical layers, instead, the whole application domain is partitioned into bounded contexts, each of which is then, ideally, assigned to one small self-sufficient team to implement as a microservice.
-The team is responsible for the implementation, deployment and maintenance of the particular microservice, meaning that, they are free to choose their programming language, libraries and frameworks to implement, and free in their choice of CI/CD tools to utilize during various stages of software development.
-If required for the particular business capability, the team can persist the data, which is modeled around that bounded context, by making use of a database, again, selected by the team according to the needs and suitability of that particular microservice.
+Each microservice is implemented and maintained by a small team who is free in choosing the kind of tech stack they use during various stages of a typical software lifecycle.
+If required for the particular business capability, the team can persist the data, which is modeled around that business capability, by making use of a database selected by the team according to the needs of the microservice.
 Last but not least, the microservices communicate with each other by means of network calls, using well-defined APIs, and simple protocols like REST over HTTP.
-Unlike Service Oriented Architecture (SOA) that utilize Enterprise Service Buses (ESB) with additional capabilities, microservices opt for simple communication infrastructure that can do basic routing of messages, as summarised in the motto "simple endpoints, dumb pipes".
-Figure~\ref{fig:monovsmicro} illustrates the microservices architecture characteristics by comparing it with a typical monolithic architecture.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.40\textwidth]{monovsmicro.png}
-\caption{Monolithic vs Microservices Architecture}
-\label{fig:monovsmicro}
-\end{figure}
+Microservices opt for simple communication infrastructure that can do basic routing of messages, as summarised in the motto "simple endpoints, dumb pipes".
 
 \subsection{Design Patterns}
 \label{subsec:patterns}
 
-The design patterns of microservices architecture considered in this study are listed below:
+The design patterns of microservices architecture considered in this study are shortly described below, which are obtained after reviewing sources such as microservices patterns book \cite{richardson_book}, Microsoft Cloud patterns website \cite{microsoft_docs} and papers that contain classifications of design patterns \cite{TaibiD2018APfM}\cite{KARABEYAKSAKALLI2021111014}\cite{valdivia}\cite{10.1145/3241403.3241429}\cite{8719492}\cite{9105640}.
 
 \begin{itemize}
-    \item API Gateway
-    \item Service Mesh with Sidecar
-    \item Service Registry and Discovery
-    \item Backends for Frontends
-    \item Asynchronous Messaging
-    \item Database per Service
-    \item Saga
-    \item API Composition
-    \item Command Query Responsibility Segregation (CQRS)
-    \item Event Sourcing
-    \item Service Instance per Virtual Machine
-    \item Service Instance per Container
-    \item Serverless
-    \item Health Check API
-    \item Log Aggregator
-    \item Distributed Tracing
-    \item Circuit Breaker
+    \item API Gateway: Using a intermediary service between frontend and microservices to route requests to specific microservices depending on the request.
+    \item Service Mesh with Sidecar: Utilizing proxies configured via a master service to help with infrastructure-related tasks.
+    \item Service Registry and Discovery: Having an "address-book" in terms of host and port numbers for microservices to let them locate each other and make API calls.
+    \item Backends for Frontends: Creating multiple microservices that deal with the same business capability but return different data according to the type of the client (mobile/web/third party etc).
+    \item Asynchronous Messaging: Utilizing a helper service to receive, temporarily store (buffer) and distribute messages between microservices.
+    \item Database per Service: Using separate database instances to be used only by a single microservice.
+    \item Saga: Having a coordinator service or distributed logic to implement the atomicity in distributed transactions.
+    \item API Composition: Using multiple microservices to receive different data and combining them to serve a separate API call.
+    \item Command Query Responsibility Segregation (CQRS): Having multiple microservice instances that solely focus on either "read" or "write" tasks of the application.
+    \item Event Sourcing: Embracing event-driven communication, storing events in a event store to persist data in a temporal way.
+    \item Service Instance per Virtual Machine: Creating and deploying VM images per microservice.
+    \item Service Instance per Container: Creating and deploying Docker containers per microservice.
+    \item Serverless: Delegating infrastructure/server management tasks to a cloud distributor, deploying the application simply by uploading the code.
+    \item Health Check API: Implementing an additional API endpoint in microservices to check the status of instances periodically
+    \item Log Aggregator: Receiving logs of microservices in a central service for ease of monitoring and debugging.
+    \item Distributed Tracing: Emitting metadata from microservices about recent API calls, to be received by a central service for combining metadata to observe the "journey" of an API call as a chain of different microservices.
+    \item Circuit Breaker: Configuring microservices to "fail-fast", i.e., return an error immediately if the requested microservice is unresponsive according to some criteria (time accumulated, number of trials, etc), and start retries in small numbers.
 \end{itemize}
 
 \subsection{Anti-Patterns}
 \label{subsec:anti-patterns}
 
-Similarly, we present the list of anti-patterns considered during this study:
+Similarly, we briefly describe the anti-patterns considered during this study, which are obtained from two papers \cite{9522227}\cite{10.1145/3424771.3424812}.
 
 \begin{itemize}
-    \item Wrong Cut
-    \item Nano Microservice
-    \item Mega Microservice
-    \item ESB Usage
-    \item Hardcoded Endpoints
-    \item No API Gateway
-    \item Shared Persistence
-    \item Shared Libraries
-    \item No CI/CD Tools
-    \item Multiple Services per Host
-    \item No API Versioning
-    \item No Health Check
-    \item Local Logging
+    \item Wrong Cut: Dividing application into technical layers or services, instead of business capabilities and bounded contexts.
+    \item Nano Microservice: Designing a microservice to carry out unnecessarily small task or part of application.
+    \item Mega Microservice: Designing a microservice to carry out unnecessarily large task or part of application.
+    \item ESB Usage: Utilizing "smart" message brokers that help with auxiliary tasks (integration, transforming messages, etc).
+    \item Hardcoded Endpoints: Instead of using service discovery, hardcoding the address (host and port number) of a microservice.
+    \item No API Gateway: Directly calling backend microservices from the client without intermediary service.
+    \item Shared Persistence: Utilization of the same database instance by multiple microservices.
+    \item Shared Libraries: Sharing a run-time or in-house development library instead of code duplication and independence.
+    \item No CI/CD Tools: Not making use of CI/CD tools in shared repositories in a distributed development context.
+    \item Multiple Services per Host: Deployment of multiple services onto the VM or physical machine.
+    \item No API Versioning: Not having version prefixes inside the URLs of API definitions.
+    \item No Health Check: Not checking the status of microservices, absence of health check API pattern.
+    \item Local Logging: Not aggregating logs of microservices in a central service, absence of log aggregator pattern.
 \end{itemize}
 
 \section{Research Methodology}
@@ -232,35 +221,35 @@ Specifically, we established two research questions:
 
 To answer first research question, the following steps have been adopted.
 
-\begin{itemize}
-    \item In order to find out whether there exists a consistent classification of microservice design patterns and anti-patterns, a literature review on digital libraries such as IEEE Explore, ACM Digital Library, Springer, Scopus, and Google Scholar has been carried out.
-    The keywords used in the search queries included "microservice pattern", "microservice pattern classification", "microservice anti-pattern" and "microservice anti-pattern classification".
+\paragraph{Querying digital libraries}
+In order to find out whether there exists a consistent classification of microservice design patterns and anti-patterns, a literature review on digital libraries such as IEEE Explore, ACM Digital Library, Springer, Scopus, and Google Scholar has been carried out.
+The keywords used in the search queries included "microservice pattern", "microservice pattern classification", "microservice anti-pattern" and "microservice anti-pattern classification".
 
-    \item After initial review of the studies found, few more studies have been added through snowballing technique, and from this extended set, the studies that do not contain a classification or grouping of patterns and anti-patterns have been eliminated.
-    
-    \item To be able to propose a classification of patterns and anti-patterns on a sound basis, various perspectives through which microservices architecture can be examined needed to be identified.
-    For this reason, the systematic mapping studies found in the literature review process have been consulted.
-    
-    \item Considering the classifications found in the literature and the findings resulted from papers that conducted systematic mapping studies, a classification proposal has been developed.
-\end{itemize}
+\paragraph{Applying snowballing}
+After initial review of the studies found, few more studies have been added through snowballing technique, and from this extended set, the studies that do not contain a classification or grouping of patterns and anti-patterns have been eliminated.
+
+\paragraph{Consulting systematic mapping studies}
+To be able to propose a classification of patterns and anti-patterns on a sound basis, various perspectives through which microservices architecture can be examined needed to be identified.
+For this reason, the systematic mapping studies found in the literature review process have been consulted.
+
+\paragraph{Developing classification proposal}
+Considering the classifications found in the literature and the findings resulted from papers that conducted systematic mapping studies, a classification proposal has been developed.\\
 
 As for the second research question, the following steps have been carried out.
 
-\begin{itemize}
-    \item Open source repository hosting service GitHub is queried with he keyword pattern "microservice OR micro-service". 
-    To find the most popular projects, the search result is sorted using "most stars" option.
+\paragraph{Querying GitHub}
+Open source repository hosting service GitHub is queried with he keyword pattern "microservice OR micro-service". 
+To find the most popular projects, the search result is sorted using "most stars" option.
 
-    \item Ten microservice repositories that have the most number of stars are selected.
-    While doing so, the repositories that contain libraries, frameworks or tool-kits have been eliminated, in addition to the ones that contain "microservice" keyword but rather implemented using other architectures.
-    
-    \item Because of the technological heterogeneity among the set of projects, two design patterns, namely "saga" and "shared libraries" which require a competent understanding of the programming language being used and a thorough comprehension of the business logic are excluded from the list of patterns and anti-patterns to be identified.
-    
-    \item For the detection of the rest of the microservices design patterns and anti-patterns, we manually inspected the repositories and the source codes of projects, without utilizing any automated tool.
-    We tried to find any information on the repository page that indicates the use of a particular pattern or anti-pattern, checked the source code and tried to verify the use of a pattern by consulting to the reference document of a library or framework at hand.
-    To detect hardcoded IP addresses, we made use of the simple regular expression "\textbackslash b\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash .\textbackslash d\{1,3\}\textbackslash b" and examined the context of the found hardcoded IP addresses.
-    For patterns and anti-patterns that can be implemented to various extents, such as API composition and shared persistence, we stated the criteria that we used to indicate the presence or absence of particular pattern or anti-pattern.
-    In addition to source codes, we examined deployment files such as "docker-compose.yaml" and dependency files such as "pom.xml" when available.
-\end{itemize}
+\paragraph{Selecting projects}
+Ten microservice repositories that have the most number of stars are selected.
+While doing so, the repositories that contain libraries, frameworks or tool-kits have been eliminated, in addition to the ones that contain "microservice" keyword but rather implemented using other architectures.
+
+\paragraph{Excluding saga pattern and shared libraries anti-pattern}
+Because of the technological heterogeneity among the set of projects, two design patterns, namely "saga" and "shared libraries" which require a competent understanding of the programming language being used and a thorough comprehension of the business logic are excluded from the list of patterns and anti-patterns to be identified.
+
+\paragraph{Detecting patterns and anti-patterns}
+We manually inspected the repositories and tried to find any information on the repository page that indicates the use of a particular pattern or anti-pattern. We examined the source code, deployment files such as "docker-compose.yaml" and dependency files such as "pom.xml" when available, and then tried to verify the use of a pattern by consulting to the reference document of a library or framework at hand.
 
 \section{Results}
 \label{sec:result}
@@ -268,10 +257,13 @@ As for the second research question, the following steps have been carried out.
 \subsection{Classification of Patterns and Anti-Patterns}
 \label{subsec:rq1}
 
-As a result of the research process related to the classification of microservices patterns and anti-patterns in the literature, we found out that there are three types of classifications for design patterns and three types of categorizations for the anti-patterns, which result from a set of nine studies and one book chapter. 
+As a result of the research process related to the classification of microservices patterns and anti-patterns in the literature, we found out that there are three types of classifications for design patterns and three types of categorizations for the anti-patterns, which result from a set of nine studies and one book chapter \cite{TaibiD2018APfM}\cite{KARABEYAKSAKALLI2021111014}\cite{valdivia}\cite{10.1145/3241403.3241429}\cite{8719492}\cite{9105640}\cite{Taibi2020}\cite{10.1145/3424771.3424812}\cite{8712355}\cite{9522227}. 
 Therefore, we concluded that there is no consensus in the literature regarding the classification of patterns and anti-patterns of microservices architecture.
-We then presented our taxonomy proposal by suggesting to use "architectural", "deployment" and "monitoring \& reliability" categories.
-The categorization of the design patterns and anti-patterns into "architectural", "deployment" and "monitoring \& reliability" categories are presented in Table~\ref{table:pattern_table_1}, Table~\ref{table:pattern_table_2} and Table~\ref{table:pattern_table_3} respectively.
+We then presented our taxonomy proposal by suggesting to use "architectural", "deployment" and "monitoring \& reliability" categories as shown in Table~\ref{table:pattern_table_1}, Table~\ref{table:pattern_table_2} and Table~\ref{table:pattern_table_3} respectively.
+While developing the proposed classification, we noticed that there are categories in the reviewed papers such as "design", "communication", "back-end", "coordination", "data" and "architectural". We argued that one pattern or anti-pattern that is placed in one of those categories in fact also affects or is affected from the ones placed in other similar categories.
+As an example, while the "hardcoded endpoints" anti-pattern is placed under "implementation" category in \cite{10.1145/3424771.3424812}, the bad practice results from a lack of service discovery mechanism in the architecture of the application.
+We therefore combined the patterns and anti-pattern that we think are about the major design decision, i.e., architecture of the application into "architectural" category.
+For the remaining ones, we realised that they reflect the processes of deployment and monitoring stages of a software development lifecycle and they are about the decisions that affect the most those stages.
 
 \begin{table}[H]
 \centering 
@@ -363,8 +355,7 @@ The categorization of the design patterns and anti-patterns into "architectural"
 \subsection{Patterns and Anti-Patterns in Microservice Projects}
 \label{subsec:rq2}
 
-To detect the patterns and anti-patterns in open source projects, we first selected ten open source microservice applications that have the most number of stars on GitHub, as shown with their names and corresponding number of stars in Table~\ref{table:project_list}.
-
+The set of examined projects is presented in Table~\ref{table:project_list}, with their names and number of GitHub stars.
 \begin{table}[H]
 \centering 
     \begin{tabular}{ 
@@ -407,107 +398,108 @@ To detect the patterns and anti-patterns in open source projects, we first selec
 
 Next, starting from the first project on the list, we examined repository page and source code to detect the aforementioned patterns and anti-patterns.
 To report the results, we first gave a short summary of the application domain and used technologies, indicated the presence of each pattern and anti-pattern in a table and then explained each pattern and anti-pattern by referring to a particular file in the repository when available.
-For exemplary purposes, the presence of design patterns and anti-patterns discovered in the "eShopOnContainers" application is indicated in Table~\ref{table:eshop_1} and Table~\ref{table:eshop_2} respectively.
 
-\begin{table}[H]
-\centering 
-    \begin{tabular}{ 
-  | >{\centering\arraybackslash} m{15.5em} 
-  | >{\centering\arraybackslash} m{2.2em} | }
-    \hline
-    \rowcolor{bluepoli!40}
-    \textbf{Design Pattern} & \cmark \textbackslash – \T\B \\
-    \hline \hline
-    API Gateway & \cmark \T\B\\
-    \hline
-    \rowcolor{bluepoli!10}
-    Service Mesh with Sidecar & \cmark \T\B \\
-    \hline
-    Service Registry \& Discovery & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Backends for Frontends & \cmark \T\B \\
-    \hline
-    Asynchronous Messaging & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Database per Service & – \T\B \\
-    \hline
-    API Composition & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    CQRS & \cmark \T\B \\
-    \hline
-    Event Sourcing & – \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Service Instance per VM & – \T\B \\
-    \hline
-    Service Instance per Container & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Serverless & – \T\B \\
-    \hline
-    Health Check & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Distributed Tracing & – \T\B \\
-    \hline
-    Log Aggregator & \cmark\T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Circuit Breaker & – \T\B \\
-    \hline
-    \end{tabular}
-    \\[10pt]
-    \caption{Presence of microservice design patterns in eShopOnContainers application}
-    \label{table:eshop_1}
-\end{table}
+% For exemplary purposes, the presence of design patterns and anti-patterns discovered in the "eShopOnContainers" application is indicated in Table~\ref{table:eshop_1} and Table~\ref{table:eshop_2} respectively.
 
-\begin{table}[H]
-\centering 
-    \begin{tabular}{ 
-  | >{\centering\arraybackslash} m{15.5em} 
-  | >{\centering\arraybackslash} m{2.2em} | }
-    \hline
-    \rowcolor{bluepoli!40}
-    \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
-    \hline \hline
-    Wrong Cut & – \T\B\\
-    \hline
-    \rowcolor{bluepoli!10}
-    Nano Microservice & – \T\B \\
-    \hline
-    Mega Microservice & – \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    ESB Usage & – \T\B \\
-    \hline
-    Hardcoded Endpoints & – \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    No API Gateway & – \T\B \\
-    \hline
-    Shared Persistence & \cmark \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    No CI/CD & – \T\B \\
-    \hline
-    Multiple Service Instances per Host & – \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    No API Versioning & – \T\B \\
-    \hline
-    No Health Check & – \T\B \\
-    \hline
-    \rowcolor{bluepoli!10}
-    Local Logging & – \T\B \\
-    \hline
-    \end{tabular}
-    \\[10pt]
-    \caption{Presence of microservice anti-patterns in eShopOnContainers application}
-    \label{table:eshop_2}
-\end{table}
+% \begin{table}[H]
+% \centering 
+%     \begin{tabular}{ 
+%   | >{\centering\arraybackslash} m{15.5em} 
+%   | >{\centering\arraybackslash} m{2.2em} | }
+%     \hline
+%     \rowcolor{bluepoli!40}
+%     \textbf{Design Pattern} & \cmark \textbackslash – \T\B \\
+%     \hline \hline
+%     API Gateway & \cmark \T\B\\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Service Mesh with Sidecar & \cmark \T\B \\
+%     \hline
+%     Service Registry \& Discovery & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Backends for Frontends & \cmark \T\B \\
+%     \hline
+%     Asynchronous Messaging & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Database per Service & – \T\B \\
+%     \hline
+%     API Composition & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     CQRS & \cmark \T\B \\
+%     \hline
+%     Event Sourcing & – \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Service Instance per VM & – \T\B \\
+%     \hline
+%     Service Instance per Container & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Serverless & – \T\B \\
+%     \hline
+%     Health Check & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Distributed Tracing & – \T\B \\
+%     \hline
+%     Log Aggregator & \cmark\T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Circuit Breaker & – \T\B \\
+%     \hline
+%     \end{tabular}
+%     \\[10pt]
+%     \caption{Presence of microservice design patterns in eShopOnContainers application}
+%     \label{table:eshop_1}
+% \end{table}
+
+% \begin{table}[H]
+% \centering 
+%     \begin{tabular}{ 
+%   | >{\centering\arraybackslash} m{15.5em} 
+%   | >{\centering\arraybackslash} m{2.2em} | }
+%     \hline
+%     \rowcolor{bluepoli!40}
+%     \textbf{Anti-Pattern} & \cmark \textbackslash – \T\B \\
+%     \hline \hline
+%     Wrong Cut & – \T\B\\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Nano Microservice & – \T\B \\
+%     \hline
+%     Mega Microservice & – \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     ESB Usage & – \T\B \\
+%     \hline
+%     Hardcoded Endpoints & – \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     No API Gateway & – \T\B \\
+%     \hline
+%     Shared Persistence & \cmark \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     No CI/CD & – \T\B \\
+%     \hline
+%     Multiple Service Instances per Host & – \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     No API Versioning & – \T\B \\
+%     \hline
+%     No Health Check & – \T\B \\
+%     \hline
+%     \rowcolor{bluepoli!10}
+%     Local Logging & – \T\B \\
+%     \hline
+%     \end{tabular}
+%     \\[10pt]
+%     \caption{Presence of microservice anti-patterns in eShopOnContainers application}
+%     \label{table:eshop_2}
+% \end{table}
 
 \subsection{Discussion of Findings}
 \label{subsec:discussion}
@@ -571,7 +563,7 @@ As a result of the detection process to find out which patterns and anti-pattern
 
 As shown in Table~\ref{table:total_number_1}, we see that the API gateway, service registry and discovery and asynchronous messaging are the most widely used architectural design patterns among the ten projects.
 Next, we observe that using containers is the preferred approach by far when compared to virtual machine images and serverless deployment when it comes to deploying a microservice application.
-
+As for the anti-patterns, we notice in Table~\ref{table:total_number_2} that the most frequent anti-pattern among the ten projects is the no API versioning anti-pattern, possibly because the examined applications are not actual microservice products that are maintained by a number of different development teams, it might be deemed not necessary by developers of examined repositories to make use of API versioning practice.
 \begin{table}[H]
 \centering 
     \begin{tabular}{ 
@@ -617,7 +609,7 @@ Next, we observe that using containers is the preferred approach by far when com
     \label{table:total_number_2}
 \end{table}
 
-As for the anti-patterns, we notice in Table~\ref{table:total_number_2} that the most frequent anti-pattern among the ten projects is the no API versioning anti-pattern, possibly because the examined applications are not actual microservice products that are maintained by a number of different development teams, it might be deemed not necessary by developers of examined repositories to make use of API versioning practice.
+
 Coming to the architectural anti-patterns, we observe that the design principles of microservice architectures are well digested by the practitioners.
 The microservices are designed around business capabilities in a balanced way and the principle of "smart endpoints, dumb pipes" is put into practice in those designs.
 %-----------------------------------------------------------------------------
