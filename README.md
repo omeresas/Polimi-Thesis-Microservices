@@ -1,4 +1,4 @@
-## My Thesis at PoliMi Comp. Sci. & Eng. MSc. Programme
+## Design Patterns and Anti-Patterns in Microservices Architecture: A Classification Proposal and Study on Open-Source Projects
 
 For my graduation thesis at Politecnico Di Milano Computer Science and Engineering Master of Science programme, I worked with Prof. Elisabetta Di Nitto and explored **design patterns and anti-patterns in microservices architecture**, to name a few:
 
